@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{% block title %}Public Page - KKKT Mkwawa{% endblock %}</title>
+
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="icon" href="{% static 'images/church.png' %}" type="image/png">
+    <meta name="theme-color" content="#007bff">
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* GLOBAL STYLES */
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+            background-color: var(--background-color, #fff);
+            color: var(--text-color, #000);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Increase top padding to avoid translator bar overlap */
+        body {
+            padding-top: 40px !important; 
+        }
+
+        .main-content {
+            display: block !important;
+            flex-direction: none !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            min-height: auto !important;
+            width: 100% !important;
+            margin: 0 auto !important;
+            padding-top: 0 !important; 
+        }
+
+        /* Sidebar styling */
+        #sidebar {
+            position: fixed;
+            left: -180px;
+            top: 0;
+            height: 100vh;
+            z-index: 1050;
+        }
+        .sidebar-open #sidebar {
+            left: 0;
+        }
+
+        /* Add to Home Screen Button */
+        #installButton {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 9999;
+            transition: background 0.3s;
+        }
+
+        /*
+         * HIDE everything in print mode:
+         * Google Translate bar (#google_translate_element),
+         * topbar, sidebar, #installButton, 
+         * plus Google Translate frames & classes
+         */
+        @media print {
+            #google_translate_element,
+            #sidebar,
+            #installButton,
+            /* Possibly the topbar includes partials/_topbar.html? If so, hide it as well. 
+               If your topbar has a known class or ID, you can hide it specifically, e.g.: */
+            .topbar,
+            /* Google Translate frames & classes */
+            .goog-te-banner-frame,
+            .goog-te-menu-frame,
+            .skiptranslate,
+            .goog-te-menu2,
+            #goog-gt-tt {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- GOOGLE TRANSLATE WIDGET: FIXED AT TOP -->
+    <div id="google_translate_element" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+        background: #f8f9fa;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+        padding: 5px 0;
+    "></div>
+
+    <!-- Include the Topbar (wrapped in partial `_topbar.html`) -->
+    {% include 'partials/_topbar.html' %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block content %}
+        <p>Welcome to the website!</p>
+        {% endblock %}
+    </div>
+
+    <!-- Include Sidebar -->
+    {% include 'partials/_sidebar.html' %}
+
+    <!-- Add to Home Screen Button -->
+    <button id="installButton">📲 Add to Home Screen</button>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Sidebar Toggle Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const closeSidebar = document.getElementById('closeSidebar');
+            let sidebarOpen = false;
+
+            function toggleSidebar() {
+                if (sidebarOpen) {
+                    sidebar.style.left = "-180px";
+                    sidebarOpen = false;
+                } else {
+                    sidebar.style.left = "0";
+                    sidebarOpen = true;
+                }
+            }
+
+            sidebarToggle?.addEventListener('click', toggleSidebar);
+            closeSidebar?.addEventListener('click', toggleSidebar);
+        });
+    </script>
+
+    <!-- PWA Service Worker & Add to Home Screen Logic -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('{% static "service-worker.js" %}')
+                    .then(function (registration) {
+                        console.log('✅ Service Worker registered:', registration.scope);
+                    })
+                    .catch(function (err) {
+                        console.log('❌ Service Worker registration failed:', err);
+                    });
+            });
+        }
+
+        // Add to Home Screen Logic
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('✅ App installed successfully.');
+                    } else {
+                        console.log('❌ App installation dismissed.');
+                    }
+                    installButton.style.display = 'none';
+                    deferredPrompt = null;
+                });
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('📲 App is already installed!');
+            installButton.style.display = 'none';
+        });
+    </script>
+
+    <!-- GOOGLE TRANSLATE SCRIPT -->
+    <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script 
+        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+        type="text/javascript">
+    </script>
+</body>
+</html>

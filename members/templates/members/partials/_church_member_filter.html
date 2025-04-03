@@ -1,0 +1,138 @@
+<!-- Filter Section -->
+<div class="filter-form">
+    <!-- Name Filter -->
+    <input type="text" id="searchName" placeholder="🔍 Search by Name">
+
+    <!-- Gender Filter -->
+    <select id="genderFilter">
+        <option value="all">⚥ Filter by Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+    </select>
+
+    <!-- Cell Filter -->
+    <select id="cellFilter">
+        <option value="all">🏡 Filter by Cell</option>
+        {% for cell in cells %}
+            <option value="{{ cell.cell_id }}">{{ cell.name }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- OutStation Filter -->
+    <select id="outstationFilter">
+        <option value="all">📍 Filter by OutStation</option>
+        {% for outstation in outstations %}
+            <option value="{{ outstation.outstation_id }}">{{ outstation.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- JavaScript for Real-Time Filtering -->
+<script>
+    function filterChurchMembers() {
+        let nameFilter = document.getElementById("searchName").value.toLowerCase();
+        let genderFilter = document.getElementById("genderFilter").value;
+        let cellFilter = document.getElementById("cellFilter").value;
+        let outstationFilter = document.getElementById("outstationFilter").value;
+
+        let members = document.querySelectorAll(".church-member-row");
+
+        let totalMales = 0;
+        let totalFemales = 0;
+        let totalMembers = 0;
+
+        members.forEach(member => {
+            let name = member.getAttribute("data-name").toLowerCase();
+            let gender = member.getAttribute("data-gender");
+            let cell = member.getAttribute("data-cell");
+            let outstation = member.getAttribute("data-outstation");
+
+            let showByName = name.includes(nameFilter);
+            let showByGender = (genderFilter === "all" || gender === genderFilter);
+            let showByCell = (cellFilter === "all" || cell === cellFilter);
+            let showByOutstation = (outstationFilter === "all" || outstation === outstationFilter);
+
+            if (showByName && showByGender && showByCell && showByOutstation) {
+                member.style.display = "table-row";
+                totalMembers++;
+
+                if (gender === "Male") {
+                    totalMales++;
+                } else if (gender === "Female") {
+                    totalFemales++;
+                }
+            } else {
+                member.style.display = "none";
+            }
+        });
+
+        // Update the summary section
+        document.getElementById("totalMales").textContent = totalMales;
+        document.getElementById("totalFemales").textContent = totalFemales;
+        document.getElementById("totalMembers").textContent = totalMembers;
+    }
+
+    // Attach event listeners for real-time filtering
+    document.getElementById("searchName").addEventListener("input", filterChurchMembers);
+    document.getElementById("genderFilter").addEventListener("change", filterChurchMembers);
+    document.getElementById("cellFilter").addEventListener("change", filterChurchMembers);
+    document.getElementById("outstationFilter").addEventListener("change", filterChurchMembers);
+
+    // Trigger initial filter to apply any pre-selected filters from URL
+    filterChurchMembers();
+</script>
+
+<!-- CSS for Styling -->
+<style>
+    /* 🌟 Full-Width Filter Section */
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px; /* Match cell_list.html */
+        width: 100%; /* Full width within parent container */
+        margin-bottom: 10px; /* Match spacing in cell_list.html */
+        padding: 0; /* No padding here, handled by parent in church_member_list.html */
+        box-sizing: border-box;
+    }
+
+    /* 🔍 iPhone-Like Input Fields */
+    .filter-form input,
+    .filter-form select {
+        padding: 10px; /* Match cell_list.html */
+        border-radius: 20px; /* Match cell_list.html for iPhone-like corners */
+        border: 1px solid #ccc; /* Match cell_list.html */
+        width: 100%; /* Full width within parent */
+        max-width: 100vw; /* Prevent exceeding viewport */
+        box-sizing: border-box; /* Include padding and border in width */
+        text-align: center; /* Match cell_list.html */
+        font-size: 16px; /* Match cell_list.html */
+        outline: none; /* Clean focus state */
+        transition: border-color 0.3s ease; /* Smooth transition like iPhone */
+    }
+
+    /* 🎨 Input Focus Effect */
+    .filter-form input:focus,
+    .filter-form select:focus {
+        border-color: #007bff; /* Blue focus like iPhone */
+    }
+
+    /* 📱 Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .filter-form input,
+        .filter-form select {
+            font-size: 14px; /* Slightly smaller for tablets */
+            padding: 8px; /* Adjust padding */
+            border-radius: 18px; /* Slightly smaller radius */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .filter-form input,
+        .filter-form select {
+            font-size: 13px; /* Smaller for phones */
+            padding: 6px; /* Minimal padding */
+            border-radius: 16px; /* Smaller radius */
+        }
+    }
+</style>

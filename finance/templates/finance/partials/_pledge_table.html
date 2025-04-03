@@ -1,0 +1,126 @@
+{% if only_styles %}
+<style>
+  /* A scrollable container for the table */
+  .pledge-table-container {
+    margin: 2rem auto;
+    width: 100%;
+    overflow-x: auto; /* Enables horizontal scrolling if table is too wide */
+  }
+
+  .pledge-table {
+    border-collapse: collapse;
+    width: 100%; /* Table tries to fill the container width */
+    min-width: 700px; /* Ensures columns aren’t squashed on small screens */
+  }
+
+  .pledge-table th,
+  .pledge-table td {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    text-align: left;
+    white-space: nowrap; 
+    /* This prevents text from wrapping, so each cell might stay on one line */
+    /* Remove if you prefer column wrapping */
+  }
+
+  .pledge-table th {
+    font-weight: bold;
+  }
+
+  /* iPhone-like style for action buttons */
+  .action-btn {
+    display: inline-block;
+    text-decoration: none;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 20px; /* Rounded / "pill" shape */
+    font-size: 14px;
+    margin-right: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+  .action-btn:hover {
+    text-decoration: none; /* No underline */
+  }
+
+  /* Update button (iOS-like blue) */
+  .update-btn {
+    background-color: #007aff;
+  }
+  .update-btn:hover {
+    background-color: #005eb8;
+  }
+
+  /* Delete button (iOS-like red) */
+  .delete-btn {
+    background-color: #ff3b30;
+  }
+  .delete-btn:hover {
+    background-color: #cc2e25;
+  }
+</style>
+{% else %}
+<div class="pledge-table-container">
+  <table class="pledge-table">
+    <thead>
+      <tr>
+        <th>Envelope #</th>
+        <th>Member (Name - Phone - Address)</th>
+        <th>Pledge Amount</th>
+        <th>Pledge for Construction</th>
+        <th>Year</th>
+        <th>Month</th>
+        <th>Date Given (Time Since)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pledge in pledges %}
+        <tr
+          data-member="{{ pledge.member.full_name|lower }} {{ pledge.member.phone_number|lower }} {{ pledge.member.address|lower }}"
+          data-envelope="{{ pledge.envelope_number|lower }}"
+          data-year="{{ pledge.year.year }}"
+          data-month="{{ pledge.month|lower }}"
+          data-date="{{ pledge.date_given }}"
+
+          data-pledge-amount="{{ pledge.pledge_amount }}"
+          data-pledge-construction="{{ pledge.pledge_for_construction }}"
+        >
+          <td>{{ pledge.envelope_number }}</td>
+          <td>
+            {{ pledge.member.full_name }} 
+            - {{ pledge.member.phone_number }} 
+            - {{ pledge.member.address }}
+          </td>
+          <td>{{ pledge.pledge_amount }}</td>
+          <td>{{ pledge.pledge_for_construction }}</td>
+          <td>{{ pledge.year.year }}</td>
+          <td>{{ pledge.month }}</td>
+          <td>
+            {{ pledge.date_given }}
+            ({{ pledge.date_given|timesince }} ago)
+          </td>
+          <td>
+            <a 
+              href="{% url 'pledge_update' pk=pledge.pk %}" 
+              class="action-btn update-btn"
+            >
+              🔄 Update
+            </a>
+            <a 
+              href="{% url 'pledge_delete' pk=pledge.pk %}" 
+              class="action-btn delete-btn"
+            >
+              🗑️ Delete
+            </a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="8">No pledges found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}

@@ -1,0 +1,24 @@
+<div style="overflow-x: auto;">
+    <table data-contribution="{{ contribution.name }}" style="
+        width: 100%; 
+        border-collapse: collapse; 
+        text-align: center; 
+        border: 1px solid #ccc;
+    ">
+        <thead style="background-color: #343a40; color: white;">
+            <tr>
+                <th style="padding: 12px;">📅 Period</th>
+                <th style="padding: 12px;">⛪ Mass Name</th>
+                <th style="padding: 12px;">💰 Amount (TZS)</th>
+                <th style="padding: 12px;">📝 Notes</th>
+                <th style="padding: 12px;">📆 Date Created</th>
+                <th style="padding: 12px;">🕰️ Date Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in donation_items %}
+                {% include 'accountant/finance/all_donation_item_funds/_table_row.html' with item=item %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,103 @@
+<!-- finance/report_partials/table_i.html -->
+<h4>Table I — Summary of Income and Expenditure for {{ current_month }}/{{ current_year }}</h4>
+
+<table style="border-collapse: collapse; width: 100%; margin-bottom: 1em;">
+  <thead>
+    <tr style="background-color: #0ef25e;">
+      <th style="padding: 8px; border: 1px solid #ccc;">I</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">Summary of Income & Expenditure</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">TSH</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Row 1: Balance from previous period -->
+    <tr>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        1
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        Balance from the previous period
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        {{ previous_balance|floatformat:2 }}
+      </td>
+    </tr>
+
+    <!-- Row 2: Overall monthly income (A+B+C+D) -->
+    <tr>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        2
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        Overall monthly income
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        {{ overall_monthly_income|floatformat:2 }}
+      </td>
+    </tr>
+
+    <!-- Row 3: Total of previous balance and monthly income -->
+    <tr>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        3
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        Total of previous balance and monthly income
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        {{ total_of_prev_balance_and_monthly_income|floatformat:2 }}
+      </td>
+    </tr>
+
+    <!-- Blank Row -->
+    <tr><td colspan="3" style="height: 10px;"></td></tr>
+
+    <!-- Row 4: Total monthly expenses -->
+    <tr>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        4
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        Total monthly expenses 
+        <br>
+        <small>(including Remittances to the Head Office (DIRA), 
+        Remittances to the Diocesan Office, 
+        Special Diocesan Contributions, 
+        Diocesan Contributions, 
+        Fellowship Expenditures)</small>
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        {{ total_monthly_expenses|floatformat:2 }}
+      </td>
+    </tr>
+
+    <!-- Blank Row -->
+    <tr><td colspan="3" style="height: 10px;"></td></tr>
+
+    <!-- Row 5: Total remained amount in this month = (A+B+C+D) - H -->
+    <tr>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        5
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        Total remained amount in this month
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        {{ total_remained_this_month|floatformat:2 }}
+      </td>
+    </tr>
+
+    <!-- Row 6: Overall total remained amount = previous_balance + ( remained this month ) -->
+    <tr>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        6
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        Overall total remained amount
+      </td>
+      <td style="padding: 8px; border: 1px solid #ccc;">
+        {{ overall_total_remained|floatformat:2 }}
+      </td>
+    </tr>
+  </tbody>
+</table>

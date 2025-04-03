@@ -1,0 +1,99 @@
+{% if leaders_active_inactive_data %}
+    <h3>
+        Leaders Active vs. Inactive
+        <button id="downloadLeadersActiveInactiveChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <div class="leaders-active-inactive-chart-container">
+        <canvas id="leadersActiveInactiveDoughnut"></canvas>
+    </div>
+
+    <p id="leadersActiveInactiveAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .leaders-active-inactive-chart-container {
+            max-width: 500px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        @media screen and (max-width: 600px) {
+            .leaders-active-inactive-chart-container {
+                max-width: 100%;
+                height: 400px;
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const leadersActiveInactiveData = JSON.parse('{{ leaders_active_inactive_data|safe }}');
+
+        let leadersActiveInactiveChart;
+
+        if (leadersActiveInactiveData.labels.length > 0) {
+            const ctx = document.getElementById('leadersActiveInactiveDoughnut').getContext('2d');
+
+            leadersActiveInactiveChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: leadersActiveInactiveData.labels, // e.g. ["Active Leaders", "Inactive Leaders"]
+                    datasets: [{
+                        data: leadersActiveInactiveData.data,  // e.g. [10, 3]
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.6)',  // Active color
+                            'rgba(255, 99, 132, 0.6)'   // Inactive color
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const dataArr = context.dataset.data;
+                                    const total = dataArr.reduce((sum, v) => sum + v, 0);
+                                    const percentage = ((value / total) * 100).toFixed(2);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Display analysis text
+            document.getElementById("leadersActiveInactiveAnalysis").innerHTML = `<strong>${leadersActiveInactiveData.analysis}</strong>`;
+        } else {
+            document.getElementById("leadersActiveInactiveAnalysis").innerHTML = `<p>No leader data available.</p>`;
+        }
+
+        // Download chart as image
+        document.getElementById("downloadLeadersActiveInactiveChart").addEventListener("click", function() {
+            if (leadersActiveInactiveChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('leadersActiveInactiveDoughnut').toDataURL('image/png');
+                link.download = 'Leaders_Active_Inactive_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No leader data provided.</p>
+{% endif %}

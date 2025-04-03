@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- Profile Section with Header Row -->
+    <div class="profile-header">
+        <!-- Header Row with Back Button, Name, and Menu Button -->
+        <div class="header-row">
+            <!-- Back Button -->
+            <button onclick="window.history.back()" class="back-btn">
+                <span class="emoji">⬅️</span>
+            </button>
+
+            <!-- Leader Name and Occupation -->
+            <h2 class="leader-name">{{ leader.church_member.full_name }} - {{ leader.occupation }}</h2>
+
+            <!-- Menu Button Partial -->
+            {% include 'accounts/partials/menu_button_partial.html' %}
+        </div>
+
+        <!-- Profile Picture (Click to Upload/Update) -->
+        <div class="profile-picture">
+            <a href="{% url 'upload_passport' leader.church_member.pk %}" title="Click to upload or update passport">
+                <img 
+                    id="leader-passport-{{ leader.pk }}"
+                    alt="Profile Picture"
+                    style="display: none; width: 120px; height: 120px; border-radius: 50%; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
+                    data-passport-url="{% if leader.church_member.passport %}{{ leader.church_member.passport.url }}{% else %}{% static 'images/user.png' %}{% endif %}"
+                >
+            </a>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+        <a href="{% url 'update_leader' leader.pk %}" class="nav-btn edit-btn">✏️ Edit</a>
+        <a href="{% url 'delete_leader' leader.pk %}" class="nav-btn delete-btn"
+           onclick="return confirm('Are you sure you want to delete this leader?');">🗑️ Delete</a>
+    </div>
+
+    <!-- Details Section -->
+    <div class="details-container">
+        <table class="details-table">
+            <tbody>
+                {% for label, value in leader_details %}
+                <tr>
+                    <td class="field-name">{{ label }}</td>
+                    <td class="field-value">{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 🌙 Dark Mode Friendly CSS -->
+<style>
+    /* 🌍 Light Mode Colors */
+    :root {
+        --text-color: #333333;
+        --highlight-color: #007bff;
+        --status-active: #28a745;
+        --status-inactive: #dc3545;
+        --button-bg: #007bff;
+        --button-hover-bg: #0056b3;
+        --document-button-bg: #28a745;
+        --document-button-hover: #1e7e34;
+    }
+
+    /* 🌙 Dark Mode Colors */
+    [data-theme="dark"] {
+        --text-color: #e0e0e0;
+        --highlight-color: #4fa3ff;
+        --status-active: #34d058;
+        --status-inactive: #ff6b6b;
+        --button-bg: #4fa3ff;
+        --button-hover-bg: #2a6ebc;
+        --document-button-bg: #34d058;
+        --document-button-hover: #24923f;
+    }
+
+    /* Container */
+    .profile-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        width: 100%;
+        overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    /* 📸 Profile Section */
+    .profile-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* Header Row Styling */
+    .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        gap: 10px; /* Space between elements */
+    }
+
+    /* Back Button Styling */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(12px, 2.5vw, 14px);
+        font-weight: bold;
+        color: #007bff;
+        padding: 8px 12px;
+        border-radius: 20px;
+        background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0; /* Prevent shrinking too much */
+    }
+
+    .back-btn .emoji {
+        font-size: clamp(16px, 3vw, 20px);
+    }
+
+    .back-btn:hover {
+        background: #bbdefb;
+        transform: scale(1.05);
+    }
+
+    .leader-name {
+        font-size: clamp(18px, 4vw, 22px); /* Scale with viewport, max matches original */
+        font-weight: bold;
+        margin: 0; /* Adjusted for header row */
+        color: var(--highlight-color);
+        flex-grow: 1; /* Take available space */
+        text-align: center;
+        white-space: normal; /* Allow wrapping */
+    }
+
+    /* 🔄 Navigation Buttons */
+    .nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .nav-btn {
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 15px;
+        font-size: 13px;
+        font-weight: bold;
+        background: var(--button-bg);
+        color: white;
+        transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .nav-btn:hover {
+        transform: scale(1.05);
+        background: var(--button-hover-bg);
+    }
+
+    .edit-btn { background: #28a745; }
+    .delete-btn { background: #dc3545; }
+
+    /* 📋 Details Section */
+    .details-container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .details-table {
+        width: 90%;
+        max-width: 600px;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    .details-table tbody tr {
+        border-bottom: 1px solid #ddd;
+    }
+
+    .field-name {
+        padding: 10px;
+        font-weight: bold;
+        color: var(--highlight-color);
+        text-align: left;
+        width: 50%;
+    }
+
+    .field-value {
+        padding: 10px;
+        text-align: left;
+        width: 50%;
+        word-break: break-word;
+        color: var(--text-color);
+    }
+
+    /* 📱 Responsive Design */
+    @media (max-width: 768px) {
+        .profile-picture img {
+            width: 90px;
+            height: 90px;
+        }
+
+        .leader-name {
+            font-size: clamp(16px, 3.5vw, 18px); /* Slightly smaller on small screens */
+        }
+
+        .nav-buttons {
+            gap: 5px;
+        }
+
+        .nav-btn {
+            font-size: 11px;
+            padding: 5px 8px;
+        }
+
+        .details-table {
+            width: 100%;
+        }
+    }
+</style>
+
+<!-- Preload Script for Leader Profile Picture -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const picEl = document.getElementById('leader-passport-{{ leader.pk }}');
+    if (picEl) {
+        const passportUrl = picEl.dataset.passportUrl;
+        const hiddenImage = new Image();
+        hiddenImage.src = passportUrl;
+        hiddenImage.onload = function() {
+            picEl.src = passportUrl;
+            picEl.style.display = 'block';
+        };
+    }
+});
+</script>
+{% endblock %}

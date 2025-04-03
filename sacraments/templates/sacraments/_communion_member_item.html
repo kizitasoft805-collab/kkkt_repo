@@ -1,0 +1,71 @@
+{% load static %}
+
+<li class="member-item" data-communion-date="{{ member.date_of_communion|date:'Y-m-d' }}" 
+    data-gender="{{ member.gender }}" 
+    data-status="{{ member.status }}"
+    style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #ddd; transition: background 0.3s ease; justify-content: space-between;">
+
+    <!-- Member Passport -->
+    {% if member.passport %}
+        <img src="{{ member.passport.url }}" 
+             alt="Member Passport" 
+             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+    {% else %}
+        <img src="{% static 'images/user.png' %}" 
+             alt="Default Avatar" 
+             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+    {% endif %}
+
+    <!-- Member Info -->
+    <div style="flex-grow: 1; text-align: left;">
+        <div class="member-name" style="font-size: 16px; font-weight: bold; display: flex; align-items: center;">
+            {{ member.full_name }}
+            {% if member.status == "Active" %}
+                <span style="color: #25D366; font-size: 18px; margin-left: 6px;" title="Active Member">✔️</span>
+            {% else %}
+                <span style="color: red; font-size: 18px; margin-left: 6px;" title="Inactive Member">❌</span>
+            {% endif %}
+        </div>
+        <div style="font-size: 14px; color: gray;">📅 {{ member.date_of_communion|date:"F d, Y" }}</div>
+        <div style="font-size: 14px; color: gray;">⏳ {{ member.time_since_communion }}</div>
+    </div>
+
+    <!-- Icons: View, Update, Delete -->
+    <div style="display: flex; align-items: center; gap: 8px;">
+
+        <!-- View Certificate -->
+        {% if member.communion_certificate and member.communion_certificate.url %}
+            <a href="{{ member.communion_certificate.url }}" target="_blank"
+               title="View Certificate" 
+               style="font-size: 18px; color: #007bff; text-decoration: none;">
+                📄 <!-- Unicode document icon -->
+            </a>
+
+            <!-- Download Certificate -->
+            <a href="{{ member.communion_certificate.url }}" 
+               title="Download Certificate" 
+               style="font-size: 18px; color: #28a745; text-decoration: none;" 
+               download>
+                ⬇️ <!-- Unicode download icon -->
+            </a>
+        {% else %}
+            <p style="font-size: 12px; color: red; margin-left: 10px;">⚠️ No Certificate</p>
+        {% endif %}
+
+        <!-- Update Member -->
+        <a href="{% url 'update_communion_member' member.id %}" 
+           title="Update Member" 
+           style="font-size: 18px; color: #f0ad4e; text-decoration: none;">
+            ✏️ <!-- Unicode edit icon -->
+        </a>
+
+        <!-- Delete Member -->
+        <a href="{% url 'delete_communion_member' member.id %}" 
+           title="Delete Member" 
+           style="font-size: 18px; color: red; text-decoration: none;"
+           onclick="return confirm('⚠️ Are you sure you want to delete {{ member.full_name }}? This action cannot be undone!')">
+            🗑️ <!-- Trash bin icon -->
+        </a>
+
+    </div>
+</li>

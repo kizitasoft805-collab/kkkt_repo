@@ -1,0 +1,70 @@
+{% if general_data_analysis %}
+    <h3>
+        📊 General Data Analysis
+        <button id="downloadGeneralDataChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <div style="display: flex; justify-content: center;">
+        <canvas id="generalDataChart" width="200" height="200"></canvas>
+    </div>
+
+    <p id="dataAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Parse JSON data from Django
+        const generalData = JSON.parse('{{ general_data_analysis|safe }}');
+
+        let generalDataChart;  // Store Chart.js instance globally
+
+        if (generalData.labels.length > 0) {
+            const polarCtx = document.getElementById('generalDataChart').getContext('2d');
+
+            // Generate dynamic colors for each data point
+            const backgroundColors = generalData.labels.map((_, index) => `hsl(${index * 40}, 70%, 50%)`);
+
+            // Create Polar Area Chart
+            generalDataChart = new Chart(polarCtx, {
+                type: 'polarArea',
+                data: {
+                    labels: generalData.labels,
+                    datasets: [{
+                        data: generalData.data,
+                        backgroundColor: backgroundColors,
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Display analysis
+            document.getElementById("dataAnalysis").innerHTML = `<strong>${generalData.analysis}</strong>`;
+        } else {
+            document.getElementById("dataAnalysis").innerHTML = `<p>No general data available.</p>`;
+        }
+
+        // Function to Download Chart as Image
+        document.getElementById("downloadGeneralDataChart").addEventListener("click", function() {
+            if (generalDataChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('generalDataChart').toDataURL('image/png');
+                link.download = 'General_Data_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No general data available.</p>
+{% endif %}

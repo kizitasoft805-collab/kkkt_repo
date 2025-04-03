@@ -1,0 +1,25 @@
+<!-- Header Section -->
+<div class="header-section" style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; margin-bottom: 15px;">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div class="header-row" style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 100%; gap: 10px;">
+        <!-- Back Button -->
+        <button onclick="window.history.back()" class="back-btn" 
+                style="display: inline-flex; align-items: center; justify-content: center; font-size: clamp(12px, 2.5vw, 14px); font-weight: bold; color: #007bff; padding: 8px 12px; border-radius: 20px; background: linear-gradient(130deg, #e3f2fd, #bbdefb); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border: none; cursor: pointer; transition: background 0.3s ease, transform 0.2s ease; white-space: nowrap; flex-shrink: 0;"
+                onmouseover="this.style.background='linear-gradient(130deg, #bbdefb, #bbdefb)'; this.style.transform='scale(1.05)'" 
+                onmouseout="this.style.background='linear-gradient(130deg, #e3f2fd, #bbdefb)'; this.style.transform='scale(1)'">
+            <span style="font-size: clamp(16px, 3vw, 20px);">⬅️</span>
+        </button>
+
+        <!-- Title -->
+        <h2 style="font-size: clamp(18px, 4vw, 24px); font-weight: bold; color: #007bff; margin: 0; flex-grow: 1; text-align: center; white-space: normal;">👥 Active Leaders List</h2>
+
+        <!-- Menu Button Partial -->
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    <!-- Add Leader Button (Moved Outside Header Row) -->
+    <a href="{% url 'create_leader' %}" class="add-button"
+       style="font-size: 16px; font-weight: bold; background: #4caf50; color: white; padding: 10px 20px; border-radius: 25px; text-decoration: none; margin-top: 10px;">
+        ➕ Add New Leader
+    </a>
+</div>

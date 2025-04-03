@@ -1,0 +1,54 @@
+<!-- finance/offering_category_form.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- We have removed the bounding <div> with border, shadow, etc. for a freer look. -->
+
+<h2 style="color: #007bff; margin-bottom: 20px; text-align: center;">
+  {{ title }}
+</h2>
+
+<form method="POST" novalidate style="
+  display: flex; 
+  flex-direction: column; 
+  gap: 20px; 
+  max-width: 600px; 
+  margin: 0 auto;
+">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+
+  <!-- Name -->
+  <div>
+    {{ form.name.errors }}
+    <label for="{{ form.name.id_for_label }}" style="font-weight: bold;">
+      Name
+    </label>
+    {{ form.name }}
+  </div>
+
+  <!-- Description -->
+  <div>
+    {{ form.description.errors }}
+    <label for="{{ form.description.id_for_label }}" style="font-weight: bold;">
+      Description
+    </label>
+    {{ form.description }}
+  </div>
+
+  <!-- Submit Button -->
+  <button type="submit" style="
+    padding: 14px 20px;
+    border-radius: 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+  ">
+    {{ btn_label }}
+  </button>
+</form>
+{% endblock %}

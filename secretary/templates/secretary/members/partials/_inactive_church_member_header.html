@@ -1,0 +1,70 @@
+<!-- Church Member List Header -->
+<div class="header-section">
+    <h2>👥 Inactive Church Member List</h2>
+    <a href="{% url 'secretary_create_church_member' %}" class="add-button">
+        ➕ Add New Member
+    </a>
+</div>
+
+<!-- Styling for Header -->
+<style>
+    .header-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto 20px auto; /* Centers content */
+        padding: 10px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        text-align: center;
+        gap: 15px; /* Space between elements */
+    }
+
+    /* Title Styling */
+    .header-section h2 {
+        font-size: 1.6rem;
+        font-weight: bold;
+        color: #007bff;
+        text-align: center;
+        flex-grow: 1;
+    }
+
+    /* Add Member Button */
+    .add-button {
+        font-size: 1rem;
+        font-weight: bold;
+        background: linear-gradient(130deg, #4caf50, #388e3c);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        transition: background 0.3s ease, transform 0.2s ease;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .add-button:hover {
+        transform: scale(1.05);
+        background: linear-gradient(130deg, #45a049, #2e7d32);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .header-section {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .header-section h2 {
+            font-size: 1.4rem;
+        }
+
+        .add-button {
+            font-size: 1rem;
+            padding: 8px 15px;
+            width: fit-content;
+        }
+    }
+</style>

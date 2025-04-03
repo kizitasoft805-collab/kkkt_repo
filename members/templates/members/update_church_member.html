@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div class="header-row">
+        <!-- Back Button -->
+        <button onclick="window.history.back()" class="back-btn">
+            <span class="emoji">⬅️</span>
+        </button>
+
+        <!-- Header Title -->
+        <h2 class="header-title">✏️ Update Church Member: {{ church_member.full_name }}</h2>
+
+        <!-- Menu Button Partial -->
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    <!-- Form -->
+    <form method="POST" enctype="multipart/form-data" class="update-form">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}" class="form-label">
+                {{ field.label }}
+                {% if field.field.required %}
+                <span class="required">*</span>
+                {% endif %}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+            <span class="error-message">{{ field.errors|join:", " }}</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <!-- Submit Button -->
+        <div class="button-container">
+            <button type="submit" class="submit-button">
+                💾 Update Church Member
+            </button>
+        </div>
+    </form>
+
+    <!-- Back Button (Removed, now in header row) -->
+</div>
+
+<!-- Styling -->
+<style>
+    /* General Layout */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* Container */
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        width: 100%;
+        overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    /* Header Row Styling */
+    .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        gap: 10px; /* Space between elements */
+    }
+
+    /* Back Button Styling */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(12px, 2.5vw, 14px);
+        font-weight: bold;
+        color: #007bff;
+        padding: 8px 12px;
+        border-radius: 20px;
+        background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0; /* Prevent shrinking too much */
+    }
+
+    .back-btn .emoji {
+        font-size: clamp(16px, 3vw, 20px);
+    }
+
+    .back-btn:hover {
+        background: #bbdefb;
+        transform: scale(1.05);
+    }
+
+    /* Header Title */
+    .header-title {
+        font-size: clamp(18px, 4vw, 24px); /* Scale with viewport, max matches original */
+        font-weight: bold;
+        color: #007bff;
+        margin: 0; /* Adjusted for header row */
+        flex-grow: 1; /* Take available space */
+        text-align: center;
+        white-space: normal; /* Allow wrapping */
+    }
+
+    /* Form */
+    .update-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Form Group */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+
+    .form-label {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    /* iPhone-like Fields */
+    .custom-input, .custom-textarea, .custom-file, .custom-checkbox {
+        border: 1px solid #ccc;
+        padding: 12px 15px;
+        border-radius: 25px; /* Rounded corners */
+        font-size: 14px;
+        width: 100%; /* Ensures all fields are the same size */
+        box-sizing: border-box; /* Prevents padding from affecting size */
+        transition: border-color 0.3s ease;
+    }
+
+    .custom-input:focus, .custom-textarea:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .custom-textarea {
+        resize: none;
+        height: 80px; /* Ensures textareas are the same size */
+    }
+
+    .custom-checkbox {
+        width: 20px;
+        height: 20px;
+        margin-top: 5px;
+    }
+
+    .error-message {
+        color: red;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .required {
+        color: red;
+    }
+
+    /* Submit Button */
+    .button-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .submit-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        background: linear-gradient(130deg, #4caf50, #388e3c);
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 25px; /* Rounded corners */
+        cursor: pointer;
+        transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .submit-button:hover {
+        transform: scale(1.05);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .header-title {
+            font-size: clamp(16px, 3.5vw, 20px); /* Slightly smaller on small screens */
+        }
+
+        .submit-button {
+            font-size: 14px;
+            padding: 10px 20px;
+        }
+    }
+</style>
+{% endblock %}

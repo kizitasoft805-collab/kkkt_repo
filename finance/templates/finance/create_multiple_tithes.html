@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>➕ Create Multiple Tithes</title>
+    <style>
+        /* ✅ Scoped Styles Only for Tithe Form */
+        .tithe-form-wrapper {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+            text-align: center;
+        }
+
+        .tithe-form-wrapper h2 {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .tithe-form-wrapper .form-container {
+            max-width: 400px;
+            margin: auto;
+        }
+
+        /* ✅ iPhone-like Fields (Scoped) */
+        .tithe-form-wrapper input[type="text"],
+        .tithe-form-wrapper input[type="number"],
+        .tithe-form-wrapper input[type="date"],
+        .tithe-form-wrapper select,
+        .tithe-form-wrapper textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border 0.3s ease;
+        }
+
+        /* Focus Effect */
+        .tithe-form-wrapper input:focus,
+        .tithe-form-wrapper select:focus,
+        .tithe-form-wrapper textarea:focus {
+            border: 1.5px solid #007bff;
+        }
+
+        /* Buttons */
+        .tithe-form-wrapper .btn-submit,
+        .tithe-form-wrapper .btn-add-more {
+            width: 100%;
+            background: linear-gradient(130deg, #007bff, #0056b3);
+            color: white;
+            font-size: 18px;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-bottom: 10px;
+        }
+
+        .tithe-form-wrapper .btn-submit:hover,
+        .tithe-form-wrapper .btn-add-more:hover {
+            transform: scale(1.05);
+        }
+
+        .tithe-form-wrapper .success-message {
+            color: green;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tithe-form-wrapper .formset-form {
+            margin-bottom: 20px;
+        }
+
+        /* Search Field Style */
+        .tithe-form-wrapper .filter-container {
+            margin-bottom: 15px;
+        }
+
+        .tithe-form-wrapper .filter-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #aaa;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+    </style>
+
+    <script>
+        function addForm() {
+            const formContainer = document.getElementById('form-container');
+            const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+            const currentFormCount = parseInt(totalForms.value);
+            const newFormIndex = currentFormCount;
+
+            const newForm = document.querySelector('.formset-form').cloneNode(true);
+            newForm.setAttribute('data-index', newFormIndex);
+
+            // Update form field names and IDs
+            newForm.innerHTML = newForm.innerHTML.replace(/form-(\d+)/g, `form-${newFormIndex}`);
+
+            // Clear input fields in the cloned form
+            newForm.querySelectorAll('input, select, textarea').forEach(input => {
+                if (input.type !== 'hidden') {
+                    input.value = '';
+                }
+            });
+
+            // Update the filter input's data-index
+            const filterInput = newForm.querySelector('.filter-input');
+            filterInput.setAttribute('data-index', newFormIndex);
+            filterInput.addEventListener('keyup', function () {
+                filterMembers(this);
+            });
+
+            // Update the member select's ID for unique identification
+            const memberSelect = newForm.querySelector('select[name^="form-"][name$="-member"]');
+            memberSelect.id = `member-select-${newFormIndex}`;
+
+            formContainer.appendChild(newForm);
+            totalForms.value = newFormIndex + 1;
+        }
+
+        function filterMembers(input) {
+            const index = input.getAttribute('data-index');
+            const filterValue = input.value.toLowerCase();
+            const memberSelect = document.querySelector(`#member-select-${index}`);
+
+            if (memberSelect) {
+                const options = memberSelect.options;
+                for (let i = 0; i < options.length; i++) {
+                    const optionText = options[i].text.toLowerCase();
+                    options[i].style.display = optionText.includes(filterValue) ? 'block' : 'none';
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div class="tithe-form-wrapper">
+        <h2>➕ Create Multiple Tithes</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p class="success-message">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <div class="form-container">
+            <form method="POST">
+                {% csrf_token %}
+                {{ formset.management_form }}
+
+                <div id="form-container">
+                    {% for form in formset %}
+                        <div class="formset-form" data-index="{{ forloop.counter0 }}">
+                            <!-- Filter Input for Each Form -->
+                            <div class="filter-container">
+                                <input type="text" class="filter-input" placeholder="🔍 Filter Church Member..."
+                                       data-index="{{ forloop.counter0 }}" onkeyup="filterMembers(this)">
+                            </div>
+
+                            <!-- Add unique ID for each member select -->
+                            {{ form.as_p|safe }}
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    const memberSelect = document.querySelector('select[name="form-{{ forloop.counter0 }}-member"]');
+                                    if (memberSelect) {
+                                        memberSelect.id = `member-select-{{ forloop.counter0 }}`;
+                                    }
+                                });
+                            </script>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" class="btn-add-more" onclick="addForm()">➕ Add More Forms</button>
+                <button type="submit" class="btn-submit">💾 Save Tithes</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
+
+{% endblock %}

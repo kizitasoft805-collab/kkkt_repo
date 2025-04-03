@@ -1,0 +1,86 @@
+<div class="message-card">
+    <!-- Profile Picture -->
+    <div class="profile-pic">
+        <img src="{{ notification.profile_pic }}" alt="Profile Picture">
+    </div>
+
+    <!-- Message Content -->
+    <div class="message-content">
+        <span class="name">{{ notification.full_name }}</span>
+        <p class="message">{{ notification.message }}</p>
+        <span class="timestamp">{{ notification.created_at }}</span>
+    </div>
+
+    <!-- Delete Individual Notification -->
+    <a href="{% url 'accountant_delete_notification' delete_type='member' identifier=notification.id %}" class="delete-member-btn">
+        🗑️
+    </a>
+</div>
+
+<!-- ✅ CSS for Message Card -->
+<style>
+    .message-card {
+        display: flex;
+        align-items: center;
+        background: white;
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 10px auto;
+        position: relative;
+    }
+
+    .profile-pic {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 10px;
+    }
+
+    .profile-pic img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .message-content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .name {
+        font-weight: bold;
+        color: #007bff;
+        font-size: 16px;
+    }
+
+    .message {
+        font-size: 14px;
+        color: #333;
+        margin: 5px 0;
+    }
+
+    .timestamp {
+        font-size: 12px;
+        color: #888;
+        text-align: right;
+    }
+
+    .delete-member-btn {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: red;
+        margin-left: 15px;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .delete-member-btn:hover {
+        color: darkred;
+        transform: scale(1.2);
+    }
+</style>

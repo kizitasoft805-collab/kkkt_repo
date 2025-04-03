@@ -1,0 +1,105 @@
+{% if tithes_data %}
+<h3>
+  Tithes Analysis (Monthly, Current Year)
+  <button id="downloadTithesChart" 
+          style="background: none; border: none; cursor: pointer;">
+    📥 Download Graph
+  </button>
+</h3>
+
+<!-- A responsive container with a fixed height -->
+<div class="tithes-chart-container">
+  <canvas id="tithesComboChart"></canvas>
+</div>
+
+<p id="tithesDescription" style="margin-top: 20px;"></p>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Custom styles for the container -->
+<style>
+  .tithes-chart-container {
+    max-width: 700px;    /* Keep a max width for larger screens */
+    margin: 0 auto;      /* Center horizontally */
+    height: 400px;       /* Fixed height for normal viewports */
+  }
+
+  /* For smaller screens, slightly increase the height */
+  @media screen and (max-width: 600px) {
+    .tithes-chart-container {
+      max-width: 100%;
+      height: 450px;     /* Increase chart height on small screens if desired */
+    }
+  }
+</style>
+
+<script>
+  // Parse JSON data from Django
+  const tData = JSON.parse('{{ tithes_data|safe }}');
+  const monthsLabels = tData.months_labels || [];
+  const sumsData = tData.sums_data || [];
+
+  let tithesChart; // We'll store our Chart.js instance in this variable
+
+  if (monthsLabels.length > 0) {
+    const ctx = document.getElementById('tithesComboChart').getContext('2d');
+
+    tithesChart = new Chart(ctx, {
+      data: {
+        labels: monthsLabels,
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Tithes (TZS)',
+            data: sumsData,
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          },
+          {
+            type: 'line',
+            label: 'Trend Line',
+            data: sumsData,
+            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 2,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,  // Let the chart fill the container height
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+  }
+
+  // Display the single descriptive paragraph
+  document.getElementById('tithesDescription').textContent = tData.description ||
+    "No Tithe data available for the current year.";
+
+  // Download button logic
+  document.getElementById("downloadTithesChart").addEventListener("click", function() {
+    // Only proceed if the chart has been created
+    if (tithesChart) {
+      const link = document.createElement('a');
+      link.href = document.getElementById('tithesComboChart').toDataURL('image/png');
+      link.download = 'Tithes_Monthly_Analysis.png';
+      link.click();
+    }
+  });
+</script>
+{% else %}
+<p>No Tithe monthly analysis data provided.</p>
+{% endif %}

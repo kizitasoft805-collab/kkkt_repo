@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    text-align: center;
+">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100vw;
+        padding: 0 10px;
+        box-sizing: border-box;
+        gap: 10px;
+        margin-bottom: 20px;
+    ">
+        <!-- Back Button -->
+        <button onclick="window.history.back()" style="
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(12px, 2.5vw, 14px);
+            font-weight: bold;
+            color: #007bff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        " onmouseover="this.style.background='linear-gradient(130deg, #bbdefb, #bbdefb)'; this.style.transform='scale(1.05)'" 
+          onmouseout="this.style.background='linear-gradient(130deg, #e3f2fd, #bbdefb)'; this.style.transform='scale(1)'">
+            <span style="font-size: clamp(16px, 3vw, 20px);">⬅️</span>
+        </button>
+
+        <!-- Page Header -->
+        <h2 style="
+            font-size: clamp(18px, 4vw, 24px);
+            font-weight: bold;
+            color: #ff0000;
+            margin: 0;
+            text-align: center;
+            flex-grow: 1;
+            white-space: normal;
+        ">
+            ⚠️ Confirm Deletion
+        </h2>
+
+        <!-- Menu Button Partial -->
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    <p style="color: #555; font-size: 18px; max-width: 600px;">
+        Are you sure you want to delete the news post titled:
+        <strong>"{{ news.title }}"</strong>?
+        <br> This action will <strong>permanently delete</strong> all associated media (images, videos, documents) and cannot be undone.
+    </p>
+
+    <form method="POST" style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin-top: 20px;
+    ">
+        {% csrf_token %}
+
+        <button type="submit" style="
+            font-size: 16px;
+            font-weight: bold;
+            background: #ff4444;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            🗑️ Delete News
+        </button>
+    </form>
+</div>
+{% endblock %}

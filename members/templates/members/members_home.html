@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="members-container">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div class="header-row">
+        <!-- Back Button -->
+        <button onclick="window.history.back()" class="back-btn">
+            <span class="emoji">⬅️</span>
+        </button>
+
+        <!-- Page Header -->
+        <h2 class="header-title">👥 Church Members Overview</h2>
+
+        <!-- Menu Button Partial -->
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    <!-- Full-Width iPhone-like Buttons -->
+    <div class="summary-buttons">
+        <!-- ✨ Add New Church Member Button -->
+        <a href="{% url 'create_church_member' %}" class="summary-button add-member-button">
+            <div class="button-content">
+                <span class="emoji">✨</span>
+                <div class="text-container">
+                    <span class="button-text">Add New Church Member</span>
+                    <span class="button-desc">Register a new member to the church</span>
+                </div>
+                <span class="more-info">➡️</span>
+            </div>
+        </a>
+
+        <!-- ✅ Active Members Button -->
+        <a href="{% url 'church_member_list' %}" class="summary-button active-button">
+            <div class="button-content">
+                <span class="emoji">✅</span>
+                <div class="text-container">
+                    <span class="button-text">Active Members: <span class="count">{{ total_active_members }}</span></span>
+                    <span class="button-desc">View list of current active members</span>
+                </div>
+                <span class="more-info">➡️</span>
+            </div>
+        </a>
+
+        <!-- ❌ Inactive Members Button -->
+        <a href="{% url 'inactive_church_member_list' %}" class="summary-button inactive-button">
+            <div class="button-content">
+                <span class="emoji">❌</span>
+                <div class="text-container">
+                    <span class="button-text">Inactive Members: <span class="count">{{ total_inactive_members }}</span></span>
+                    <span class="button-desc">See members no longer active</span>
+                </div>
+                <span class="more-info">➡️</span>
+            </div>
+        </a>
+
+        <!-- 📊 Report Button -->
+        <a href="{% url 'church_members_report' %}" class="summary-button report-button">
+            <div class="button-content">
+                <span class="emoji">📊</span>
+                <div class="text-container">
+                    <span class="button-text">Report: View Stats</span>
+                    <span class="button-desc">Analyze membership statistics</span>
+                </div>
+                <span class="more-info">➡️</span>
+            </div>
+        </a>
+    </div>
+
+    <!-- 📊 Membership Distribution Analysis Graphs -->
+    <div class="members-distribution-section">
+        {% include 'members/partials/membership_distribution_analysis.html' %}
+    </div>
+</div>
+
+<!-- 🚀 Styling -->
+<style>
+    /* Container */
+    .members-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        width: 100%;
+        overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    /* Header Row Styling */
+    .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 25px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        gap: 10px; /* Space between elements */
+    }
+
+    /* Back Button Styling */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(12px, 2.5vw, 14px);
+        font-weight: bold;
+        color: #007bff;
+        padding: 8px 12px;
+        border-radius: 20px;
+        background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0; /* Prevent shrinking too much */
+    }
+
+    .back-btn .emoji {
+        font-size: clamp(16px, 3vw, 20px);
+    }
+
+    .back-btn:hover {
+        background: #bbdefb;
+        transform: scale(1.05);
+    }
+
+    .header-title {
+        font-size: clamp(20px, 4vw, 28px); /* Scale with viewport, max matches original */
+        font-weight: 600;
+        margin: 0; /* Adjusted for header row */
+        color: #333;
+        flex-grow: 1; /* Take available space */
+        text-align: center;
+        white-space: normal; /* Allow wrapping */
+    }
+
+    .summary-buttons {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        overflow-x: hidden;
+    }
+
+    .summary-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        height: 85px; /* Increased height to accommodate description */
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600;
+        padding: 0 20px;
+        color: white;
+        background-size: 200% 100%;
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        transition: opacity 0.2s ease, background-position 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .button-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .emoji {
+        font-size: 28px;
+        margin-right: 12px;
+    }
+
+    .text-container {
+        flex-grow: 1;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .button-text {
+        font-size: 18px;
+    }
+
+    .button-desc {
+        font-size: 14px; /* Smaller for description */
+        font-weight: 400; /* Lighter weight */
+        color: rgba(255, 255, 255, 0.85); /* Slightly transparent white */
+        margin-top: 2px; /* Space between title and description */
+    }
+
+    .count {
+        font-size: 18px;
+        margin-left: 8px;
+        font-weight: 500;
+    }
+
+    .more-info {
+        font-size: 24px;
+        transition: transform 0.2s ease;
+    }
+
+    /* Button color gradients */
+    .add-member-button {
+        background: linear-gradient(130deg, #ab47bc, #8e24aa);
+    }
+    .active-button {
+        background: linear-gradient(130deg, #66bb6a, #4caf50);
+    }
+    .inactive-button {
+        background: linear-gradient(130deg, #ff7043, #f4511e);
+    }
+    .report-button {
+        background: linear-gradient(130deg, #5c6bc0, #3f51b5);
+    }
+
+    /* Hover effects */
+    .summary-button:hover {
+        opacity: 0.9;
+        background-position: right center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .summary-button:hover .more-info {
+        transform: translateX(5px);
+    }
+
+    .members-distribution-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        width: 100%;
+        max-width: 900px;
+        margin: 20px auto;
+    }
+
+    .members-graphs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+    }
+    .graph-container {
+        padding: 15px 0;
+        border-bottom: 2px solid #ddd;
+    }
+
+    @media screen and (max-width: 1024px) {
+        .members-graphs-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+    }
+    @media screen and (max-width: 768px) {
+        .header-title {
+            font-size: clamp(18px, 3.5vw, 24px); /* Slightly smaller on small screens */
+        }
+
+        .members-graphs-grid {
+            grid-template-columns: 1fr;
+        }
+        .graph-container {
+            border-bottom: 1px solid #ddd;
+        }
+        .summary-button {
+            font-size: 16px;
+            height: 75px; /* Adjusted for mobile with description */
+            padding: 0 15px;
+        }
+        .emoji {
+            font-size: 24px;
+        }
+        .button-text {
+            font-size: 16px;
+        }
+        .button-desc {
+            font-size: 12px;
+        }
+        .more-info {
+            font-size: 20px;
+        }
+    }
+</style>
+{% endblock %}

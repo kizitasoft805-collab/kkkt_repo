@@ -1,0 +1,18 @@
+<!-- finance/report_partials/table_e.html -->
+<h4>Table E — Sum of A + B + C + D</h4>
+<p><strong>Total (E): {{ sum_table_a_b_c_d|floatformat:2 }} TZS</strong></p>
+
+<!-- Next, the heading "Christians statistics" -->
+<h4>Christians statistics</h4>
+
+<!-- F: Total Church Members -->
+<p>
+  <strong>F: Total of Church Members:</strong>
+  {{ total_church_members }}
+</p>
+
+<!-- G: Average Offerings per Member (E/F) -->
+<p>
+  <strong>G: Average Offerings per Member (E / F):</strong>
+  {{ average_offering_per_member|floatformat:2 }} TZS
+</p>

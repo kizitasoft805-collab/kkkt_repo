@@ -1,0 +1,14 @@
+<div class="full-notifications-list">
+    {% for notification in notifications %}
+        <div class="message-card">
+            <div class="profile-pic">
+                <img src="{{ notification.profile_pic }}" alt="Profile Picture">
+            </div>
+            <div class="message-content">
+                <span class="name">{{ notification.full_name }}</span>
+                <p class="message">{{ notification.message }}</p>
+                <span class="timestamp">{{ notification.created_at }}</span>
+            </div>
+        </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* Container for the filter form */
+.filter-form-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.filter-form {
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 14px;
+  align-items: flex-end;
+}
+
+.filter-block {
+  display: flex; 
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.from-to-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.iphone-input {
+  padding: 14px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  width: 100%;
+}
+
+.filter-label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.filter-button {
+  padding: 14px 20px;
+  border-radius: 15px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Larger screens => single row for all filters */
+@media (min-width: 992px) {
+  .filter-form {
+    flex-wrap: nowrap;
+  }
+}
+
+/* For smaller screens => stack them */
+@media (max-width: 991px) {
+  .filter-form {
+    flex-direction: column;
+  }
+  .filter-block {
+    width: 100%;
+  }
+  .from-to-row {
+    width: 100%;
+  }
+}
+
+/* 
+  Force each table cell to show text on a single line: white-space: nowrap; 
+  If a cell has more text, it will cause horizontal scroll (since we have overflow-x: auto).
+*/
+.table-nowrap th,
+.table-nowrap td {
+  white-space: nowrap; 
+}
+</style>
+
+<!-- Category Title & Description -->
+<h2 style="text-align: center; color: #007bff; margin-bottom: 10px;">
+  Expenditures for {{ category.name }}
+</h2>
+<p style="text-align: center; color: #666; margin-bottom: 20px;">
+  {{ category.description|default:"No description provided." }}
+</p>
+
+<!-- FILTER FORM -->
+<div class="filter-form-container">
+  <form method="GET" class="filter-form">
+    <!-- YEAR -->
+    <div class="filter-block">
+      <label for="id_year_filter" class="filter-label">Year</label>
+      <select name="year" id="id_year_filter" class="iphone-input">
+        {% for y in all_years %}
+          <option value="{{ y.year }}"
+            {% if y.year|stringformat:"s" == year_filter %} selected {% endif %}>
+            {{ y.year }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- MONTH -->
+    <div class="filter-block">
+      <label for="id_month_filter" class="filter-label">Month</label>
+      <select name="month" id="id_month_filter" class="iphone-input">
+        <option value="">-- All --</option>
+        {% for m in all_months %}
+          <option value="{{ m }}"
+            {% if m == month_filter %} selected {% endif %}>
+            {{ m }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- PURPOSE -->
+    <div class="filter-block">
+      <label for="id_purpose_filter" class="filter-label">Purpose</label>
+      <input type="text" name="purpose" id="id_purpose_filter"
+             value="{{ purpose_filter }}"
+             placeholder="Partial purpose"
+             class="iphone-input">
+    </div>
+
+    <!-- FROM & TO DATE -->
+    <div class="from-to-row">
+      <!-- FROM DATE -->
+      <div class="filter-block">
+        <label for="id_from_date" class="filter-label">From Date</label>
+        <input type="date" name="from_date" id="id_from_date"
+               value="{{ from_date }}"
+               class="iphone-input">
+      </div>
+      <!-- TO DATE -->
+      <div class="filter-block">
+        <label for="id_to_date" class="filter-label">To Date</label>
+        <input type="date" name="to_date" id="id_to_date"
+               value="{{ to_date }}"
+               class="iphone-input">
+      </div>
+    </div>
+
+    <!-- APPLY & RESET BUTTONS -->
+    <div style="display: flex; gap: 14px; margin-top: 6px;">
+      <button type="submit" class="filter-button"
+              style="background-color: #007bff; color: white;">
+        Apply
+      </button>
+      <button type="button" class="filter-button"
+              onclick="window.location.href='?';"
+              style="background-color: #6c757d; color: white;">
+        Reset
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- FILTERED TOTAL -->
+<div style="max-width: 800px; margin: 0 auto; margin-bottom: 20px; text-align: center;">
+  <h4 style="color: #28a745;">
+    Total: <span style="color: #dc3545;">
+      {{ total }}
+    </span>
+  </h4>
+</div>
+
+<!-- EXPENDITURE TABLE -->
+{% if expenditures %}
+  <div style="
+    margin: 0 auto; 
+    overflow-x: auto; 
+    border: 1px solid #ddd; 
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  ">
+    <table class="table-nowrap" style="width: 100%; border-collapse: collapse; text-align: center; min-width: 700px;">
+      <thead>
+        <tr style="background-color: #007bff; color: white;">
+          <th style="padding: 10px;">S/N</th>
+          <th style="padding: 10px;">Purpose</th>
+          <th style="padding: 10px;">Year - Month - Date</th>
+          <th style="padding: 10px;">Amount</th>
+          <th style="padding: 10px;">Date Created</th>
+          <th style="padding: 10px;">Date Updated</th>
+          <th style="padding: 10px;">Notes</th>
+          <th style="padding: 10px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in expenditures %}
+          <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 8px;">{{ forloop.counter }}</td>
+            <td style="padding: 8px;">{{ e.expenditure_purpose|default:"—" }}</td>
+            <td style="padding: 8px;">
+              {{ e.year.year }} - {{ e.month }} - {{ e.date_taken|date:"Y-m-d" }}
+            </td>
+            <td style="padding: 8px;">{{ e.expenditure_amount }}</td>
+            <td style="padding: 8px;">{{ e.date_created|date:"Y-m-d H:i" }}</td>
+            <td style="padding: 8px;">{{ e.date_updated|date:"Y-m-d H:i" }}</td>
+            <td style="padding: 8px; text-align: left;">
+              {{ e.notes|default:"—" }}
+            </td>
+            <!-- ACTIONS: Update / Delete -->
+            <td style="padding: 8px;">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <!-- Update Icon -->
+                <a href="{% url 'expenditure_update' e.pk %}"
+                   style="
+                     background-color: #ffc107;
+                     color: black;
+                     padding: 6px 8px;
+                     border-radius: 8px;
+                     text-decoration: none;
+                     font-size: 14px;
+                     transition: transform 0.2s ease;
+                   "
+                   onmouseover="this.style.transform='scale(1.1)'"
+                   onmouseout="this.style.transform='scale(1)'"
+                   title="Update Expenditure">
+                  ✏️
+                </a>
+                <!-- Delete Icon -->
+                <a href="{% url 'expenditure_delete' e.pk %}"
+                   style="
+                     background-color: #dc3545;
+                     color: white;
+                     padding: 6px 8px;
+                     border-radius: 8px;
+                     text-decoration: none;
+                     font-size: 14px;
+                     transition: transform 0.2s ease;
+                   "
+                   onmouseover="this.style.transform='scale(1.1)'"
+                   onmouseout="this.style.transform='scale(1)'"
+                   title="Delete Expenditure">
+                  🗑️
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p style="color: #999; font-style: italic; margin-top: 20px; text-align: center;">
+    No expenditures found for this category under the current filters.
+  </p>
+{% endif %}
+
+{% endblock %}

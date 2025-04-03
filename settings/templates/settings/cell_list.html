@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    padding: 10px;
+    box-sizing: border-box;
+    gap: 10px;
+    width: 100%;
+    overflow-x: hidden;
+">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        gap: 10px;
+    ">
+        <button onclick="window.history.back()" style="
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(12px, 2.5vw, 14px);
+            font-weight: bold;
+            color: #007bff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        " onmouseover="this.style.background='linear-gradient(130deg, #bbdefb, #bbdefb)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='linear-gradient(130deg, #e3f2fd, #bbdefb)'; this.style.transform='scale(1)'">
+            <span style="font-size: clamp(16px, 3vw, 20px);">⬅️</span>
+        </button>
+
+        <h2 style="
+            font-size: clamp(18px, 4vw, 22px);
+            font-weight: bold;
+            color: #007bff;
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+            white-space: normal;
+        ">
+            🏡 Church Cells
+        </h2>
+
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    <!-- Create New Cell Button -->
+    <a href="{% url 'create_cell' %}" class="create-button">
+        ➕ Create New Cell
+    </a>
+
+    <!-- Total Cells Count -->
+    <h3 class="single-line-text" style="
+        color: #28a745;
+        font-size: 18px;
+        margin-bottom: 5px;
+        text-align: center;
+    ">
+        🏆 Total Cells in the Church: <strong id="total-cells-overall">{{ total_cells }}</strong>
+    </h3>
+
+    <!-- Search Section -->
+    <div class="search-form">
+        <input type="text" id="search-outstation" placeholder="🔍 Search by Outstation Name or ID" class="search-input">
+        <input type="text" id="search-cell" placeholder="🔍 Search by Cell Name or ID" class="search-input">
+    </div>
+
+    {% if outstation_cells %}
+        {% for outstation, data in outstation_cells.items %}
+            <!-- Outstation Title -->
+            <h3 class="outstation-title" data-outstation-id="{{ outstation.outstation_id }}">
+                📍 Outstation: <span style="color: #007bff;">{{ outstation.name }}</span>
+                <span style="color: #28a745;">(Total: <span class="outstation-total-cells">{{ data.total }}</span>)</span>
+            </h3>
+
+            <!-- Full-Width Table Wrapper -->
+            <div style="width: 100%; overflow-x: auto;">
+                <table class="cell-table" style="
+                    width: 100%;
+                    border-collapse: collapse;
+                    border: 1px solid #ddd;
+                    text-align: left;
+                    margin: 0;
+                ">
+                    <thead>
+                        <tr style="
+                            font-weight: bold;
+                            text-transform: uppercase;
+                            border-bottom: 2px solid #ddd;
+                        ">
+                            <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">S/N</th>
+                            <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">🔢 Cell ID</th>
+                            <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">🏷️ Cell Name</th>
+                            <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">📝 Description</th>
+                            <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">📅 Date Created</th>
+                            <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">⏳ Time Since Created</th>
+                            <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">📆 Date Updated</th>
+                            <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">⏲️ Time Since Updated</th>
+                            <th style="padding: 10px; white-space: nowrap;">⚙️ Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cell in data.cells %}
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">{{ forloop.counter }}</td>
+                                <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;" class="cell-id">🔢 {{ cell.cell_id }}</td>
+                                <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;" class="cell-name">🏷️ {{ cell.name }}</td>
+                                <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">📝 
+                                    {% if cell.description %}
+                                        {{ cell.description|truncatewords:10 }}
+                                    {% else %}
+                                        No description available
+                                    {% endif %}
+                                </td>
+                                <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">📅 {{ cell.date_created|date:"F d, Y" }}</td>
+                                <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">⏳ {{ cell.time_since_created }}</td>
+                                <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">📆 {{ cell.date_updated|date:"F d, Y" }}</td>
+                                <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">⏲️ {{ cell.time_since_updated }}</td>
+                                <td style="padding: 10px; white-space: nowrap;">
+                                    <a href="{% url 'cell_detail' cell.pk %}" style="color: #17a2b8; text-decoration: none; font-size: 16px; margin-right: 10px;" title="View Details">👁️</a>
+                                    <a href="{% url 'update_cell' cell.pk %}" style="color: #ffc107; text-decoration: none; font-size: 16px; margin-right: 10px;" title="Edit">✏️</a>
+                                    <a href="{% url 'delete_cell' cell.pk %}" style="color: #f44336; text-decoration: none; font-size: 16px;" title="Delete">🗑️</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Display Message for Outstations Without Cells -->
+    {% if outstations_without_cells %}
+        <p class="no-cells">
+            ❌ The cells for <strong>{{ outstations_without_cells|join:", " }}</strong> have not been created yet.
+        </p>
+    {% endif %}
+</div>
+
+<!-- CSS Fixes & Styling -->
+<style>
+    .single-line-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .create-button {
+        font-size: 14px;
+        font-weight: bold;
+        background: #28a745;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+        margin-bottom: 10px;
+    }
+
+    .create-button:hover {
+        background: #218838;
+    }
+
+    .search-form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        width: 100%;
+        max-width: 100vw;
+        box-sizing: border-box;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .outstation-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-top: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .no-cells {
+        font-size: 16px;
+        color: #555;
+        text-align: center;
+        margin-top: 10px;
+        padding: 10px;
+        background: rgba(255, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+</style>
+
+<!-- JavaScript for Real-Time Filtering -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchOutstationInput = document.getElementById('search-outstation');
+        const searchCellInput = document.getElementById('search-cell');
+        const totalCellsOverallDisplay = document.getElementById('total-cells-overall');
+        const outstationTitles = document.querySelectorAll('.outstation-title');
+        const cellTables = document.querySelectorAll('.cell-table');
+        const overallTotalCells = {{ total_cells }};
+
+        function updateFilteredCounts() {
+            let totalFilteredCells = 0;
+
+            outstationTitles.forEach((title, index) => {
+                const outstationId = title.getAttribute('data-outstation-id');
+                const outstationName = title.querySelector('span').textContent.toLowerCase();
+                const table = cellTables[index];
+                const rows = table.querySelectorAll('tbody tr');
+                let outstationCellCount = 0;
+
+                const outstationQuery = searchOutstationInput.value.toLowerCase();
+                const cellQuery = searchCellInput.value.toLowerCase();
+
+                // Check if outstation matches the query
+                const outstationMatches = outstationId.includes(outstationQuery) || outstationName.includes(outstationQuery);
+
+                let anyRowVisible = false;
+
+                rows.forEach(row => {
+                    const cellId = row.querySelector('.cell-id').textContent.toLowerCase().replace('🔢', '').trim();
+                    const cellName = row.querySelector('.cell-name').textContent.toLowerCase().replace('🏷️', '').trim();
+
+                    const cellMatches = cellId.includes(cellQuery) || cellName.includes(cellQuery);
+
+                    if ((outstationMatches || !outstationQuery) && (cellMatches || !cellQuery)) {
+                        row.style.display = '';
+                        outstationCellCount++;
+                        anyRowVisible = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Update outstation total cells display
+                title.querySelector('.outstation-total-cells').textContent = outstationCellCount;
+                totalFilteredCells += outstationCellCount;
+
+                // Hide outstation title and table if no rows are visible
+                if (anyRowVisible) {
+                    title.style.display = '';
+                    table.style.display = '';
+                } else {
+                    title.style.display = 'none';
+                    table.style.display = 'none';
+                }
+            });
+
+            // Update overall total cells display
+            totalCellsOverallDisplay.textContent = totalFilteredCells;
+        }
+
+        // Add event listeners for both search inputs
+        searchOutstationInput.addEventListener('input', updateFilteredCounts);
+        searchCellInput.addEventListener('input', updateFilteredCounts);
+
+        // Initialize counts on page load
+        updateFilteredCounts();
+    });
+</script>
+
+{% endblock %}

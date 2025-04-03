@@ -1,0 +1,236 @@
+{% extends 'pastor_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* Print Button styling (for on-screen) */
+  .print-button {
+    background-color: #007AFF; /* iOS-like blue */
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+  .print-button:hover {
+    background-color: #005BB5;
+  }
+
+  /* 
+   * Hide everything except .print-area at print time,
+   * but let elements keep their natural display (table, table-row, etc.)
+   */
+  @media print {
+    body * {
+      display: none !important;
+    }
+    .print-area, .print-area * {
+      display: revert !important;   /* Keep table layouts, etc. */
+      visibility: visible !important;
+    }
+  }
+
+  /* Normal table styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    vertical-align: top;
+  }
+
+  .subtitle {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    text-align: center;
+  }
+  .subtitle u {
+    text-decoration: underline;
+  }
+
+  .pastor-sign-section {
+    margin-top: 1.5rem;
+    font-weight: bold;
+  }
+  .pastor-sign-section img {
+    vertical-align: middle;
+    margin-left: 0.5rem;
+    height: 50px; /* adjust as needed */
+  }
+</style>
+
+<!-- Print button (outside the print-area, won't show when printed) -->
+<button class="print-button" onclick="window.print()">
+  🖨️ Print
+</button>
+
+<!-- Only content inside .print-area is visible when printing -->
+<div class="print-area">
+
+  <h1>Detailed Pastor Report</h1>
+
+  {% for report in reports %}
+    <h2>
+      Evangelical Lutheran Church in Tanzania, Iringa Diocese,
+      Congregational Pastor’s Work Report Form
+    </h2>
+
+    <p class="subtitle">
+      Month: <u>{{ report.month }}</u>, 
+      Year: <u>{{ report.year.year }}</u>
+      &ndash; The fellowship of MKWAWA
+    </p>
+
+    <!-- TABLE #1: Dates of Services + Visited Local Congregations -->
+    <table>
+      <thead>
+        <tr>
+          <th>Dates of Services</th>
+          <th>Visited Local Congregations</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <!-- List of Dates of Services -->
+          <td>
+            <ul>
+              {% for dateobj in report.dates_of_services.all %}
+                <li>{{ dateobj.service_date }}</li>
+              {% empty %}
+                <li>No service dates recorded.</li>
+              {% endfor %}
+            </ul>
+          </td>
+          <!-- List of Visited Local Congregations -->
+          <td>
+            <ul>
+              {% for congregation in report.visited_congregations.all %}
+                <li>{{ congregation.congregation_name }}</li>
+              {% empty %}
+                <li>No congregations visited.</li>
+              {% endfor %}
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- TABLE #2: Remaining fields -->
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Report Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Number of Evangelists</td>
+          <td>{{ report.number_of_evangelists }}</td>
+        </tr>
+        <tr>
+          <td>Number of Local Congregations</td>
+          <td>{{ report.number_of_local_congregations }}</td>
+        </tr>
+        <tr>
+          <td>Local Congregations Lord’s Table</td>
+          <td>{{ report.local_congregations_lords_table }}</td>
+        </tr>
+        <tr>
+          <td>Baptized Male</td>
+          <td>{{ report.baptized_male }}</td>
+        </tr>
+        <tr>
+          <td>Baptized Female</td>
+          <td>{{ report.baptized_female }}</td>
+        </tr>
+        <tr>
+          <td>Returned Male</td>
+          <td>{{ report.returned_male }}</td>
+        </tr>
+        <tr>
+          <td>Returned Female</td>
+          <td>{{ report.returned_female }}</td>
+        </tr>
+        <tr>
+          <td>Marriages Solemnized</td>
+          <td>{{ report.marriages_solemnized }}</td>
+        </tr>
+        <tr>
+          <td>Membership Transfer Sessions Count</td>
+          <td>{{ report.membership_transfer_sessions_count }}</td>
+        </tr>
+        <tr>
+          <td>Membership Transfer Sessions Where</td>
+          <td>{{ report.membership_transfer_sessions_where|linebreaks }}</td>
+        </tr>
+        <tr>
+          <td>Number of Christians</td>
+          <td>{{ report.number_of_christians }}</td>
+        </tr>
+        <tr>
+          <td>Number of Cell Groups</td>
+          <td>{{ report.number_of_cell_groups }}</td>
+        </tr>
+        <tr>
+          <td>Church Projects</td>
+          <td>{{ report.church_projects|linebreaks }}</td>
+        </tr>
+        <tr>
+          <td>Number of Joined Christians</td>
+          <td>{{ report.number_of_joined_christians }}</td>
+        </tr>
+        <tr>
+          <td>Number of Deceased Christians</td>
+          <td>{{ report.number_of_deceased_christians }}</td>
+        </tr>
+        <tr>
+          <td>Number of Separated Christians</td>
+          <td>{{ report.number_of_separated_christians }}</td>
+        </tr>
+        <tr>
+          <td>Number of Relocated Christians</td>
+          <td>{{ report.number_of_relocated_christians }}</td>
+        </tr>
+        <tr>
+          <td>Average Income This Month</td>
+          <td>{{ report.average_income_this_month }}</td>
+        </tr>
+        <tr>
+          <td>Number of Schools</td>
+          <td>{{ report.number_of_schools }}</td>
+        </tr>
+        <tr>
+          <td>Parish Meetings</td>
+          <td>{{ report.parish_meetings|linebreaks }}</td>
+        </tr>
+        <tr>
+          <td>Growth Explanations</td>
+          <td>{{ report.growth_explanations|linebreaks }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pastor Info / Signature Section -->
+    <div class="pastor-sign-section">
+      <p>
+        Name of the pastor:
+        <u>DERICK CHUSSY</u>
+        &emsp;
+        Pastor Signature:
+        <img src="{% static 'images/signature1.png' %}" alt="Pastor Signature">
+        &emsp;
+        Stamp:
+        <img src="{% static 'images/stamp1.png' %}" alt="Pastor Stamp">
+      </p>
+    </div>
+
+  {% endfor %}
+</div>
+{% endblock %}

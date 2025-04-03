@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- 📋 Title & Add Button Section -->
+    {% include 'finance/donation_item_fund/_header.html' with contribution=contribution %}
+
+    <!-- 🔍 Filter Section -->
+    {% include 'finance/donation_item_fund/_filters.html' with donation_items=donation_items %}
+
+    <!-- 📝 Donation Item Table Section -->
+    {% if donation_items %}
+        {% include 'finance/donation_item_fund/_table.html' with donation_items=donation_items contribution=contribution %}
+    {% else %}
+        {% include 'finance/donation_item_fund/_no_data.html' %}
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,110 @@
+<!-- settings/templates/settings/confirm_delete_year.html -->
+
+{% extends 'secretary_base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    width: 100%; /* Full width */
+    padding: 0; /* Remove extra padding */
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+">
+    <h2 style="
+        font-size: 24px;
+        font-weight: bold;
+        color: #f44336;
+        margin: 20px 0;
+    ">
+        ❗ Confirm Delete
+    </h2>
+
+    <div style="
+        width: 100%; /* Full width */
+        max-width: 600px; /* Optional max-width for larger screens */
+        text-align: center;
+        padding: 20px;
+        box-sizing: border-box;
+    ">
+        <p style="font-size: 16px; color: #555;">
+            Are you sure you want to delete the year <strong>{{ year.year }}</strong>?
+            This action cannot be undone.
+        </p>
+
+        <!-- Error Message -->
+        {% if messages %}
+            <div style="
+                color: red;
+                font-size: 14px;
+                margin-top: 10px;
+                text-align: center;
+            ">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" style="
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        ">
+            {% csrf_token %}
+            <!-- Delete Button -->
+            <button type="submit" style="
+                display: inline-flex; /* Flex for alignment */
+                align-items: center; /* Vertically align content */
+                gap: 5px; /* Space between icon and text */
+                font-size: 16px;
+                font-weight: bold;
+                background: linear-gradient(130deg, #f44336, #d32f2f);
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: background 0.3s ease, transform 0.2s ease;
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <span class="material-icons" style="
+                    vertical-align: middle;
+                    font-size: 20px;
+                ">delete</span>
+                Delete
+            </button>
+            
+            <!-- Cancel Button -->
+            <a href="{% url 'secretary_year_list' %}" style="
+                display: inline-flex; /* Flex for alignment */
+                align-items: center; /* Vertically align content */
+                gap: 5px; /* Space between icon and text */
+                font-size: 16px;
+                font-weight: bold;
+                background: linear-gradient(130deg, #007bff, #0056b3);
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 25px;
+                text-decoration: none;
+                text-align: center;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: background 0.3s ease, transform 0.2s ease;
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <span class="material-icons" style="
+                    vertical-align: middle;
+                    font-size: 20px;
+                ">arrow_back</span>
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

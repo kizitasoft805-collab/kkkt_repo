@@ -1,0 +1,242 @@
+{% extends 'secretary_base.html' %}
+{% block content %}
+<div class="container">
+    <h2 class="header-title">📸 Upload Church Asset Media</h2>
+
+    <p>You have saved <strong>{{ total_assets }}</strong> church assets.</p>
+    <p>If any of them require media uploads, please attach images below.</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="success-message">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" class="media-form">
+        {% csrf_token %}
+
+        {% for asset in latest_assets %}
+        <div class="asset-block">
+            <h3 class="asset-title">🏛️ {{ asset.name }} ({{ asset.asset_type }})</h3>
+            
+            <div class="image-upload-container" id="upload-container-{{ asset.id }}">
+                <div class="field-container">
+                    <input type="file" name="images_{{ asset.id }}" class="file-input rounded-input" 
+                           onchange="previewImage(this, '{{ asset.id }}')">
+                    <div id="preview-container-{{ asset.id }}" class="preview-container"></div>
+                </div>
+            </div>
+
+            <button type="button" class="add-more-button" onclick="addImageField('{{ asset.id }}')">
+                ➕ Add More Images
+            </button>
+        </div>
+        {% endfor %}
+
+        <!-- Submit Button -->
+        <button type="submit" class="submit-button">
+            💾 Save Media
+        </button>
+
+        <!-- Skip Button -->
+        <a href="{% url 'secretary_church_assets_list' %}" class="skip-button">⏩ Skip This Step</a>
+    </form>
+</div>
+
+<!-- 🚀 JavaScript for Image Preview & Adding More Fields -->
+<script>
+    function addImageField(assetId) {
+        const uploadContainer = document.getElementById(`upload-container-${assetId}`);
+        const newField = document.createElement('div');
+        newField.classList.add('field-container');
+
+        const newInput = document.createElement('input');
+        newInput.type = 'file';
+        newInput.name = `images_${assetId}`;
+        newInput.classList.add('file-input', 'rounded-input');
+        newInput.onchange = function() { previewImage(newInput, assetId); };
+
+        const previewContainer = document.createElement('div');
+        previewContainer.classList.add('preview-container');
+
+        newField.appendChild(newInput);
+        newField.appendChild(previewContainer);
+        uploadContainer.appendChild(newField);
+    }
+
+    function previewImage(input, assetId) {
+        const previewContainer = input.nextElementSibling;
+        previewContainer.innerHTML = ''; // Clear previous preview
+
+        if (input.files) {
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = e.target.result;
+                    imgElement.classList.add('preview-image');
+                    previewContainer.appendChild(imgElement);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+</script>
+
+<!-- 🎨 Updated CSS -->
+<style>
+    /* 🌍 Full Width & No Viewport Shaking */
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* ✅ Fix: Prevent Topbar from Hiding `h2` */
+    .container {
+        width: 90%;
+        max-width: 600px;
+        margin: auto;
+        text-align: center;
+        padding: 15px;
+        padding-top: 40px; /* 🔥 Reduced from 45px to 40px */
+    }
+
+    /* 📸 Header Title */
+    .header-title {
+        font-size: 22px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 10px;
+    }
+
+    /* ✅ Success Message */
+    .success-message {
+        color: green;
+        font-size: 14px;
+    }
+
+    /* 🚀 Asset Upload Block */
+    .asset-block {
+        padding: 15px;
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    .asset-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    /* 🎯 Form Fields (iPhone-like Design) */
+    .field-container {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+
+    .file-input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 25px;
+        border: 2px solid #ccc;
+        font-size: 16px;
+        outline: none;
+        transition: all 0.3s ease-in-out;
+        text-align: center;
+    }
+
+    /* 💡 Glow Effect on Focus */
+    .file-input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+    }
+
+    /* 📸 Enlarged Image Preview */
+    .preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        justify-content: center;
+    }
+
+    .preview-image {
+        width: 100%;
+        max-width: 250px;
+        height: 250px;
+        border-radius: 15px;
+        object-fit: cover;
+        border: 2px solid #ddd;
+    }
+
+    /* 🎛️ Buttons */
+    .add-more-button, .submit-button, .skip-button {
+        padding: 12px;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        margin-top: 10px;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .add-more-button {
+        background: #28a745;
+        color: white;
+    }
+
+    .submit-button {
+        background: #007bff;
+        color: white;
+    }
+
+    .skip-button {
+        background: #ff9800;
+        color: white;
+        padding: 12px;
+        text-decoration: none;
+        text-align: center;
+        display: inline-block;
+        margin-top: 15px;
+        border-radius: 25px;
+    }
+
+    .skip-button:hover {
+        background: #e68a00;
+    }
+
+    /* 📱 Mobile Responsive */
+    @media screen and (max-width: 768px) {
+        .container {
+            width: 95%;
+            padding: 10px;
+            padding-top: 40px; /* 🔥 Adjusted for smaller screens */
+        }
+
+        .header-title {
+            font-size: 20px;
+        }
+
+        .file-input {
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .add-more-button, .submit-button, .skip-button {
+            font-size: 14px;
+            padding: 10px;
+        }
+    }
+</style>
+{% endblock %}

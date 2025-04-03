@@ -1,0 +1,162 @@
+{% extends 'pastor_base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Page Header -->
+<h2 class="header-title">👥 Church Members Overview</h2>
+
+<!-- Members Summary Boxes -->
+<div class="summary-boxes">
+    <!-- ✅ Active Members Box -->
+    <a href="{% url 'pastor_church_member_list' %}" class="summary-box active-box">
+        <div class="box-content">
+            <div>
+                <h3>✅ Active Members</h3>
+                <!-- Display the total number of active members -->
+                <p class="count">{{ total_active_members }}</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- ❌ Inactive Members Box -->
+    <a href="{% url 'pastor_inactive_church_member_list' %}" class="summary-box inactive-box">
+        <div class="box-content">
+            <div>
+                <h3>❌ Inactive Members</h3>
+                <!-- Display the total number of inactive members -->
+                <p class="count">{{ total_inactive_members }}</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+</div>
+
+<!-- 📊 Membership Distribution Analysis Graphs -->
+<div class="members-distribution-section">
+    {% include 'members/partials/membership_distribution_analysis.html' %}
+</div>
+
+<!-- 🚀 Styling -->
+<style>
+    /* 🌍 General Layout */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                     'Helvetica Neue', Arial, sans-serif;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* 🔹 Header Title */
+    .header-title {
+        font-size: 26px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    /* 📊 Summary Boxes */
+    .summary-boxes {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 800px;
+        margin: auto;
+    }
+
+    /* 📦 Member Box Styling */
+    .summary-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 300px;
+        height: 80px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 15px 20px;
+        border-radius: 15px;
+        color: white;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    /* 🎨 Box Colors */
+    .active-box {
+        background: linear-gradient(130deg, #4CAF50, #388E3C); /* Green */
+    }
+
+    .inactive-box {
+        background: linear-gradient(130deg, #FF5722, #E64A19); /* Red-Orange */
+    }
+
+    /* 🏹 More Info Arrow */
+    .box-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .more-info {
+        font-size: 24px;
+        transition: transform 0.2s ease;
+    }
+
+    /* 🏠 Hover Effects */
+    .summary-box:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .summary-box:hover .more-info {
+        transform: translateX(5px);
+    }
+
+    /* 📊 Membership Distribution Section */
+    .members-distribution-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        width: 100%;
+        max-width: 900px;
+        margin: auto;
+    }
+
+    /* 📊 Graphs Grid */
+    .members-graphs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    /* 🖼 Graph Blocks */
+    .graph-container {
+        padding: 15px 0;
+        border-bottom: 2px solid #ddd; /* Separator Line Between Graphs */
+    }
+
+    /* 📱 Responsive Design */
+    @media screen and (max-width: 1024px) {
+        .members-graphs-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        .members-graphs-grid {
+            grid-template-columns: 1fr;
+        }
+        .graph-container {
+            border-bottom: 1px solid #ddd;
+        }
+    }
+</style>
+
+{% endblock %}

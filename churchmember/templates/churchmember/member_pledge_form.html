@@ -1,0 +1,170 @@
+{% extends "member_base.html" %}
+
+{% block title %}
+Member Pledge Form
+{% endblock title %}
+
+{% block styles %}
+<style>
+  .pledge-form-wrapper {
+    max-width: 600px;
+    margin: 2rem auto;
+  }
+  .pledge-form-wrapper h2 {
+    text-align: center;
+  }
+  .pledge-form-wrapper p {
+    margin: 1rem 0;
+  }
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  label {
+    font-weight: bold;
+  }
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  .btn-row {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+  }
+  .save-btn {
+    background-color: #28a745;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .save-btn:hover {
+    background-color: #218838;
+  }
+  .back-btn {
+    background-color: #6c757d;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .back-btn:hover {
+    background-color: #5a6268;
+  }
+  .footer-note {
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="pledge-form-wrapper">
+  <h2>EVANGELICAL LUTHERAN CHURCH OF TANZANIA - MKWAWA FELLOWSHIP<br>
+  PLEDGE FORM</h2>
+  
+  <p><strong>Be careful when saving the form because this action is not editable until you contact the chairman/secretary/accountant.</strong></p>
+  
+  <!-- Display Django messages if any -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- The Member's details (read-only) -->
+  <div class="form-group">
+    <label>Name</label>
+    <input type="text" value="{{ church_member.full_name }}" disabled />
+  </div>
+  <div class="form-group">
+    <label>Phone Number</label>
+    <input type="text" value="{{ church_member.phone_number }}" disabled />
+  </div>
+  <div class="form-group">
+    <label>Current Living Place</label>
+    <input type="text" value="{{ church_member.address }}" disabled />
+  </div>
+
+  <!-- Actual Pledge Form Fields -->
+  <form method="POST" novalidate>
+    {% csrf_token %}
+    
+    <div class="form-group">
+      {{ form.envelope_number.label_tag }}
+      {{ form.envelope_number }}
+      {% if form.envelope_number.errors %}
+        <div class="text-danger">{{ form.envelope_number.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      {{ form.pledge_amount.label_tag }}
+      {{ form.pledge_amount }}
+      {% if form.pledge_amount.errors %}
+        <div class="text-danger">{{ form.pledge_amount.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      {{ form.pledge_for_construction.label_tag }}
+      {{ form.pledge_for_construction }}
+      {% if form.pledge_for_construction.errors %}
+        <div class="text-danger">{{ form.pledge_for_construction.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      {{ form.year.label_tag }}
+      {{ form.year }}
+      {% if form.year.errors %}
+        <div class="text-danger">{{ form.year.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      {{ form.month.label_tag }}
+      {{ form.month }}
+      {% if form.month.errors %}
+        <div class="text-danger">{{ form.month.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      {{ form.date_given.label_tag }}
+      {{ form.date_given }}
+      {% if form.date_given.errors %}
+        <div class="text-danger">{{ form.date_given.errors }}</div>
+      {% endif %}
+    </div>
+
+    <!-- Buttons Row -->
+    <div class="btn-row">
+      <button type="submit" class="save-btn">Save</button>
+      <button type="button" class="back-btn" onclick="window.history.back()">Back</button>
+    </div>
+  </form>
+
+  <!-- Footer Note -->
+  <div class="footer-note">
+    <strong>Proverbs 3:9</strong> Honor the LORD with your wealth and with the firstfruits of all your produce,<br>
+    For more information, call 0756554389 or 0677975417
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,41 @@
+{% if only_styles %}
+<style>
+  .pledge-button-container {
+    text-align: center;
+    margin-bottom: 1rem; /* some spacing below the button row */
+  }
+
+  .create-pledge-btn {
+    display: inline-block;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 16px;
+    padding: 12px 24px;
+    
+    /* iPhone-like round corners */
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    
+    /* iOS-like blue color */
+    background-color: #007aff;
+    
+    /* A subtle shadow for a “raised” look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+
+  /* Hover/active effect */
+  .create-pledge-btn:hover {
+    background-color: #005eb8;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    text-decoration: none; /* ensure no underline */
+  }
+</style>
+{% else %}
+<div class="pledge-button-container">
+  <a href="{% url 'pledge_create' %}" class="create-pledge-btn">
+    ➕ Create a New Pledge
+  </a>
+</div>
+{% endif %}

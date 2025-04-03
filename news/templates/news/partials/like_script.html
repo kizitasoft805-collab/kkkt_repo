@@ -1,0 +1,51 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".like-button").forEach(button => {
+            const newsId = button.getAttribute("data-news-id");
+            const likeCountElement = document.getElementById(`like-count-${newsId}`);
+            const icon = button;
+
+            button.addEventListener("click", function () {
+                fetch(`/news/like/${newsId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": getCSRFToken(),
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "same-origin",
+                    body: JSON.stringify({ news_id: newsId })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.liked) {
+                        icon.textContent = "💖";
+                        saveLike(newsId);
+                    } else {
+                        icon.textContent = "❤️";
+                        removeLike(newsId);
+                    }
+                    likeCountElement.textContent = data.total_likes;
+                })
+                .catch(error => console.error("Error:", error));
+            });
+        });
+
+        function getCSRFToken() {
+            const cookie = document.cookie.split("; ").find(row => row.startsWith("csrftoken="));
+            return cookie ? cookie.split("=")[1] : "";
+        }
+
+        function saveLike(newsId) {
+            document.cookie = `liked_news=${newsId};path=/;max-age=${365 * 24 * 60 * 60}`;
+        }
+
+        function removeLike(newsId) {
+            document.cookie = `liked_news=${newsId};path=/;max-age=0`;
+        }
+    });
+</script>

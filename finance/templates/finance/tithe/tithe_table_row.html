@@ -1,0 +1,57 @@
+<tr 
+    data-year="{{ tithe.year.year }}" 
+    data-member="{{ tithe.member.full_name }}" 
+    data-date="{{ tithe.date_given }}" 
+    data-amount="{{ tithe.amount }}" 
+    style="border-bottom: 1px solid #ccc;"
+>
+    <td style="padding: 14px; text-align: left;">{{ counter }}</td>
+    <td style="padding: 14px; text-align: left; word-wrap: break-word;">{{ tithe.member.full_name }}</td>
+    <td style="padding: 14px; text-align: left;">{{ tithe.amount|floatformat:2 }}</td>
+    <td style="padding: 14px; text-align: left;">{{ tithe.payment_method }}</td>
+    <td style="padding: 14px; text-align: left;">
+        {{ tithe.date_given|date:"Y-m-d" }}
+        <small style="color: gray;">({{ tithe.time_since_given }})</small>
+    </td>
+    <td style="padding: 14px; text-align: left; word-wrap: break-word;">{{ tithe.purpose|default:"N/A" }}</td>
+    <td style="padding: 14px; text-align: left;">{{ tithe.receipt_number }}</td>
+
+    <!-- ✅ Circular Action Buttons -->
+    <td style="padding: 14px; text-align: center;">
+        <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+            <!-- Edit Button -->
+            <a href="{% url 'update_tithe' tithe.id %}" style="
+                background: #28a745;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                text-decoration: none;
+                border-radius: 50%;
+                font-size: 18px;
+                transition: background 0.3s;
+            " onmouseover="this.style.background='#218838'" onmouseout="this.style.background='#28a745'">
+                ✏️
+            </a>
+
+            <!-- Delete Button -->
+            <a href="{% url 'delete_tithe' tithe.id %}" style="
+                background: #dc3545;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                text-decoration: none;
+                border-radius: 50%;
+                font-size: 18px;
+                transition: background 0.3s;
+            " onmouseover="this.style.background='#c82333'" onmouseout="this.style.background='#dc3545'">
+                🗑️
+            </a>
+        </div>
+    </td>
+</tr>

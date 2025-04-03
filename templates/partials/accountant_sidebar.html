@@ -1,0 +1,195 @@
+{% load static %}
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar" style="
+    position: fixed;
+    /* Offset from top (e.g., 60px) so the close icon is fully visible. 
+       If you don't have a top bar/translator, you can set top: 0; */
+    top: 60px;
+    left: -200px; /* Hidden initially */
+    width: 200px;
+    /* Subtract offset from total screen height to fit nicely */
+    max-height: calc(100vh - 60px);
+    overflow: auto;  /* Allow scrolling if content exceeds */
+    z-index: 2000;   /* Ensures above other elements */
+    display: none;   /* Hidden until toggled */
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--sidebar-background);
+    animation: none; /* Applied dynamically via JS */
+    transition: left 0.3s ease, display 0.3s ease;
+">
+
+    <!-- Close Icon (❌) -->
+    <div id="closeSidebar" style="
+        position: absolute;
+        top: 8px;   /* Smaller offset inside the sidebar */
+        right: 8px;
+        font-size: 18px; /* Slightly smaller close icon */
+        cursor: pointer;
+        color: #fff; /* White text/icon color */
+        background-color: blue; /* Red */
+        width: 32px;    /* Smaller dimension */
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0px 3px 6px rgba(0,0,0,0.3);
+        z-index: 2001;  /* On top of the sidebar container */
+        overflow: hidden;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    " 
+    onmouseover="this.style.backgroundColor='blue'" 
+    onmouseout="this.style.backgroundColor='blue'">
+        ❌
+    </div>
+
+    <!-- User Profile Picture -->
+    <a href="{% url 'accountant_upload_profile_picture' %}" style="text-decoration: none;">
+        {% if user.profile_picture %}
+            <img
+                src="{{ user.profile_picture.url }}"
+                alt="User Profile Picture"
+                style="
+                    width: 40px;  /* Smaller user pic */
+                    height: 40px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: 2px solid var(--sidebar-icon-border);
+                    box-shadow: 0px 3px 6px rgba(0,0,0,0.2);
+                    margin-top: 40px; /* Space below close icon */
+                    margin-bottom: 15px; 
+                "
+            />
+        {% else %}
+            <img
+                src="{% static 'images/user.png' %}"
+                alt="Default User Icon"
+                style="
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: 2px solid var(--sidebar-icon-border);
+                    box-shadow: 0px 3px 6px rgba(0,0,0,0.2);
+                    margin-top: 40px;
+                    margin-bottom: 15px;
+                "
+            />
+        {% endif %}
+    </a>
+
+    <!-- Reusable .sidebar-button style -->
+    <style>
+        .sidebar-button {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 6px;         /* Slightly smaller gap */
+            width: 80%;
+            padding: 6px 10px; /* Reduced padding */
+            margin-bottom: 8px; /* Reduced bottom margin */
+            font-size: 12px;  /* Smaller text for phone screens */
+            text-decoration: none;
+            color: white;
+            border-radius: 12px; /* Slightly smaller corner radius */
+            box-shadow: 0px 3px 6px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .sidebar-button:hover {
+            transform: scale(1.03);
+        }
+    </style>
+
+    <!-- Home Button (🏠) -->
+    <a href="{% url 'accountant_dashboard' %}" class="sidebar-button" style="background-color: #007bff;"
+       onmouseover="this.style.backgroundColor='#0056b3'"
+       onmouseout="this.style.backgroundColor='#007bff'">
+        <span style="font-size: 16px;">🏠</span>
+        <span>Home</span>
+    </a>
+
+    <!-- Details Button (ℹ️) -->
+    <a href="{% url 'parish_treasurer_details' %}" class="sidebar-button" style="background-color: #28a745;"
+       onmouseover="this.style.backgroundColor='#1c7430'"
+       onmouseout="this.style.backgroundColor='#28a745'">
+        <span style="font-size: 16px;">ℹ️</span>
+        <span>Details</span>
+    </a>
+
+    <!-- News Button (📰) -->
+    <a href="{% url 'accountant_news_home' %}" class="sidebar-button" style="background-color: #17a2b8;"
+       onmouseover="this.style.backgroundColor='#117a8b'"
+       onmouseout="this.style.backgroundColor='#17a2b8'">
+        <span style="font-size: 16px;">📰</span>
+        <span>News</span>
+    </a>
+
+    <!-- Notifications Button (🔔) -->
+    <a href="{% url 'accountant_notifications_home' %}" class="sidebar-button" style="background-color: #6f42c1;"
+       onmouseover="this.style.backgroundColor='#59369e'"
+       onmouseout="this.style.backgroundColor='#6f42c1'">
+        <span style="font-size: 16px;">🔔</span>
+        <span>Notifications</span>
+    </a>
+
+    <!-- Finance Button (💰) -->
+    <a href="{% url 'accountant_finance_home' %}" class="sidebar-button" style="background-color: #20c997;"
+       onmouseover="this.style.backgroundColor='#198754'"
+       onmouseout="this.style.backgroundColor='#20c997'">
+        <span style="font-size: 16px;">💰</span>
+        <span>Finance</span>
+    </a>
+
+    <!-- Properties Button (🏡) -->
+    <a href="{% url 'accountant_properties_home' %}" class="sidebar-button" style="background-color: #0dcaf0;"
+       onmouseover="this.style.backgroundColor='#0bbac8'"
+       onmouseout="this.style.backgroundColor='#0dcaf0'">
+        <span style="font-size: 16px;">🏡</span>
+        <span>Properties</span>
+    </a>
+</div>
+
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle'); 
+    const closeSidebar = document.getElementById('closeSidebar');
+    let sidebarVisible = false;
+
+    const toggleSidebar = () => {
+        sidebarVisible = !sidebarVisible;
+        if (sidebarVisible) {
+            // Show sidebar
+            sidebar.style.display = 'flex';
+            sidebar.style.animation = 'slideIn 0.5s ease forwards';
+            setTimeout(() => {
+                sidebar.style.left = '0';
+            }, 10);
+        } else {
+            // Hide sidebar
+            sidebar.style.left = '-200px';
+            sidebar.style.animation = 'slideOut 0.5s ease forwards';
+            setTimeout(() => {
+                sidebar.style.display = 'none';
+            }, 300);
+        }
+    };
+
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    closeSidebar.addEventListener('click', toggleSidebar);
+
+    // Keyframe animations
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes slideIn {
+            from { left: -200px; opacity: 0; }
+            to { left: 0; opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { left: 0; opacity: 1; }
+            to { left: -200px; opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+</script>

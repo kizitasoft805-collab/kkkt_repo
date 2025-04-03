@@ -1,0 +1,338 @@
+{% extends 'pastor_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* Minimal table-based styling for screen + ensuring no odd breaks in print */
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 1rem;
+  }
+
+  .print-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+  .print-btn:hover {
+    background: #0056b3;
+  }
+
+  h2 {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+
+  h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  th {
+    font-weight: 600;
+  }
+
+  .subheader {
+    font-weight: 600;
+    margin: 1rem 0 0.3rem 0;
+  }
+
+  .light-note {
+    font-size: 0.9rem;
+  }
+
+  .spacer {
+    margin-top: 2rem;
+  }
+
+  /* 
+    Print-specific rules:
+    1) Hide everything outside #printArea
+    2) Keep each table on one page if possible (page-break-inside: avoid)
+  */
+  @media print {
+    body * {
+      visibility: hidden !important;
+    }
+    #printArea, #printArea * {
+      visibility: visible !important;
+    }
+    #printArea {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      background: #fff;
+    }
+    .print-btn {
+      display: none !important;
+    }
+
+    table {
+      page-break-inside: avoid; /* keep entire table together */
+    }
+    thead {
+      display: table-header-group; /* Repeats table header if pages break */
+    }
+    tfoot {
+      display: table-footer-group;
+    }
+  }
+</style>
+
+<!-- Print Button (outside the print area) -->
+<button class="print-btn" onclick="window.print()">🖨️ Print Page</button>
+
+<!-- All content in #printArea is shown in print -->
+<div id="printArea">
+
+  <h2>Pastor Report</h2>
+
+  <!-- 1) Membership Overview Table -->
+  <h3>Membership Overview</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Stat</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Active Members</td>
+        <td>{{ total_active_members }}</td>
+      </tr>
+      <tr>
+        <td>Inactive Members</td>
+        <td>{{ total_inactive_members }}</td>
+      </tr>
+      <tr>
+        <td><strong>Total Members</strong></td>
+        <td><strong>{{ total_active_members|add:total_inactive_members }}</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 2) Member Details (Active) -->
+  <h3>Member Details (Active Only)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Stat</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Baptized</td>
+        <td>{{ active_baptized }}</td>
+      </tr>
+      <tr>
+        <td>Unbaptized</td>
+        <td>{{ active_unbaptized }}</td>
+      </tr>
+      <tr>
+        <td>Confirmed</td>
+        <td>{{ active_confirmed }}</td>
+      </tr>
+      <tr>
+        <td>Unconfirmed</td>
+        <td>{{ active_unconfirmed }}</td>
+      </tr>
+      <tr>
+        <td>Married Male</td>
+        <td>{{ active_married_male }}</td>
+      </tr>
+      <tr>
+        <td>Inactive Unmarried Male</td>
+        <td>{{ inactive_unmarried_male }}</td>
+      </tr>
+      <tr>
+        <td>Married Female</td>
+        <td>{{ active_married_female }}</td>
+      </tr>
+      <tr>
+        <td>Inactive Unmarried Female</td>
+        <td>{{ inactive_unmarried_female }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 3) Leaders Stats -->
+  <h3>Leaders Stats</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Stat</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Active Leaders</td>
+        <td>{{ overall_active_leaders }}</td>
+      </tr>
+      <tr>
+        <td>Inactive Leaders</td>
+        <td>{{ overall_inactive_leaders }}</td>
+      </tr>
+      <tr>
+        <td><strong>Total Leaders</strong></td>
+        <td><strong>{{ overall_active_leaders|add:overall_inactive_leaders }}</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 4) Zones & Communities -->
+  <h3>Zones & Communities Count</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Stat</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Total Zones</td>
+        <td>{{ total_zones }}</td>
+      </tr>
+      <tr>
+        <td>Total Communities</td>
+        <td>{{ total_communities }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 5) Zone Statistics in a table format -->
+  <div class="spacer"></div>
+  <h3>Zone Statistics</h3>
+  <p class="light-note">A breakdown of each zone with various stats:</p>
+  {% for z in zone_stats %}
+    <h4 class="subheader">{{ z.zone.name }} ({{ z.zone.location }})</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>Stat</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Baptized</td>
+          <td>{{ z.zone_baptized }}</td>
+        </tr>
+        <tr>
+          <td>Unbaptized</td>
+          <td>{{ z.zone_unbaptized }}</td>
+        </tr>
+        <tr>
+          <td>Confirmed</td>
+          <td>{{ z.zone_confirmed }}</td>
+        </tr>
+        <tr>
+          <td>Unconfirmed</td>
+          <td>{{ z.zone_unconfirmed }}</td>
+        </tr>
+        <tr>
+          <td>Married Male</td>
+          <td>{{ z.zone_married_male }}</td>
+        </tr>
+        <tr>
+          <td>Unmarried Male</td>
+          <td>{{ z.zone_unmarried_male }}</td>
+        </tr>
+        <tr>
+          <td>Married Female</td>
+          <td>{{ z.zone_married_female }}</td>
+        </tr>
+        <tr>
+          <td>Unmarried Female</td>
+          <td>{{ z.zone_unmarried_female }}</td>
+        </tr>
+        <tr>
+          <td>Active Leaders in Zone</td>
+          <td>{{ z.active_leaders_in_zone }}</td>
+        </tr>
+      </tbody>
+    </table>
+  {% endfor %}
+
+  <!-- 6) Community Statistics in table format -->
+  <div class="spacer"></div>
+  <h3>Community Statistics</h3>
+  <p class="light-note">A breakdown of each community (showing its zone):</p>
+  {% for c in community_stats %}
+    <h4 class="subheader">{{ c.community.name }} (Zone: {{ c.community.zone.name }})</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>Stat</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Baptized</td>
+          <td>{{ c.comm_baptized }}</td>
+        </tr>
+        <tr>
+          <td>Unbaptized</td>
+          <td>{{ c.comm_unbaptized }}</td>
+        </tr>
+        <tr>
+          <td>Confirmed</td>
+          <td>{{ c.comm_confirmed }}</td>
+        </tr>
+        <tr>
+          <td>Unconfirmed</td>
+          <td>{{ c.comm_unconfirmed }}</td>
+        </tr>
+        <tr>
+          <td>Married Male</td>
+          <td>{{ c.comm_married_male }}</td>
+        </tr>
+        <tr>
+          <td>Unmarried Male</td>
+          <td>{{ c.comm_unmarried_male }}</td>
+        </tr>
+        <tr>
+          <td>Married Female</td>
+          <td>{{ c.comm_married_female }}</td>
+        </tr>
+        <tr>
+          <td>Unmarried Female</td>
+          <td>{{ c.comm_unmarried_female }}</td>
+        </tr>
+        <tr>
+          <td>Active Leaders in Community</td>
+          <td>{{ c.active_leaders_in_comm }}</td>
+        </tr>
+      </tbody>
+    </table>
+  {% endfor %}
+</div> <!-- end #printArea -->
+{% endblock %}

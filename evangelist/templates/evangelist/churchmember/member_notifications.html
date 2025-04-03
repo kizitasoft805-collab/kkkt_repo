@@ -1,0 +1,59 @@
+{% extends 'evangelist_base.html' %}
+
+{% load static %}
+
+{% block content %}
+<h2 style="text-align: center; color: #007bff; font-family: Arial, sans-serif; margin-top: 20px;">
+    🔔 Your Notifications
+</h2>
+
+{% if notifications %}
+    <ul style="list-style: none; padding: 0; margin: 20px auto; max-width: 600px;">
+        {% for notification in notifications %}
+            <li style="
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                padding: 10px 0;
+                border-bottom: 1px solid #ddd;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+            " 
+            onclick="this.style.transform='scale(1.02)'"
+            onmouseleave="this.style.transform='scale(1)'"
+            >
+                <!-- 👤 Profile Picture -->
+                <div>
+                    <img src="{% if notification.church_member.user_account.profile_picture %}
+                                {{ notification.church_member.user_account.profile_picture.url }}
+                              {% else %}
+                                {% static 'images/user.png' %}
+                              {% endif %}"
+                         alt="Profile Picture"
+                         style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                </div>
+
+                <!-- 📄 Notification Content -->
+                <div style="flex: 1; font-family: Arial, sans-serif;">
+                    <h4 style="margin: 0; font-weight: bold; color: #333;">{{ notification.title }}</h4>
+                    <p style="margin: 5px 0; color: #666; font-size: 14px;">{{ notification.message }}</p>
+                    <small style="color: #aaa;">📅 {{ notification.created_at|date:"M d, Y - H:i" }}</small>
+                </div>
+
+                <!-- ✅ Read/Unread Indicator -->
+                <div>
+                    {% if notification.is_read %}
+                        <span style="color: green; font-size: 20px;">✔️</span>
+                    {% else %}
+                        <span style="color: red; font-size: 20px;">🆕</span>
+                    {% endif %}
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p style="text-align: center; color: #888; font-style: italic; margin-top: 50px;">
+        You have no notifications yet.
+    </p>
+{% endif %}
+{% endblock %}

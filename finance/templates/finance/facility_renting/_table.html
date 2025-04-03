@@ -1,0 +1,22 @@
+<div id="renting-table-container" style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; text-align: center;">
+        <thead>
+            <tr style="background-color: #007bff; color: white;">
+                <th style="padding: 12px;">🧾 Receipt ID</th>
+                <th style="padding: 12px;">🏠 Property</th>
+                <th style="padding: 12px;">👤 Rentor</th>
+                <th style="padding: 12px;">💰 Amount (TZS)</th>
+                <th style="padding: 12px;">📅 Rental Period</th> <!-- Updated Header -->
+                <th style="padding: 12px;">🎯 Purpose</th>
+                <th style="padding: 12px;">📆 Date Created</th>
+                <th style="padding: 12px;">🕰️ Date Updated</th>
+                <th style="padding: 12px;">⚙️ Actions</th>
+            </tr>
+        </thead>
+        <tbody id="renting-table-body">
+            {% for renting in rentings %}
+                {% include 'finance/facility_renting/_table_row.html' with renting=renting %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

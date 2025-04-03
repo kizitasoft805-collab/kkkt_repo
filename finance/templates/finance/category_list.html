@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Page Header with Title + Buttons -->
+<div style="
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    margin-bottom: 20px;
+">
+    <h2 style="font-size: 26px; font-weight: bold; color: #007bff; margin: 0;">
+        Category List
+    </h2>
+
+    <!-- Buttons Container -->
+    <div style="display: flex; gap: 10px;">
+        <!-- Create New Category Button -->
+        <a href="{% url 'category_create' %}" style="
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            ➕ Create
+        </a>
+
+        <!-- Eye Icon: View All Expenditures (Global) -->
+        <a href="{% url 'expenditure_list_all' %}" style="
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 15px;
+            background-color: #17a2b8;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            👁️ View All Expenditures
+        </a>
+    </div>
+</div>
+
+<!-- Category List -->
+<ul style="list-style-type: none; padding: 0;">
+    {% for cat in categories %}
+        <li style="
+            margin-bottom: 12px; 
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start;
+            gap: 10px;
+        ">
+            <!-- Left side: Category info -->
+            <div style="text-align: left;">
+                <!-- Name -->
+                <div style="font-size: 18px; font-weight: bold; color: #333;">
+                    {{ cat.name }}
+                </div>
+                <!-- Description -->
+                <div style="font-size: 14px; color: #555; margin: 6px 0;">
+                    {{ cat.description|default:"No description provided." }}
+                </div>
+                <!-- Dates -->
+                <small style="font-size: 12px; color: #999;">
+                    Created: {{ cat.date_created|date:"Y-m-d H:i" }} |
+                    Updated: {{ cat.date_updated|date:"Y-m-d H:i" }}
+                </small>
+            </div>
+
+            <!-- Right side: Action Buttons arranged as 2 rows x 2 columns -->
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- First row: Edit & Delete -->
+                <div style="display: flex; gap: 10px;">
+                    <!-- Edit Button -->
+                    <a href="{% url 'category_update' cat.pk %}" style="
+                        background-color: #ffc107;
+                        color: black;
+                        padding: 6px 12px;
+                        border-radius: 15px;
+                        text-decoration: none;
+                        transition: transform 0.2s ease;
+                        font-size: 14px;
+                        font-weight: bold;
+                    " onmouseover="this.style.transform='scale(1.1)'" 
+                       onmouseout="this.style.transform='scale(1)'"
+                       title="Edit Category">
+                        ✏️
+                    </a>
+
+                    <!-- Delete Button -->
+                    <a href="{% url 'category_delete' cat.pk %}" style="
+                        background-color: #dc3545;
+                        color: white;
+                        padding: 6px 12px;
+                        border-radius: 15px;
+                        text-decoration: none;
+                        transition: transform 0.2s ease;
+                        font-size: 14px;
+                        font-weight: bold;
+                    " onmouseover="this.style.transform='scale(1.1)'" 
+                       onmouseout="this.style.transform='scale(1)'"
+                       title="Delete Category">
+                        🗑️
+                    </a>
+                </div>
+
+                <!-- Second row: Add Expenditure & View Expenditures -->
+                <div style="display: flex; gap: 10px;">
+                    <!-- Add Expenditure Button -->
+                    <a href="{% url 'expenditure_create' cat.pk %}" style="
+                        background-color: #28a745;
+                        color: white;
+                        padding: 6px 12px;
+                        border-radius: 15px;
+                        text-decoration: none;
+                        transition: transform 0.2s ease;
+                        font-size: 14px;
+                        font-weight: bold;
+                    " onmouseover="this.style.transform='scale(1.1)'" 
+                       onmouseout="this.style.transform='scale(1)'"
+                       title="Add Expenditure to Category">
+                        ➕
+                    </a>
+
+                    <!-- View Expenditures (Eye Icon) -->
+                    <a href="{% url 'category_expenditure_list' cat.pk %}" style="
+                        background-color: #17a2b8;
+                        color: white;
+                        padding: 6px 12px;
+                        border-radius: 15px;
+                        text-decoration: none;
+                        transition: transform 0.2s ease;
+                        font-size: 14px;
+                        font-weight: bold;
+                    " onmouseover="this.style.transform='scale(1.1)'" 
+                       onmouseout="this.style.transform='scale(1)'"
+                       title="View Expenditures in This Category">
+                        👁️
+                    </a>
+                </div>
+            </div>
+        </li>
+    {% empty %}
+        <p style="color: #6c757d; font-style: italic; margin-top: 10px;">
+            No categories available.
+        </p>
+    {% endfor %}
+</ul>
+{% endblock %}

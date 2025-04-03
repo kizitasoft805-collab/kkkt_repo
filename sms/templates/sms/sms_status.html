@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-2">  <!-- ✅ Reduced margin further from mt-3 to mt-1 -->
+
+    <!-- Page Title -->
+    {% include "sms/_page_title.html" %}
+
+    <!-- SMS Balance Section -->
+    {% include "sms/_sms_balance.html" %}
+
+    <!-- Messages Sent Table -->
+    {% include "sms/_messages_list.html" %}
+
+</div>
+
+<!-- Additional CSS to Ensure Minimum Spacing -->
+<style>
+    .container {
+        padding-top: 30px;  /* ✅ Further reduces space from the top */
+        margin-top: 0px;   /* ✅ Ensures no extra margin */
+    }
+</style>
+{% endblock %}

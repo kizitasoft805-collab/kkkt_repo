@@ -1,0 +1,193 @@
+{% extends 'evangelist_base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Profile Section -->
+<div class="profile-header">
+    <!-- Profile Picture (Click to Upload/Update) -->
+    <div class="profile-picture">
+            <!-- Remove direct src; store in data-passport-url -->
+            <img 
+                id="leader-passport-{{ leader.pk }}"
+                alt="Profile Picture"
+                style="display: none; width: 120px; height: 120px; border-radius: 50%; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
+                data-passport-url="{% if leader.church_member.passport %}{{ leader.church_member.passport.url }}{% else %}{% static 'images/user.png' %}{% endif %}"
+            >
+        </a>
+    </div>
+    <!-- Leader Name -->
+    <h2 class="leader-name">{{ leader.church_member.full_name }}</h2>
+</div>
+
+<!-- Navigation Buttons -->
+<div class="nav-buttons">
+    <a href="{% url 'evangelist_leader_list' %}" class="nav-btn back-btn">⬅️ Back</a>
+</div>
+
+<!-- Details Section -->
+<div class="details-container">
+    <table class="details-table">
+        <tbody>
+            {% for label, value in leader_details %}
+            <tr>
+                <td class="field-name">{{ label }}</td>
+                <td class="field-value">{{ value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- 🌙 Dark Mode Friendly CSS -->
+<style>
+    /* 🌍 Light Mode Colors */
+    :root {
+        --text-color: #333333;
+        --highlight-color: #007bff;
+        --status-active: #28a745;
+        --status-inactive: #dc3545;
+        --button-bg: #007bff;
+        --button-hover-bg: #0056b3;
+        --document-button-bg: #28a745;
+        --document-button-hover: #1e7e34;
+    }
+
+    /* 🌙 Dark Mode Colors */
+    [data-theme="dark"] {
+        --text-color: #e0e0e0;
+        --highlight-color: #4fa3ff;
+        --status-active: #34d058;
+        --status-inactive: #ff6b6b;
+        --button-bg: #4fa3ff;
+        --button-hover-bg: #2a6ebc;
+        --document-button-bg: #34d058;
+        --document-button-hover: #24923f;
+    }
+
+    /* 📸 Profile Section */
+    .profile-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .leader-name {
+        font-size: 22px;
+        font-weight: bold;
+        margin-top: 10px;
+        color: var(--highlight-color);
+    }
+
+    /* 🔄 Navigation Buttons */
+    .nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .nav-btn {
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 15px;
+        font-size: 13px;
+        font-weight: bold;
+        background: var(--button-bg);
+        color: white;
+        transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .nav-btn:hover {
+        transform: scale(1.05);
+        background: var(--button-hover-bg);
+    }
+
+    .back-btn { background: #6c757d; }
+    .edit-btn { background: #28a745; }
+    .delete-btn { background: #dc3545; }
+
+    /* 📋 Details Section */
+    .details-container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .details-table {
+        width: 90%;
+        max-width: 600px;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    .details-table tbody tr {
+        border-bottom: 1px solid #ddd;
+    }
+
+    .field-name {
+        padding: 10px;
+        font-weight: bold;
+        color: var(--highlight-color);
+        text-align: left;
+        width: 50%;
+    }
+
+    .field-value {
+        padding: 10px;
+        text-align: left;
+        width: 50%;
+        word-break: break-word;
+        color: var(--text-color);
+    }
+
+    /* 📱 Responsive Design */
+    @media (max-width: 768px) {
+        .profile-picture img {
+            width: 90px;
+            height: 90px;
+        }
+
+        .leader-name {
+            font-size: 18px;
+        }
+
+        .nav-buttons {
+            gap: 5px;
+        }
+
+        .nav-btn {
+            font-size: 11px;
+            padding: 5px 8px;
+        }
+
+        .details-table {
+            width: 100%;
+        }
+    }
+</style>
+
+<!-- Preload Script for Leader Profile Picture -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Identify the leader passport <img> by its unique ID
+    const picEl = document.getElementById('leader-passport-{{ leader.pk }}');
+    if (picEl) {
+        // Get the data-passport-url from the element
+        const passportUrl = picEl.dataset.passportUrl;
+        
+        // Create an offscreen image to preload
+        const hiddenImage = new Image();
+        hiddenImage.src = passportUrl;
+
+        hiddenImage.onload = function() {
+            // Once fully loaded, apply the source and reveal the actual <img>
+            picEl.src = passportUrl;
+            picEl.style.display = 'block';
+        };
+    }
+});
+</script>
+{% endblock %}
+

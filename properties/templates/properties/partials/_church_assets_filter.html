@@ -1,0 +1,122 @@
+<!-- 🔍 Search Form -->
+<div class="filter-form">
+    <!-- Filter by Name -->
+    <input type="text" id="searchName" placeholder="🔍 Search by name...">
+
+    <!-- Filter by Asset Type -->
+    <select id="typeFilter">
+        <option value="all">📂 Filter by Type</option>
+        {% for type, label in church_assets.model.ASSET_TYPE_CHOICES %}
+            <option value="{{ type }}">{{ label }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- ✅ New Filter by Status -->
+    <select id="statusFilter">
+        <option value="all">📂 Filter by Status</option>
+        {% for sValue, sLabel in church_assets.model.STATUS_CHOICES %}
+            <option value="{{ sValue }}">{{ sLabel }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- JavaScript for Real-Time Filtering -->
+<script>
+    function filterChurchAssets() {
+        let nameFilter = document.getElementById("searchName").value.toLowerCase();
+        let typeFilter = document.getElementById("typeFilter").value;
+        let statusFilter = document.getElementById("statusFilter").value; // ✅ Read status
+
+        let assets = document.querySelectorAll(".church-asset-row");
+
+        let totalQuantity = 0;
+        let totalValue = 0;
+
+        assets.forEach(asset => {
+            let name = asset.getAttribute("data-name").toLowerCase();
+            let type = asset.getAttribute("data-type");
+            let status = asset.getAttribute("data-status");  // ✅ Access status from row
+
+            // Evaluate each filter
+            let showByName  = name.includes(nameFilter);
+            let showByType  = (typeFilter === "all" || type === typeFilter);
+            let showByStatus = (statusFilter === "all" || status === statusFilter);
+
+            // If all filter conditions are satisfied, show this row
+            if (showByName && showByType && showByStatus) {
+                asset.style.display = "table-row";
+                totalQuantity += parseInt(asset.getAttribute("data-quantity"));
+                totalValue += parseFloat(asset.getAttribute("data-value"));
+            } else {
+                asset.style.display = "none";
+            }
+        });
+
+        // Update total quantity and value in your template
+        document.getElementById("totalQuantity").textContent = totalQuantity;
+        document.getElementById("totalValue").textContent = "TZS " + totalValue.toLocaleString();
+    }
+
+    // ✅ Attach event listeners
+    document.getElementById("searchName").addEventListener("input", filterChurchAssets);
+    document.getElementById("typeFilter").addEventListener("change", filterChurchAssets);
+    document.getElementById("statusFilter").addEventListener("change", filterChurchAssets);
+
+    // Trigger initial filter to apply any pre-selected filters
+    filterChurchAssets();
+</script>
+
+<!-- CSS for Styling -->
+<style>
+    /* 🌟 Full-Width Filter Section */
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px; /* Match _church_member_filter.html */
+        width: 100%; /* Full width within parent container */
+        margin-bottom: 10px; /* Match _church_member_filter.html */
+        padding: 0; /* No padding here, handled by parent */
+        box-sizing: border-box;
+    }
+
+    /* 🔍 iPhone-Like Input Fields */
+    .filter-form input,
+    .filter-form select {
+        padding: 10px; /* Match _church_member_filter.html */
+        border-radius: 20px; /* Match _church_member_filter.html for iPhone-like corners */
+        border: 1px solid #ccc; /* Match _church_member_filter.html */
+        width: 100%; /* Full width within parent */
+        max-width: 100vw; /* Prevent exceeding viewport */
+        box-sizing: border-box; /* Include padding and border in width */
+        text-align: center; /* Match _church_member_filter.html */
+        font-size: 16px; /* Match _church_member_filter.html */
+        outline: none; /* Clean focus state */
+        transition: border-color 0.3s ease; /* Smooth transition like iPhone */
+    }
+
+    /* 🎨 Input Focus Effect */
+    .filter-form input:focus,
+    .filter-form select:focus {
+        border-color: #007bff; /* Blue focus like iPhone */
+    }
+
+    /* 📱 Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .filter-form input,
+        .filter-form select {
+            font-size: 14px; /* Slightly smaller for tablets */
+            padding: 8px; /* Adjust padding */
+            border-radius: 18px; /* Slightly smaller radius */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .filter-form input,
+        .filter-form select {
+            font-size: 13px; /* Smaller for phones */
+            padding: 6px; /* Minimal padding */
+            border-radius: 16px; /* Smaller radius */
+        }
+    }
+</style>

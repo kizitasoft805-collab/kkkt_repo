@@ -1,0 +1,216 @@
+{% extends 'accountant_base.html' %}
+{% block content %}
+<div>
+    <h2>📢 Create Notification</h2>
+
+    <!-- Display Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Main Form -->
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Title & Message Fields -->
+        {% include 'accountant/notifications/_notification_form.html' %}
+
+        <!-- Button to Open Fullscreen Recipient Selection -->
+        <button type="button" id="open-recipients-modal" class="recipient-button">👥 Select Recipients</button>
+
+        <!-- Fullscreen Recipients Selection Modal -->
+        <div id="recipients-modal" class="fullscreen-modal">
+            
+            <!-- Floating Buttons -->
+            <button type="button" id="close-recipients-modal" class="close-button">
+                <span class="close-icon">❌</span>
+            </button>
+
+            <button type="submit" class="send-icon-button">📩</button>
+
+            <div class="modal-content">
+                <h3>Select Recipients</h3>
+
+                <!-- Recipient Type Selection -->
+                <div id="recipient-type-container">
+                    {% include 'accountant/notifications/_select_recipient_type.html' %}
+                </div>
+
+                <!-- Recipients List (Dynamic, NO FRAME) -->
+                <div id="recipients-list-container">
+                    {% include 'accountant/notifications/_recipients_list.html' %}
+                </div>
+            </div>
+
+            <!-- ✅ Sticky Send Notification Button at the Bottom -->
+            <div class="send-button-container">
+                <button type="submit" class="send-button">🚀 Send Notification</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- ✅ Inline CSS for Floating Buttons and Sticky Send Button -->
+<style>
+    /* 🌍 Prevent Horizontal Scrolling */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    html, body {
+        width: 100vw;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* 🎨 Button to Open Fullscreen Modal */
+    .recipient-button {
+        background: #007bff;
+        color: white;
+        padding: 12px 15px;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        display: block;
+        margin: 20px auto;
+        width: 80%;
+        max-width: 250px;
+        border: none;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 📜 Fullscreen Modal with Smooth Opening */
+    .fullscreen-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: white;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transform: translateY(100%);
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+
+    .fullscreen-modal.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .modal-content {
+        width: 100%;
+        max-width: 100%;
+        text-align: center;
+        background: white;
+        padding-bottom: 70px; /* Ensure bottom button space */
+        overflow-y: auto;
+        flex-grow: 1; /* Allow scrolling */
+    }
+
+    /* 📌 Floating Close Button (❌) */
+    .close-button {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 1100;
+    }
+
+    /* ✅ Blue X Icon */
+    .close-icon {
+        color: blue;
+        font-size: 28px;
+    }
+
+    /* ✅ Floating Send Notification Icon (📩) */
+    .send-icon-button {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: transparent;
+        border: none;
+        font-size: 28px;
+        color: #28a745;
+        cursor: pointer;
+        z-index: 1100;
+    }
+
+    /* ✅ Sticky Send Button at the Bottom */
+    .send-button-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 15px;
+        display: flex;
+        justify-content: center;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        z-index: 1100;
+    }
+
+    .send-button {
+        background: #28a745;
+        color: white;
+        padding: 12px 15px;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 80%;
+        max-width: 250px;
+        border: none;
+    }
+
+    /* ✅ Fix for Mobile Keyboard Overlap */
+    @media screen and (max-width: 768px) {
+        .send-button-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+
+        .fullscreen-modal {
+            padding-bottom: 60px; /* Ensure space for keyboard */
+        }
+    }
+</style>
+
+<!-- ✅ JavaScript for Fullscreen Modal & Fixing Mobile Viewport Issues -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const modal = document.getElementById("recipients-modal");
+        const openButton = document.getElementById("open-recipients-modal");
+        const closeButton = document.getElementById("close-recipients-modal");
+        const sendIconButton = document.querySelector(".send-icon-button");
+
+        openButton.addEventListener("click", function() {
+            modal.classList.add("show");
+        });
+
+        closeButton.addEventListener("click", function() {
+            modal.classList.remove("show");
+        });
+
+        // Make the send icon button work the same as the main send button
+        sendIconButton.addEventListener("click", function() {
+            document.querySelector("form").submit();
+        });
+    });
+</script>
+{% endblock %}

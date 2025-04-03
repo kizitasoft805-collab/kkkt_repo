@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+">
+    <h2 style="text-align: center; color: #007bff; margin-bottom: 20px;">
+        {{ title }}
+    </h2>
+
+    <form method="POST" novalidate style="display: flex; flex-direction: column; gap: 14px;">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <!-- Render form fields -->
+        <div>
+            {{ form.name.errors }}
+            {{ form.name }}
+        </div>
+        <div>
+            {{ form.description.errors }}
+            {{ form.description }}
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" style="
+            padding: 14px 20px;
+            border-radius: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        ">
+            {{ btn_label }}
+        </button>
+    </form>
+</div>
+{% endblock %}

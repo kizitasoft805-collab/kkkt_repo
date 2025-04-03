@@ -1,0 +1,84 @@
+{% extends "secretary_base.html" %}
+
+{% block content %}
+<div class="center-container">
+    <h2 class="text-danger fw-bold">⚠️ Confirm Deletion</h2>
+    <p class="lead text-dark">
+        Are you sure you want to delete this SMS? <br>
+        <span class="text-muted">This action <u>cannot</u> be undone.</span>
+    </p>
+
+    <div class="sms-preview">
+        <p><strong>📨 Sent To:</strong> {{ sms.phone_number }}</p>
+        <p><strong>📅 Date Sent:</strong> {{ sms.sent_at }}</p>
+        <p><strong>💬 Message:</strong> "{{ sms.message }}"</p>
+    </div>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger action-btn">🗑️ Yes, Delete</button>
+        <a href="{% url 'secretary_sms_status' %}" class="btn btn-secondary action-btn">❌ Cancel</a>
+    </form>
+</div>
+
+<!-- Inline Styling for Centering and Clean Layout -->
+<style>
+    .center-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 26px;
+        margin-bottom: 15px;
+    }
+
+    .lead {
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    .sms-preview {
+        font-size: 16px;
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 8px;
+        max-width: 500px;
+        margin-bottom: 20px;
+    }
+
+    .action-btn {
+        font-size: 18px;
+        padding: 12px 20px;
+        border-radius: 6px;
+        margin: 10px;
+        text-decoration: none;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+        font-weight: bold;
+    }
+
+    .btn-danger:hover {
+        background-color: #b21f2d;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        font-weight: bold;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+</style>
+{% endblock %}

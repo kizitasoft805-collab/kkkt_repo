@@ -1,0 +1,60 @@
+{% extends 'accountant_base.html' %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 50px auto; padding: 20px; text-align: center;">
+
+    <!-- ⚠️ Confirmation Heading -->
+    <h2 style="color: red; font-weight: bold; font-size: 26px; margin-bottom: 10px;">
+        ⚠️ Confirm Deletion
+    </h2>
+
+    <!-- 🚨 Confirmation Message -->
+    <p style="font-size: 16px; margin-bottom: 20px;">
+        Are you sure you want to delete the renting record for:
+    </p>
+
+    <!-- 📄 Renting Details (Organized Text Only) -->
+    <div style="margin: 20px 0; line-height: 1.6; font-size: 16px;">
+        <p><strong>🏠 Property:</strong> {{ renting.property_rented.name }}</p>
+        <p><strong>👤 Rentor:</strong> {{ renting.rentor_name }}</p>
+        <p><strong>💰 Amount:</strong> {{ renting.amount }} TZS</p>
+        <p><strong>📅 Date Rented:</strong> {{ renting.date_rented }}</p>
+        <p><strong>🧾 Receipt ID:</strong> {{ renting.receipt_id }}</p>
+    </div>
+
+    <!-- 🗑️ Confirmation Form -->
+    <form method="POST" style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+        {% csrf_token %}
+        
+        <!-- ✅ Confirm Delete Button -->
+        <button type="submit" style="
+            background-color: #dc3545;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" 
+           onmouseout="this.style.transform='scale(1)'">
+            ✅ Yes, Delete
+        </button>
+
+        <!-- ❌ Cancel Button -->
+        <a href="{% url 'accountant_facility_renting_list' %}" style="
+            background-color: #6c757d;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" 
+           onmouseout="this.style.transform='scale(1)'">
+            ❌ Cancel
+        </a>
+    </form>
+
+</div>
+{% endblock %}

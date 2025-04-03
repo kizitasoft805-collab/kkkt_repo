@@ -1,0 +1,367 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Header Row with Back Button, Title, Action Buttons, and Menu Button -->
+<div style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 clamp(5px, 1vw, 10px);
+    box-sizing: border-box;
+    gap: clamp(5px, 1vw, 10px);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+">
+    <!-- Back Button -->
+    <button onclick="window.history.back()" style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(12px, 2.5vw, 14px);
+        font-weight: bold;
+        color: #007bff;
+        padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 12px);
+        border-radius: 20px;
+        background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+    " onmouseover="this.style.background='linear-gradient(130deg, #bbdefb, #bbdefb)'; this.style.transform='scale(1.05)'" 
+      onmouseout="this.style.background='linear-gradient(130deg, #e3f2fd, #bbdefb)'; this.style.transform='scale(1)'">
+        <span style="font-size: clamp(16px, 3vw, 20px);">⬅️</span>
+    </button>
+
+    <!-- Title -->
+    <h2 style="
+        font-size: clamp(18px, 3.5vw, 26px);
+        font-weight: bold;
+        color: #007bff;
+        margin: 0;
+        text-align: center;
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+    ">
+        🌟 Special Contributions
+    </h2>
+
+    <!-- Action Buttons -->
+    <div style="display: flex; gap: clamp(5px, 1vw, 10px); flex-shrink: 0;">
+        <!-- 👁️ View All Donations -->
+        <a href="{% url 'all_donation_item_funds' %}"
+           style="
+             background-color: #17a2b8;
+             color: white;
+             padding: clamp(8px, 1.5vw, 10px);
+             border-radius: 50%;
+             text-decoration: none;
+             transition: transform 0.2s ease;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             flex-shrink: 0;"
+           onmouseover="this.style.transform='scale(1.1)'" 
+           onmouseout="this.style.transform='scale(1)'">
+            👁️
+        </a>
+        <!-- ➕ Add Contribution -->
+        <a href="{% url 'special_contribution_create' %}"
+           style="
+             background-color: #28a745;
+             color: white;
+             padding: clamp(8px, 1.5vw, 10px);
+             border-radius: 50%;
+             text-decoration: none;
+             transition: transform 0.2s ease;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             flex-shrink: 0;"
+           onmouseover="this.style.transform='scale(1.1)'" 
+           onmouseout="this.style.transform='scale(1)'">
+            ➕
+        </a>
+    </div>
+
+    <!-- Menu Button Partial -->
+    {% include 'accounts/partials/menu_button_partial.html' %}
+</div>
+
+<!-- Filter Form -->
+<form method="GET" style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+    <label style="font-weight: bold;">Filter by Type:</label>
+    <select name="type" style="
+        padding: 14px; 
+        border-radius: 15px;
+        border: 1px solid #ccc;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        font-size: 16px;
+        outline: none;"
+    >
+        <option value="ALL" {% if selected_type == 'ALL' %}selected{% endif %}>All</option>
+        <option value="DIOCESAN" {% if selected_type == 'DIOCESAN' %}selected{% endif %}>Diocesan</option>
+        <option value="JIMBO" {% if selected_type == 'JIMBO' %}selected{% endif %}>Jimbo</option>
+        <option value="FELLOWSHIP" {% if selected_type == 'FELLOWSHIP' %}selected{% endif %}>Fellowship</option>
+    </select>
+
+    <label style="font-weight: bold;">Filter by Name:</label>
+    <input 
+        type="text" 
+        name="name" 
+        value="{{ q_name }}" 
+        placeholder="Enter part of name..." 
+        style="
+            padding: 14px; 
+            border-radius: 15px; 
+            border: 1px solid #ccc; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            font-size: 16px;
+            outline: none;
+            width: 200px;"
+    >
+
+    <!-- Apply Button -->
+    <button type="submit" style="
+        padding: 14px 20px;
+        border-radius: 15px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    ">
+        Apply Filter
+    </button>
+
+    <!-- Reset Filters Button -->
+    <button 
+        type="button" 
+        style="
+            padding: 14px 20px;
+            border-radius: 15px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        "
+        onclick="window.location.href='?type=ALL&name='"
+    >
+        Reset Filters
+    </button>
+</form>
+
+<!-- If no results after filtering, fallback message -->
+{% if not diocesan_contribs and not jimbo_contribs and not fellowship_contribs %}
+<p style="text-align: center; font-weight: bold; color: #6c757d; margin-top: 20px;">
+    No special contributions found (with your current filters).
+</p>
+{% else %}
+
+<!-- Grand Total (only if we have something) -->
+<p style="font-weight: bold; color: #28a745; font-size: 18px;">
+    Overall Total of All Contribution Types (Filtered):
+    <span style="color: #dc3545;">{{ total_all }}</span>
+</p>
+
+<!-- DIOCESAN Table -->
+{% if diocesan_contribs %}
+<h3 style="color: #007bff; font-size: 20px; margin-top: 30px;">Special Diocesan Contributions</h3>
+<p style="font-weight: bold; color: #28a745;">
+    Overall Total: {{ total_diocesan }}
+</p>
+<div style="overflow-x: auto; margin-bottom: 30px;">
+    <table style="width: 100%; border-collapse: collapse; text-align: center;">
+        <thead>
+            <tr style="background-color: #007bff; color: white;">
+                <th style="padding: 12px;">S/N</th>
+                <th style="padding: 12px;">⚙️ Actions</th>
+                <th style="padding: 12px;">📛 Name</th>
+                <th style="padding: 12px;">📝 Description</th>
+                <th style="padding: 12px;">💰 Total (This Contribution)</th>
+                <th style="padding: 12px;">📅 Date Created</th>
+                <th style="padding: 12px;">🕰️ Date Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in diocesan_contribs %}
+            <tr style="border-bottom: 1px solid #ccc;">
+                <td style="padding: 10px;">{{ forloop.counter }}</td>
+                <td style="padding: 10px; display: flex; justify-content: center; gap: 5px;">
+                    <a href="{% url 'special_contribution_update' c.pk %}"
+                       style="background-color: #ffc107; color: black; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        ✏️
+                    </a>
+                    <a href="{% url 'special_contribution_delete' c.pk %}"
+                       style="background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        🗑️
+                    </a>
+                    <a href="{% url 'donation_item_fund_list' c.id %}"
+                       style="background-color: #17a2b8; color: white; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        👁️
+                    </a>
+                    <a href="{% url 'donation_item_fund_create' c.id %}"
+                       style="background-color: #28a745; color: white; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        ➕
+                    </a>
+                </td>
+                <td style="padding: 10px;">{{ c.name }}</td>
+                <td style="padding: 10px;">{{ c.description|default:"N/A" }}</td>
+                <td style="padding: 10px; font-weight: bold;">
+                    {{ c.total_amount|default_if_none:"0" }}
+                </td>
+                <td style="padding: 10px;">{{ c.date_created|date:"Y-m-d H:i" }}</td>
+                <td style="padding: 10px;">{{ c.date_updated|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<!-- JIMBO Table -->
+{% if jimbo_contribs %}
+<h3 style="color: #007bff; font-size: 20px; margin-top: 30px;">Jimbo Contributions</h3>
+<p style="font-weight: bold; color: #28a745;">
+    Overall Total: {{ total_jimbo }}
+</p>
+<div style="overflow-x: auto; margin-bottom: 30px;">
+    <table style="width: 100%; border-collapse: collapse; text-align: center;">
+        <thead>
+            <tr style="background-color: #007bff; color: white;">
+                <th style="padding: 12px;">S/N</th>
+                <th style="padding: 12px;">⚙️ Actions</th>
+                <th style="padding: 12px;">📛 Name</th>
+                <th style="padding: 12px;">📝 Description</th>
+                <th style="padding: 12px;">💰 Total (This Contribution)</th>
+                <th style="padding: 12px;">📅 Date Created</th>
+                <th style="padding: 12px;">🕰️ Date Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in jimbo_contribs %}
+            <tr style="border-bottom: 1px solid #ccc;">
+                <td style="padding: 10px;">{{ forloop.counter }}</td>
+                <td style="padding: 10px; display: flex; justify-content: center; gap: 5px;">
+                    <a href="{% url 'special_contribution_update' c.pk %}"
+                       style="background-color: #ffc107; color: black; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        ✏️
+                    </a>
+                    <a href="{% url 'special_contribution_delete' c.pk %}"
+                       style="background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        🗑️
+                    </a>
+                    <a href="{% url 'donation_item_fund_list' c.id %}"
+                       style="background-color: #17a2b8; color: white; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        👁️
+                    </a>
+                    <a href="{% url 'donation_item_fund_create' c.id %}"
+                       style="background-color: #28a745; color: white; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        ➕
+                    </a>
+                </td>
+                <td style="padding: 10px;">{{ c.name }}</td>
+                <td style="padding: 10px;">{{ c.description|default:"N/A" }}</td>
+                <td style="padding: 10px; font-weight: bold;">
+                    {{ c.total_amount|default_if_none:"0" }}
+                </td>
+                <td style="padding: 10px;">{{ c.date_created|date:"Y-m-d H:i" }}</td>
+                <td style="padding: 10px;">{{ c.date_updated|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<!-- FELLOWSHIP Table -->
+{% if fellowship_contribs %}
+<h3 style="color: #007bff; font-size: 20px; margin-top: 30px;">Fellowship Contributions</h3>
+<p style="font-weight: bold; color: #28a745;">
+    Overall Total: {{ total_fellowship }}
+</p>
+<div style="overflow-x: auto; margin-bottom: 30px;">
+    <table style="width: 100%; border-collapse: collapse; text-align: center;">
+        <thead>
+            <tr style="background-color: #007bff; color: white;">
+                <th style="padding: 12px;">S/N</th>
+                <th style="padding: 12px;">⚙️ Actions</th>
+                <th style="padding: 12px;">📛 Name</th>
+                <th style="padding: 12px;">📝 Description</th>
+                <th style="padding: 12px;">💰 Total (This Contribution)</th>
+                <th style="padding: 12px;">📅 Date Created</th>
+                <th style="padding: 12px;">🕰️ Date Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in fellowship_contribs %}
+            <tr style="border-bottom: 1px solid #ccc;">
+                <td style="padding: 10px;">{{ forloop.counter }}</td>
+                <td style="padding: 10px; display: flex; justify-content: center; gap: 5px;">
+                    <a href="{% url 'special_contribution_update' c.pk %}"
+                       style="background-color: #ffc107; color: black; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        ✏️
+                    </a>
+                    <a href="{% url 'special_contribution_delete' c.pk %}"
+                       style="background-color: #dc3545; color: white; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        🗑️
+                    </a>
+                    <a href="{% url 'donation_item_fund_list' c.id %}"
+                       style="background-color: #17a2b8; color: white; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        👁️
+                    </a>
+                    <a href="{% url 'donation_item_fund_create' c.id %}"
+                       style="background-color: #28a745; color: white; padding: 6px 10px; border-radius: 50px;
+                              text-decoration: none; transition: transform 0.2s ease;"
+                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        ➕
+                    </a>
+                </td>
+                <td style="padding: 10px;">{{ c.name }}</td>
+                <td style="padding: 10px;">{{ c.description|default:"N/A" }}</td>
+                <td style="padding: 10px; font-weight: bold;">
+                    {{ c.total_amount|default_if_none:"0" }}
+                </td>
+                <td style="padding: 10px;">{{ c.date_created|date:"Y-m-d H:i" }}</td>
+                <td style="padding: 10px;">{{ c.date_updated|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,211 @@
+{% extends 'secretary_base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    padding: 10px;
+    box-sizing: border-box;
+    gap: 10px;
+    width: 100%;
+">
+
+    <!-- ➕ Create New Zone Button -->
+    <a href="{% url 'secretary_create_zone' %}" class="create-button">
+        ➕ Create New Zone
+    </a>
+
+    <!-- 🏡 Heading -->
+    <h2 class="single-line-text">
+        🏡 Church Zones (Kanda)
+    </h2>
+
+    <!-- 🏆 Total Zones Count -->
+    <h3 class="single-line-text">
+        🏆 Total Zones: <strong>{{ total_zones }}</strong>
+    </h3>
+
+    <!-- 🔍 Search Section -->
+    <form method="GET" class="search-form">
+        <input type="text" name="search_zone" value="{{ search_query }}" placeholder="🔍 Search by Zone ID or Name" class="search-input">
+        <button type="submit" class="search-button">🔍 Search</button>
+    </form>
+
+    {% if zones %}
+        <div class="table-container">
+            <table class="zone-table">
+                <thead>
+                    <tr>
+                        <th>🔢 Zone ID</th>
+                        <th>🏷️ Zone Name</th>
+                        <th>📝 Description</th>
+                        <th>📍 Location</th>
+                        <th>🏘️ Total Communities</th>
+                        <th>📅 Date Created</th>
+                        <th>⏳ Time Since Created</th>
+                        <th>📆 Date Updated</th>
+                        <th>⏳ Time Since Updated</th>
+                        <th>⚙️ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for zone in zones %}
+                        <tr>
+                            <td class="truncate-text">{{ zone.zone_id }}</td>
+                            <td class="truncate-text">{{ zone.name }}</td>
+                            <td class="truncate-text">
+                                {% if zone.description %}
+                                    {{ zone.description|truncatewords:10 }}
+                                {% else %}
+                                    No description available
+                                {% endif %}
+                            </td>
+                            <td class="truncate-text">{{ zone.location }}</td>
+                            <td class="truncate-text">{{ zone.total_communities }}</td>
+                            <td class="truncate-text">{{ zone.date_created|date:"F d, Y" }}</td>
+                            <td class="truncate-text">{{ zone.time_since_created }}</td>
+                            <td class="truncate-text">{{ zone.date_updated|date:"F d, Y" }}</td>
+                            <td class="truncate-text">{{ zone.time_since_updated }}</td>
+                            <td class="actions">
+                                <a href="{% url 'secretary_zone_detail' zone.pk %}" class="view-button" title="View Details">👁️</a>
+                                <a href="{% url 'secretary_update_zone' zone.pk %}" class="edit-button" title="Edit">✏️</a>
+                                <a href="{% url 'secretary_delete_zone' zone.pk %}" class="delete-button" title="Delete">🗑️</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="no-zones">
+            ❌ No zones found. Try a different search or create a new zone.
+        </p>
+    {% endif %}
+</div>
+
+<!-- 🚀 CSS Fixes & Styling -->
+<style>
+    .single-line-text {
+        font-size: 22px;
+        font-weight: bold;
+        color: #007bff;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .create-button {
+        font-size: 14px;
+        font-weight: bold;
+        background: #28a745;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+        margin-bottom: 10px;
+    }
+
+    .create-button:hover {
+        background: #218838;
+    }
+
+    .search-form {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        width: 100%;
+        max-width: 800px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 8px;
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        width: 100%;
+        max-width: 250px;
+        text-align: center;
+    }
+
+    .search-button {
+        font-size: 14px;
+        font-weight: bold;
+        background: #007bff;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        border: none;
+        transition: background 0.3s ease;
+    }
+
+    .search-button:hover {
+        background: #0056b3;
+    }
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .zone-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 2px solid #ddd;
+        text-align: left;
+    }
+
+    .zone-table th {
+        font-weight: bold;
+        text-transform: uppercase;
+        background: #007bff;
+        color: white;
+        padding: 10px;
+    }
+
+    .zone-table td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* Truncate text to a single line */
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px;
+    }
+
+    .actions {
+        text-align: center;
+    }
+
+    .view-button {
+        color: #17a2b8;
+    }
+
+    .edit-button {
+        color: #ffc107;
+    }
+
+    .delete-button {
+        color: #f44336;
+    }
+
+    .no-zones {
+        font-size: 16px;
+        color: #555;
+        text-align: center;
+        margin-top: 10px;
+    }
+</style>
+
+{% endblock %}

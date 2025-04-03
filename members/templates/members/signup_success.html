@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Signup Success</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% load static %}
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
+
+    body {
+      background: linear-gradient(to right, #e6e6fa, #40e0d0); /* Soft lavender to gentle teal */
+      color: #333;
+      font-family: Arial, sans-serif;
+    }
+
+    body.dark-mode {
+      background: #1c1c1c;
+      color: #ddd;
+    }
+
+    .content {
+      margin-top: 60px;
+      margin-bottom: 60px;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    .page-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .back-arrow {
+      cursor: pointer;
+      font-size: 1.2em;
+      position: absolute;
+      left: 20px;
+    }
+
+    .form-heading {
+      margin: 0;
+      font-size: 1.6em;
+      color: #4CAF50; /* Green to signify success */
+    }
+
+    .success-message {
+      font-size: 1.1em;
+      line-height: 1.5;
+      margin: 0 auto 20px;
+      max-width: 600px;
+    }
+
+    .emojis {
+      font-size: 2em;
+      margin: 20px 0;
+    }
+
+    .login-links {
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+    .login-links p {
+      margin: 10px 0;
+    }
+    .login-links a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .login-links a:hover {
+      text-decoration: underline;
+    }
+    body.dark-mode .login-links a {
+      color: #66b0ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <!-- Title with back arrow -->
+    <div class="page-title">
+      <span class="back-arrow" onclick="window.history.back()">🔙</span>
+      <h1 class="form-heading">Welcome to Our Church Family!</h1>
+    </div>
+
+    <div class="success-message">
+      <p>Congratulations for signing up successfully! Your details have been saved and sent to the system admin. Now your status is <strong>Pending</strong>. Please wait for approval from the admin or church secretary. After being approved, you will receive a message confirming your successful approval, along with a link to request an account using your 20-character ID.</p>
+      <p>We are so grateful to have you join our community! Thank you for choosing to be part of our church family. Your presence brings joy and strength to us all, and we look forward to growing together in faith and love.</p>
+    </div>
+
+    <div class="emojis">
+      🎉 🙏 ✨ 🕊️ ❤️
+    </div>
+
+    <div class="login-links">
+      <p>Already registered? You can <a href="{% url 'login' %}">login here</a></p>
+      <p>Forgot your password? <a href="{% url 'forgot_password' %}">Reset it here</a></p>
+      <p>Need an account? <a href="{% url 'request_account' %}">Request one here</a></p>
+      <p>Back to <a href="{% url 'church_member_signup' %}">Sign Up</a></p>
+    </div>
+  </div>
+</body>
+</html>

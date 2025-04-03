@@ -1,0 +1,270 @@
+{% extends 'secretary_base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    padding: 10px;
+    box-sizing: border-box;
+    gap: 10px;
+    width: 100%;
+">
+
+    <!-- ➕ Create New Community Button (Moved to the Top) -->
+    <a href="{% url 'secretary_create_community' %}" class="create-button">
+        ➕ Create New Community
+    </a>
+
+    <!-- 🏡 Heading -->
+    <h2 class="single-line-text" style="
+        font-size: 22px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 5px;
+        text-align: center;
+    ">
+        🏡 Church Communities (Jumuiya)
+    </h2>
+
+    <!-- 🏆 Total Communities Count -->
+    <h3 class="single-line-text" style="
+        color: #28a745;
+        font-size: 18px;
+        margin-bottom: 5px;
+        text-align: center;
+    ">
+        🏆 Total Communities in the Church: <strong>{{ total_communities }}</strong>
+    </h3>
+
+    <!-- 🔍 Search Section -->
+    <form method="GET" style="
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        width: 100%;
+        max-width: 800px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    ">
+        <input type="text" name="search_zone" value="{{ search_zone }}" placeholder="🔍 Search by Zone Name or ID"
+            class="search-input">
+        
+        <input type="text" name="search_community" value="{{ search_community }}" placeholder="🔍 Search by Community Name or ID"
+            class="search-input">
+        
+        <button type="submit" class="search-button">🔍 Search</button>
+    </form>
+
+    {% if zone_communities %}
+        {% for zone, data in zone_communities.items %}
+            <!-- 📍 Zone Title -->
+            <h3 class="zone-title">
+                📍 Zone: <span style="color: #007bff;">{{ zone.name }}</span>
+                <span style="color: #28a745;">(Total: {{ data.total }})</span>
+            </h3>
+
+            <div class="table-container">
+                <table class="community-table">
+                    <thead>
+                        <tr>
+                            <th>🔢 Community id</th>
+                            <th>🏷️ Community Name</th>
+                            <th>📝 Description</th>
+                            <th>📅 Date Created</th>
+                            <th>⏳ Time Since Created</th>
+                            <th>📆 Date Updated</th>
+                            <th>⏳ Time Since Updated</th>
+                            <th>⚙️ Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for community in data.communities %}
+                            <tr>
+                                <td class="truncate-text">{{ community.community_id }}</td>
+                                <td class="truncate-text">{{ community.name }}</td>
+                                <td class="truncate-text">{{ community.description }}</td>
+                                <td class="truncate-text">{{ community.date_created|date:"F d, Y" }}</td>
+                                <td class="truncate-text">{{ community.time_since_created }}</td>
+                                <td class="truncate-text">{{ community.date_updated|date:"F d, Y" }}</td>
+                                <td class="truncate-text">{{ community.time_since_updated }}</td>
+                                <td class="actions">
+                                    <a href="{% url 'secretary_community_detail' community.pk %}" class="view-button" title="View Details">👁️</a>
+                                    <a href="{% url 'secretary_update_community' community.pk %}" class="edit-button" title="Edit">✏️</a>
+                                    <a href="{% url 'secretary_delete_community' community.pk %}" class="delete-button" title="Delete">🗑️</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Display Message for Zones Without Communities -->
+    {% if zones_without_communities %}
+        <p class="no-communities">
+            ❌ The communities for <strong>{{ zones_without_communities|join:", " }}</strong> have not been created yet.
+        </p>
+    {% endif %}
+</div>
+
+<!-- 🚀 CSS Fixes & Styling -->
+<style>
+    /* Single Line Text (Prevents Wrapping) */
+    .single-line-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    /* Create Button (Now at the Top) */
+    .create-button {
+        font-size: 14px;
+        font-weight: bold;
+        background: #28a745;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+        margin-bottom: 10px;
+    }
+
+    .create-button:hover {
+        background: #218838;
+    }
+
+    /* Responsive Search Fields */
+    .search-input {
+        flex: 1;
+        padding: 8px;
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        width: 100%;
+        max-width: 250px;
+        text-align: center;
+    }
+
+    .search-button {
+        font-size: 14px;
+        font-weight: bold;
+        background: #007bff;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        border: none;
+        transition: background 0.3s ease;
+    }
+
+    .search-button:hover {
+        background: #0056b3;
+    }
+
+    /* Zone Titles */
+    .zone-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-top: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Table Container */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    /* Community Table */
+    .community-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 2px solid #ddd;
+        text-align: left;
+    }
+
+    .community-table th {
+        font-weight: bold;
+        text-transform: uppercase;
+        background: #007bff;
+        color: white;
+        padding: 10px;
+    }
+
+    .community-table td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    /* Actions */
+    .actions {
+        text-align: center;
+    }
+
+    .edit-button {
+        color: #ffc107;
+        text-decoration: none;
+        font-size: 16px;
+        margin-right: 10px;
+    }
+
+    .delete-button {
+        color: #f44336;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    /* Prevent Text Wrapping */
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 180px;
+    }
+
+    /* No Communities Message */
+    .no-communities {
+        font-size: 16px;
+        color: #555;
+        text-align: center;
+        margin-top: 10px;
+        padding: 10px;
+        background: rgba(255, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+
+    /* Responsive Adjustments */
+    @media screen and (max-width: 768px) {
+        .search-input, .search-button {
+            width: 100%;
+        }
+
+        .community-table th, .community-table td {
+            font-size: 12px;
+            padding: 8px;
+        }
+    
+        .view-button {
+    color: #17a2b8; /* Cyan color */
+    text-decoration: none;
+    font-size: 16px;
+    margin-right: 10px;
+    transition: color 0.3s ease;
+}
+
+.view-button:hover {
+    color: #117a8b;
+}
+
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,82 @@
+{% if leaders_distribution_data %}
+    <h3>
+        👥 Leaders Distribution by Cell
+        <button id="downloadLeadersChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <div style="display: flex; justify-content: center;">
+        <canvas id="leadersDistributionChart" width="200" height="200"></canvas>
+    </div>
+
+    <p id="leadersAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Parse JSON data from Django
+        const leadersData = JSON.parse('{{ leaders_distribution_data|safe }}');
+
+        let leadersChart;  // Store Chart.js instance globally
+
+        if (leadersData.labels.length > 0) {
+            const doughnutCtx = document.getElementById('leadersDistributionChart').getContext('2d');
+
+            // Generate dynamic colors for each cell
+            const backgroundColors = leadersData.labels.map((_, index) => `hsl(${index * 40}, 70%, 50%)`);
+
+            // Create Doughnut Chart with Data Labels (Percentages & Cell Names)
+            leadersChart = new Chart(doughnutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: leadersData.labels,
+                    datasets: [{
+                        data: leadersData.data,
+                        backgroundColor: backgroundColors,
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                        // Note: datalabels requires chartjs-plugin-datalabels; removed unless plugin is included
+                        /*
+                        datalabels: {
+                            color: '#000',
+                            anchor: 'center',
+                            align: 'center',
+                            font: { weight: 'bold' },
+                            formatter: function(value, ctx) {
+                                return `${ctx.chart.data.labels[ctx.dataIndex]}: ${value}%`;
+                            }
+                        }
+                        */
+                    }
+                }
+            });
+
+            // Display analysis
+            document.getElementById("leadersAnalysis").innerHTML = `<strong>${leadersData.analysis}</strong>`;
+        } else {
+            document.getElementById("leadersAnalysis").innerHTML = `<p>No leader data available.</p>`;
+        }
+
+        // Function to Download Chart as Image
+        document.getElementById("downloadLeadersChart").addEventListener("click", function() {
+            if (leadersChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('leadersDistributionChart').toDataURL('image/png');
+                link.download = 'Leaders_Distribution_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No leader data available.</p>
+{% endif %}

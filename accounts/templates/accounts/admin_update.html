@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+">
+    <!-- Back Button -->
+    <a href="{% url 'superuser_detail' %}" style="
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        background: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 25px;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+        max-width: 100%;
+        word-wrap: break-word;
+        text-align: center;
+    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        <span class="material-icons" style="font-size: 20px;">arrow_back</span>
+        Back to Profile
+    </a>
+
+    <!-- Header -->
+    <h2 style="
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 20px;
+        text-align: center;
+        word-wrap: break-word;
+        max-width: 100%;
+    ">
+        ✏️ Update Profile
+    </h2>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green; font-size: 14px; text-align: center; word-wrap: break-word; max-width: 100%;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Profile Picture Preview -->
+    <img id="profilePreview" src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}{% static 'images/user.png' %}{% endif %}" 
+         alt="Profile Picture Preview"
+         style="
+            width: 100%;
+            max-width: 250px;
+            height: auto;
+            object-fit: cover;
+            margin-bottom: 20px;
+        ">
+
+    <!-- Update Form -->
+    <form method="POST" enctype="multipart/form-data" style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        max-width: 500px;
+    ">
+        {% csrf_token %}
+        
+        <!-- Custom Form Field Styling -->
+        <div style="width: 100%;">
+            {% for field in form %}
+                <div style="margin-bottom: 15px; width: 100%; position: relative;">
+                    <label for="{{ field.id_for_label }}" style="font-weight: bold; color: #555; display: block; margin-bottom: 5px;">
+                        {{ field.label }}
+                    </label>
+                    <div style="position: relative;">
+                        {{ field }}
+                        {% if field.widget.input_type == "password" %}
+                            <span class="material-icons toggle-password" data-target="{{ field.id_for_label }}"
+                                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #007bff;">
+                                visibility_off
+                            </span>
+                        {% endif %}
+                    </div>
+                    {% if field.help_text %}
+                        <small style="color: #666;">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p style="color: red; font-size: 14px;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Submit & Show/Hide Password Row -->
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <!-- Show/Hide Password Button -->
+            <button type="button" id="toggleAllPasswords" style="
+                font-size: 16px;
+                font-weight: bold;
+                background: linear-gradient(130deg, #ff9800, #e65100);
+                color: white;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: background 0.3s ease, transform 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <span class="material-icons">visibility</span>
+                Show Passwords
+            </button>
+
+            <!-- Update Profile Button -->
+            <button type="submit" style="
+                font-size: 16px;
+                font-weight: bold;
+                background: linear-gradient(130deg, #4caf50, #388e3c);
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: background 0.3s ease, transform 0.2s ease;
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <span class="material-icons">save</span>
+                Update Profile
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- JavaScript: Toggle Password Visibility -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Individual password toggle
+        document.querySelectorAll(".toggle-password").forEach(icon => {
+            icon.addEventListener("click", function () {
+                let targetId = this.getAttribute("data-target");
+                let inputField = document.getElementById(targetId);
+
+                if (inputField.type === "password") {
+                    inputField.type = "text";
+                    this.textContent = "visibility";
+                } else {
+                    inputField.type = "password";
+                    this.textContent = "visibility_off";
+                }
+            });
+        });
+
+        // Show/Hide all passwords button
+        let toggleAllBtn = document.getElementById("toggleAllPasswords");
+        toggleAllBtn.addEventListener("click", function () {
+            let passwordFields = document.querySelectorAll("input[type='password']");
+            let allHidden = [...passwordFields].every(field => field.type === "password");
+
+            passwordFields.forEach(field => {
+                field.type = allHidden ? "text" : "password";
+            });
+
+            this.innerHTML = allHidden 
+                ? '<span class="material-icons">visibility_off</span> Hide Passwords' 
+                : '<span class="material-icons">visibility</span> Show Passwords';
+        });
+    });
+</script>
+
+<!-- Profile Picture Preview Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const profileInput = document.querySelector("input[name='profile_picture']");
+        const profilePreview = document.getElementById("profilePreview");
+
+        profileInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    profilePreview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+
+<!-- Ensure All Input Fields are Styled the Same -->
+<style>
+    input, select, textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: 25px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+</style>
+{% endblock %}

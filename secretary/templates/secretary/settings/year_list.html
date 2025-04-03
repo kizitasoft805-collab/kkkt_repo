@@ -1,0 +1,112 @@
+{% extends 'secretary_base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    padding: 0;
+    box-sizing: border-box;
+    gap: 20px;
+    width: 100%;
+">
+    <!-- Create New Year Button -->
+    <a href="{% url 'secretary_create_year' %}" style="
+        font-size: 16px;
+        font-weight: bold;
+        background: linear-gradient(130deg, #28a745, #218838);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 25px;
+        text-decoration: none;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background 0.3s ease, transform 0.2s ease;
+        margin: 20px 0;
+    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        ➕ Create New Year
+    </a>
+
+    <!-- Heading -->
+    <h2 style="
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+        margin: 0;
+    ">
+        🗓️ Year List
+    </h2>
+
+    {% if years %}
+        <!-- Full-Width Table Wrapper -->
+        <div style="
+            width: 100%;
+            overflow-x: auto;
+        ">
+            <table style="
+                width: 100%;
+                border-collapse: collapse;
+                border: 1px solid #ddd;
+                text-align: left;
+                margin: 0;
+            ">
+                <thead>
+                    <tr style="
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        border-bottom: 2px solid #ddd;
+                    ">
+                        <th style="padding: 10px; white-space: nowrap;">Year</th>
+                        <th style="padding: 10px; white-space: nowrap;">Date Created</th>
+                        <th style="padding: 10px; white-space: nowrap;">Time Since Created</th>
+                        <th style="padding: 10px; white-space: nowrap;">Current</th>
+                        <th style="padding: 10px; white-space: nowrap;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for year in years %}
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ year.year }}</td>
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">📅 {{ year.date_created|date:"F d, Y" }}</td>
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">⏳ {{ year.time_since_created }}</td>
+                            <td style="padding: 10px; white-space: nowrap;">
+                                {% if year.is_current %}
+                                    ✅
+                                {% else %}
+                                    ❌
+                                {% endif %}
+                            </td>
+                            <td style="padding: 10px; white-space: nowrap;">
+                                <a href="{% url 'secretary_update_year' year.pk %}" style="
+                                    color: #ffc107;
+                                    text-decoration: none;
+                                    font-size: 16px;
+                                    margin-right: 10px;
+                                " title="Edit">
+                                    ✏️
+                                </a>
+                                <a href="{% url 'secretary_delete_year' year.pk %}" style="
+                                    color: #f44336;
+                                    text-decoration: none;
+                                    font-size: 16px;
+                                " title="Delete">
+                                    🗑️
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="color: #555; margin-top: 20px;">
+            No years found. 
+            <a href="{% url 'secretary_create_year' %}" style="color: #007bff; text-decoration: none;">Create a Year</a>
+        </p>
+    {% endif %}
+</div>
+{% endblock %}

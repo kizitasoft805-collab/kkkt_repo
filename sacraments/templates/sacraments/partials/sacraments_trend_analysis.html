@@ -1,0 +1,99 @@
+{% if sacraments_trend_data %}
+    <h3>
+        ✝️ Sacraments Trend Analysis
+        <button id="downloadSacramentsTrendChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <!-- Responsive Container for the Chart -->
+    <div class="sacraments-trend-chart-wrapper">
+        <canvas id="sacramentsTrendChart"></canvas>
+    </div>
+    
+    <p id="sacramentsTrendAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* 📊 Increase Y-Axis Length & Responsiveness */
+        .sacraments-trend-chart-wrapper {
+            max-width: 700px;  /* Center the chart */
+            height: 500px;      /* Increased height for better visibility */
+            margin: 0 auto;
+        }
+
+        /* Ensure Proper Sizing on Smaller Screens */
+        @media screen and (max-width: 600px) {
+            .sacraments-trend-chart-wrapper {
+                max-width: 100%;
+                height: 550px;  /* Increased height for small viewports */
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const sacramentsTrendData = JSON.parse('{{ sacraments_trend_data|safe }}');
+
+        let sacramentsTrendChart;  // Store Chart.js instance globally
+
+        if (sacramentsTrendData.labels.length > 0) {
+            const ctx = document.getElementById('sacramentsTrendChart').getContext('2d');
+
+            sacramentsTrendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sacramentsTrendData.labels,
+                    datasets: [{
+                        label: 'Total Members',
+                        data: sacramentsTrendData.data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,  // Ensures correct aspect ratio
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMin: 0,
+                            suggestedMax: Math.max(...sacramentsTrendData.data) + 10,  // Dynamically adjust Y-axis
+                            ticks: {
+                                stepSize: 5,  // Ensures proper spacing
+                                font: {
+                                    size: 14  // Larger font for readability
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            document.getElementById("sacramentsTrendAnalysis").innerHTML = `<strong>${sacramentsTrendData.analysis}</strong>`;
+        } else {
+            document.getElementById("sacramentsTrendAnalysis").innerHTML = `<p>No sacramental data available.</p>`;
+        }
+
+        // Function to Download Chart as Image
+        document.getElementById("downloadSacramentsTrendChart").addEventListener("click", function() {
+            if (sacramentsTrendChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('sacramentsTrendChart').toDataURL('image/png');
+                link.download = 'Sacraments_Trend_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No sacramental data available.</p>
+{% endif %}

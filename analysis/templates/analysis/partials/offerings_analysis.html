@@ -1,0 +1,84 @@
+{% if offerings_data %}
+    <h3>
+        Offerings Analysis (Current Year)
+        <button id="downloadOfferingsChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <div class="offerings-chart-container">
+        <canvas id="offeringsLineChart"></canvas>
+    </div>
+
+    <!-- Single Description Paragraph -->
+    <p id="offeringsLongDescription" style="margin-top: 20px;"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .offerings-chart-container {
+            max-width: 700px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        @media screen and (max-width: 600px) {
+            .offerings-chart-container {
+                max-width: 100%;
+                height: 450px;
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const offeringsData = JSON.parse('{{ offerings_data|safe }}');
+
+        let offeringsChart;
+
+        if (offeringsData.labels.length > 0) {
+            const ctx = document.getElementById('offeringsLineChart').getContext('2d');
+
+            offeringsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: offeringsData.labels,
+                    datasets: [{
+                        label: 'Total Offerings (TZS)',
+                        data: offeringsData.data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        // Show the single descriptive text
+        const descElement = document.getElementById("offeringsLongDescription");
+        descElement.innerHTML = offeringsData.offerings_description || "No description available.";
+
+        // Download button logic
+        document.getElementById("downloadOfferingsChart").addEventListener("click", function() {
+            if (offeringsChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('offeringsLineChart').toDataURL('image/png');
+                link.download = 'Offerings_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No offerings analysis data provided.</p>
+{% endif %}

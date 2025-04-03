@@ -1,0 +1,160 @@
+{% extends 'secretary_base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+">
+    <!-- Back Button -->
+    <a href="{% url 'secretary_church_member_list' %}" style="
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        background: linear-gradient(130deg, #007bff, #0056b3);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 25px;
+        margin-bottom: 15px;
+    ">
+        <span class="material-icons">arrow_back</span> Back
+    </a>
+
+    <!-- Header -->
+    <h2 style="
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 20px;
+        word-wrap: break-word;
+        text-align: center;
+        width: 100%;
+        max-width: 800px;
+    ">
+        🖼️ Upload Passport for {{ member.full_name }}
+    </h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p style="
+                color: green;
+                font-size: 14px;
+                word-wrap: break-word;
+                width: 100%;
+                max-width: 800px;
+                text-align: center;
+            ">
+                {{ message }}
+            </p>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Enlarged Preview Section -->
+    <div id="preview-container" style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 100vw;
+    ">
+        <img id="preview-image" 
+             src="{% if member.passport %}{{ member.passport.url }}{% else %}{% static 'images/user.png' %}{% endif %}" 
+             alt="Passport Preview" 
+             style="
+                width: 100%;
+                max-width: 500px;
+                aspect-ratio: 1/1;
+                border-radius: 20px;
+                object-fit: cover;
+                border: 2px solid #ccc;
+             ">
+    </div>
+
+    <!-- Form -->
+    <form method="POST" enctype="multipart/form-data" id="upload-form" style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 600px;
+    ">
+        {% csrf_token %}
+        <div style="
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            word-wrap: break-word;
+        ">
+            {{ form.as_p }}
+        </div>
+
+        <button type="submit" id="upload-button" style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(130deg, #4caf50, #388e3c);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span id="upload-icon" class="material-icons" style="font-size: 20px; vertical-align: middle;">cloud_upload</span>
+            <span id="upload-text">Upload Passport</span>
+        </button>
+    </form>
+</div>
+
+<!-- JavaScript for Preview and Loading Message -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const input = document.querySelector('input[type="file"]');
+        const previewImage = document.getElementById('preview-image');
+        const form = document.getElementById('upload-form');
+        const uploadButton = document.getElementById('upload-button');
+        const uploadText = document.getElementById('upload-text');
+        const uploadIcon = document.getElementById('upload-icon');
+
+        // Preview uploaded image
+        input.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Show "Saving please wait..." on form submission
+        form.addEventListener('submit', () => {
+            uploadButton.disabled = true; // Disable the button to prevent multiple clicks
+            uploadText.textContent = 'Saving please wait...';
+            uploadIcon.style.display = 'none'; // Hide the upload icon
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* Container for the entire form */
+.filter-form-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* The form that holds the filter fields */
+.filter-form {
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 14px;
+  align-items: flex-end; 
+  /* On large screens we want them all in a single row,
+     we handle that in a media query. On smaller screens,
+     they'll wrap. */
+}
+
+/* Each filter block (Year, Month, Category, Purpose, etc.) */
+.filter-block {
+  display: flex; 
+  flex-direction: column;
+  min-width: 150px;
+  /* On smaller screens we want them to take full width,
+     so we define that below. For large, we keep them auto. */
+}
+
+/* The from-to-row container to keep From & To side by side even on smaller devices,
+   but still let them wrap if extremely narrow. */
+.from-to-row {
+  display: flex; 
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* iPhone-like styling for select, input */
+.iphone-input {
+  padding: 14px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  width: 100%;
+}
+
+/* Label styling */
+.filter-label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+/* Buttons (Apply & Reset) */
+.filter-button {
+  padding: 14px 20px;
+  border-radius: 15px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 
+  For screens ≥992px: 
+  force everything into a single row, no wrapping 
+*/
+@media (min-width: 992px) {
+  .filter-form {
+    flex-wrap: nowrap;  /* all filters in one line */
+  }
+  .filter-block {
+    width: auto;        /* shrink to content */
+    min-width: 140px;   /* optional tweak so they aren't too small */
+  }
+  .from-to-row {
+    flex-wrap: nowrap;
+  }
+}
+
+/* 
+  For screens <992px:
+  each filter block in full width, 
+  except from_date & to_date remain side-by-side 
+  but can wrap if extremely narrow 
+*/
+@media (max-width: 991px) {
+  .filter-form {
+    flex-direction: column;
+  }
+  .filter-block {
+    width: 100%; 
+    min-width: auto; 
+  }
+  .from-to-row {
+    width: 100%;
+  }
+}
+</style>
+
+<h2 style="text-align: center; color: #007bff; margin-bottom: 20px;">
+  Expenditures by Category
+</h2>
+
+<!-- SEARCH / FILTER FORM -->
+<div class="filter-form-container">
+  <form method="GET" class="filter-form">
+    <!-- YEAR -->
+    <div class="filter-block">
+      <label for="id_year_filter" class="filter-label">Year</label>
+      <select name="year" id="id_year_filter" class="iphone-input">
+        <!-- Optionally, if you want an "All" choice:
+        <option value="">-- All --</option> -->
+        {% for y in all_years %}
+          <option value="{{ y.year }}"
+            {% if y.year|stringformat:"s" == year_filter %} selected {% endif %}>
+            {{ y.year }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- MONTH -->
+    <div class="filter-block">
+      <label for="id_month_filter" class="filter-label">Month</label>
+      <select name="month" id="id_month_filter" class="iphone-input">
+        <option value="">-- All --</option>
+        {% for m in all_months %}
+          <option value="{{ m }}" 
+            {% if m == month_filter %} selected {% endif %}>
+            {{ m }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- CATEGORY -->
+    <div class="filter-block">
+      <label for="id_category_filter" class="filter-label">Category</label>
+      <select name="category" id="id_category_filter" class="iphone-input">
+        <option value="">-- All --</option>
+        {% for c in all_categories %}
+          <option value="{{ c.pk }}"
+            {% if c.pk|stringformat:"s" == category_filter %} selected {% endif %}>
+            {{ c.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- PURPOSE -->
+    <div class="filter-block">
+      <label for="id_purpose_filter" class="filter-label">Purpose</label>
+      <input type="text" name="purpose" id="id_purpose_filter"
+             value="{{ purpose_filter }}"
+             placeholder="Partial purpose"
+             class="iphone-input">
+    </div>
+
+    <!-- FROM & TO DATE side by side in .from-to-row -->
+    <div class="from-to-row">
+      <!-- FROM DATE -->
+      <div class="filter-block">
+        <label for="id_from_date" class="filter-label">From Date</label>
+        <input type="date" name="from_date" id="id_from_date"
+               value="{{ from_date }}"
+               class="iphone-input">
+      </div>
+      <!-- TO DATE -->
+      <div class="filter-block">
+        <label for="id_to_date" class="filter-label">To Date</label>
+        <input type="date" name="to_date" id="id_to_date"
+               value="{{ to_date }}"
+               class="iphone-input">
+      </div>
+    </div>
+
+    <!-- APPLY & RESET BUTTONS -->
+    <div style="display: flex; gap: 14px; margin-top: 6px;">
+      <!-- Apply Button -->
+      <button type="submit" class="filter-button"
+              style="background-color: #007bff; color: white;">
+        Apply
+      </button>
+      <!-- Reset Button -->
+      <button type="button" class="filter-button"
+              onclick="window.location.href='?';"
+              style="background-color: #6c757d; color: white;">
+        Reset
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<!-- OVERALL TOTAL -->
+<div style="max-width: 1200px; margin: 0 auto; margin-bottom: 20px;">
+  <h4 style="color: #28a745;">
+    Overall Total: <span style="color: #dc3545;">
+      {{ overall_sum }}
+    </span>
+  </h4>
+</div>
+
+<!-- RESULTS BY CATEGORY -->
+<div style="max-width: 1200px; margin: 0 auto;">
+  {% for cat in categories %}
+    <!-- 
+      We only have categories that have expenditures, so no extra check is needed. 
+    -->
+    <div style="margin-bottom: 20px;">
+      <h3 style="color: #333; margin-bottom: 5px;">
+        {{ cat.name }}
+      </h3>
+      <p style="color: #666; margin: 0 0 10px;">
+        {{ cat.description|default:"No description" }}
+      </p>
+
+      <p style="font-weight: bold; color: #28a745;">
+        Category Total: 
+        <span style="color: #dc3545;">{{ cat.cat_sum }}</span>
+      </p>
+
+      <!-- Scrollable container for the table -->
+      <div style="width: 100%; overflow-x: auto; margin-bottom: 30px;">
+        <table style="border-collapse: collapse; text-align: center; min-width: 900px; width: 100%;">
+          <thead>
+            <tr style="background-color: #007bff; color: white;">
+              <th style="padding: 10px;">S/N</th>
+              <th style="padding: 10px;">Purpose</th>
+              <th style="padding: 10px;">Year - Month - Date</th>
+              <th style="padding: 10px;">Expenditure Amount</th>
+              <th style="padding: 10px;">Receipt</th>
+              <th style="padding: 10px;">Date Created</th>
+              <th style="padding: 10px;">Date Updated</th>
+              <th style="padding: 10px;">Notes</th>
+              <th style="padding: 10px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for exp in cat.expenditures.all %}
+              <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 8px;">{{ forloop.counter }}</td>
+                <td style="padding: 8px;">{{ exp.expenditure_purpose|default:"—" }}</td>
+                <td style="padding: 8px;">
+                  {{ exp.year.year }} - {{ exp.month }} - {{ exp.date_taken|date:"Y-m-d" }}
+                </td>
+                <td style="padding: 8px;">{{ exp.expenditure_amount }}</td>
+                <td style="padding: 8px;">
+                  {% if exp.receipt %}
+                    <a href="{{ exp.receipt.url }}"
+                       class="receipt-link"
+                       data-receipt="{{ exp.receipt.url }}"
+                       target="_blank"
+                       style="color: #007bff; text-decoration: underline;">
+                      View
+                    </a>
+                  {% else %}
+                    <span style="color: #999; font-style: italic;">No File</span>
+                  {% endif %}
+                </td>
+                <td style="padding: 8px;">{{ exp.date_created|date:"Y-m-d H:i" }}</td>
+                <td style="padding: 8px;">{{ exp.date_updated|date:"Y-m-d H:i" }}</td>
+                <td style="padding: 8px; text-align: left;">
+                  {{ exp.notes|default:"—" }}
+                </td>
+                <td style="padding: 8px;">
+                  <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <!-- Update Button -->
+                    <a href="{% url 'expenditure_update' exp.pk %}"
+                       style="
+                         background-color: #ffc107;
+                         color: black;
+                         padding: 6px 8px;
+                         border-radius: 8px;
+                         text-decoration: none;
+                         font-size: 14px;
+                         transition: transform 0.2s ease;
+                       "
+                       onmouseover="this.style.transform='scale(1.1)'"
+                       onmouseout="this.style.transform='scale(1)'"
+                       title="Update Expenditure">
+                      ✏️
+                    </a>
+                    <!-- Delete Button -->
+                    <a href="{% url 'expenditure_delete' exp.pk %}"
+                       style="
+                         background-color: #dc3545;
+                         color: white;
+                         padding: 6px 8px;
+                         border-radius: 8px;
+                         text-decoration: none;
+                         font-size: 14px;
+                         transition: transform 0.2s ease;
+                       "
+                       onmouseover="this.style.transform='scale(1.1)'"
+                       onmouseout="this.style.transform='scale(1)'"
+                       title="Delete Expenditure">
+                      🗑️
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="9" style="padding: 8px; color: #999; font-style: italic;">
+                  No expenditures in this category.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- Prefetch receipts on mouseover for speed -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const receiptLinks = document.querySelectorAll(".receipt-link");
+  
+  receiptLinks.forEach(link => {
+    link.addEventListener("mouseover", function() {
+      const fileUrl = link.getAttribute("data-receipt");
+      // Warm up the cache
+      fetch(fileUrl, { method: 'GET' })
+        .then(response => {})
+        .catch(err => console.warn("Failed to prefetch receipt:", err));
+    });
+  });
+});
+</script>
+
+{% endblock %}

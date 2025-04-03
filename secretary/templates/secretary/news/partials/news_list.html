@@ -1,0 +1,25 @@
+{% if news_list %}
+    <div style="width: 100%; max-width: 900px;">
+        {% for news in news_list %}
+            {% include 'secretary/news/partials/news_item.html' with news=news %}
+
+            <!-- 🏷️ Horizontal Black Line (Only if Not Last Item) -->
+            {% if not forloop.last %}
+                <hr class="news-divider"> 
+            {% endif %}
+        {% endfor %}
+    </div>
+{% else %}
+    <p style="font-size: 18px; color: #555; text-align: center;">No news found.</p>
+{% endif %}
+
+<!-- 🚀 Updated Styling for Black Separator Line -->
+<style>
+    .news-divider {
+        border: none; /* Remove default border */
+        height: 4px; /* Adjust thickness */
+        background-color: black; /* Solid black color */
+        margin: 20px 0; /* Add spacing */
+        width: 100%; /* Ensure full width */
+    }
+</style>

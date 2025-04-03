@@ -1,0 +1,9 @@
+{% if communion_members %}
+    <ul style="list-style: none; padding: 0; margin: auto; max-width: 500px;">
+        {% for member in communion_members %}
+            {% include 'sacraments/_communion_member_item.html' with member=member %}
+        {% endfor %}
+    </ul>
+{% else %}
+    <p style="text-align: center;">No First Communion members found.</p>
+{% endif %}

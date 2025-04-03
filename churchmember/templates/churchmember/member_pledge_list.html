@@ -1,0 +1,310 @@
+{% extends "member_base.html" %}
+
+{% load humanize %}  <!-- For timesince, if needed -->
+
+{% block title %}
+My Pledges
+{% endblock title %}
+
+{% block styles %}
+<style>
+  .pledge-list-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    font-family: Arial, sans-serif;
+  }
+  .header-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 1rem;
+  }
+
+  /* "Create a New Pledge" Button */
+  .new-pledge-btn {
+    display: inline-block;
+    background-color: #28a745;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    transition: background-color 0.3s;
+  }
+  .new-pledge-btn:hover {
+    background-color: #218838;
+    text-decoration: none;
+  }
+
+  /* Filter Container */
+  .filter-container {
+    display: flex;
+    flex-direction: column; /* arrange filter rows vertically */
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .filter-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center; /* center horizontally */
+  }
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+  }
+  .filter-group label {
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .filter-group input[type="text"],
+  .filter-group input[type="date"],
+  .filter-group select {
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 20px; /* iPhone-like rounded corners */
+    font-size: 14px;
+    outline: none;
+  }
+
+  /* Totals Container (placed right below the filters) */
+  .totals-container {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: bold;
+  }
+  .totals-container span {
+    display: inline-block;
+    margin: 0 1.5rem;
+  }
+
+  /* The pledge blocks */
+  .pledge-block {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #f8f9fa;
+  }
+  .pledge-block h3 {
+    margin-top: 0;
+    font-size: 16px;
+    margin-bottom: 0.5rem;
+  }
+  .pledge-details {
+    margin: 0.5rem 0;
+    line-height: 1.5;
+  }
+
+  .footer-note {
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="pledge-list-container">
+  <!-- Heading -->
+  <h2 class="header-title">
+    EVANGELICAL LUTHERAN CHURCH OF TANZANIA - MKWAWA FELLOWSHIP <br>
+    PLEDGE FORM
+  </h2>
+
+  <!-- Create a New Pledge Button -->
+  <div style="text-align: center;">
+    <a href="{% url 'member_pledge_create' %}" class="new-pledge-btn">
+      ➕ Create a New Pledge
+    </a>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-container">
+
+    <!-- Row 1: Envelope only -->
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="filterEnvelope">Envelope #</label>
+        <input 
+          type="text" 
+          id="filterEnvelope" 
+          placeholder="e.g. 123"
+          onkeyup="applyFilters()" 
+        />
+      </div>
+    </div>
+
+    <!-- Row 2: From Date & To Date side by side -->
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="filterFromDate">From Date</label>
+        <input 
+          type="date" 
+          id="filterFromDate"
+          onchange="applyFilters()"
+        />
+      </div>
+      <div class="filter-group">
+        <label for="filterToDate">To Date</label>
+        <input 
+          type="date" 
+          id="filterToDate"
+          onchange="applyFilters()"
+        />
+      </div>
+    </div>
+
+    <!-- Row 3: Year & Month side by side -->
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="filterYear">Year</label>
+        <select id="filterYear" onchange="applyFilters()">
+          <option value="">All Years</option>
+          {% for y in all_years %}
+            <option value="{{ y.year }}">{{ y.year }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="filterMonth">Month</label>
+        <select id="filterMonth" onchange="applyFilters()">
+          <option value="">All Months</option>
+          {% for m in months_list %}
+            <option value="{{ m }}">{{ m }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Totals just below the filters -->
+  <div class="totals-container">
+    <span>Total Pledge: <span id="totalPledge">0</span></span>
+    <span>Total Construction: <span id="totalConstruction">0</span></span>
+    <span>Overall Total: <span id="totalOverall">0</span></span>
+  </div>
+
+  <!-- The pledge blocks -->
+  {% if pledges %}
+    {% for pledge in pledges %}
+      <div 
+        class="pledge-block"
+        data-envelope="{{ pledge.envelope_number|lower }}"
+        data-date="{{ pledge.date_given }}"
+        data-year="{{ pledge.year.year }}"
+        data-month="{{ pledge.month|lower }}"
+        data-pledge="{{ pledge.pledge_amount }}"
+        data-construction="{{ pledge.pledge_for_construction }}"
+      >
+        <h3>Name: {{ church_member.full_name }}</h3>
+        <div class="pledge-details">
+          <strong>Phone Number:</strong> {{ church_member.phone_number }} <br>
+          <strong>Current Living Place:</strong> {{ church_member.address }} <br>
+          <strong>Envelope Number:</strong> {{ pledge.envelope_number }}
+        </div>
+        <p><strong>MY PLEDGE FOR YEAR {{ pledge.year.year }}</strong></p>
+        <p>
+          1. Pledge: {{ pledge.pledge_amount }}<br>
+          2. Construction: {{ pledge.pledge_for_construction }}
+        </p>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No pledges found.</p>
+  {% endif %}
+
+  <!-- Footer Note -->
+  <div class="footer-note">
+    <strong>Proverbs 3:9</strong> Honor the LORD with your wealth and with the firstfruits of all your produce,<br>
+    For more information, call 0756554389 or 0677975417.
+  </div>
+</div>
+
+<script>
+  // We'll load the current year for default filter
+  var currentYearVal = "{{ current_year_val|default:'' }}"; 
+  // If you passed current_year_val from the view, do so. If not, remove this
+
+  document.addEventListener("DOMContentLoaded", function() {
+    if (currentYearVal) {
+      document.getElementById('filterYear').value = currentYearVal;
+    }
+    applyFilters();
+  });
+
+  function applyFilters() {
+    const envelopeFilter = document.getElementById('filterEnvelope').value.toLowerCase();
+    const fromDateStr    = document.getElementById('filterFromDate').value;
+    const toDateStr      = document.getElementById('filterToDate').value;
+    const yearFilter     = document.getElementById('filterYear').value;
+    const monthFilter    = document.getElementById('filterMonth').value.toLowerCase();
+
+    let fromDate = fromDateStr ? new Date(fromDateStr) : null;
+    let toDate   = toDateStr ? new Date(toDateStr) : null;
+
+    if (fromDate) fromDate.setHours(0,0,0,0);
+    if (toDate)   toDate.setHours(23,59,59,999);
+
+    // Grab all pledge-block divs
+    const pledgeBlocks = document.querySelectorAll('.pledge-block');
+
+    let totalPledge = 0;
+    let totalConstruction = 0;
+
+    pledgeBlocks.forEach(block => {
+      const rowEnvelope   = (block.getAttribute('data-envelope') || '').toLowerCase();
+      const rowDateStr    = block.getAttribute('data-date') || '';
+      const rowYear       = block.getAttribute('data-year') || '';
+      const rowMonth      = (block.getAttribute('data-month') || '').toLowerCase();
+      const rowPledgeAmt  = parseFloat(block.getAttribute('data-pledge')) || 0;
+      const rowConstrAmt  = parseFloat(block.getAttribute('data-construction')) || 0;
+
+      let show = true;
+
+      // Envelope filter
+      if (envelopeFilter && !rowEnvelope.includes(envelopeFilter)) {
+        show = false;
+      }
+
+      // Date range
+      if (rowDateStr) {
+        const rowDate = new Date(rowDateStr);
+        if (fromDate && rowDate < fromDate) {
+          show = false;
+        }
+        if (toDate && rowDate > toDate) {
+          show = false;
+        }
+      }
+
+      // Year filter
+      if (yearFilter && rowYear !== yearFilter) {
+        show = false;
+      }
+
+      // Month filter
+      if (monthFilter && rowMonth !== monthFilter) {
+        show = false;
+      }
+
+      // Hide/show block
+      block.style.display = show ? '' : 'none';
+
+      // If visible, add to totals
+      if (show) {
+        totalPledge += rowPledgeAmt;
+        totalConstruction += rowConstrAmt;
+      }
+    });
+
+    // Update totals
+    const overallTotal = totalPledge + totalConstruction;
+    document.getElementById('totalPledge').textContent = totalPledge.toFixed(2);
+    document.getElementById('totalConstruction').textContent = totalConstruction.toFixed(2);
+    document.getElementById('totalOverall').textContent = overallTotal.toFixed(2);
+  }
+</script>
+{% endblock content %}

@@ -1,0 +1,192 @@
+{% extends 'pastor_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+/* Container style */
+.container {
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 1rem;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* Fieldset + Legend styling */
+fieldset {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+fieldset legend {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* iPhone-like input styling */
+.ios-input,
+.ios-select,
+.ios-textarea,
+.ios-date {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  margin-bottom: 0.5rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* For text areas: */
+.ios-textarea {
+  resize: vertical;
+}
+
+/* Buttons (Add More, Submit, etc.) */
+.ios-submit {
+  background-color: #007AFF; /* iOS-like blue */
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+.ios-submit:hover {
+  background-color: #005BB5;
+}
+
+/* Each form block for child forms */
+.ios-form-block {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Error styling */
+.error {
+  color: #b94a48;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  border-radius: 5px;
+}
+</style>
+
+<div class="container">
+  <h1>Create/Update Pastor Report</h1>
+
+  <form method="POST" novalidate>
+    {% csrf_token %}
+
+    <!-- PastorReport Form -->
+    {{ report_form.non_field_errors }}
+    <fieldset>
+      <legend>Pastor Report Details</legend>
+      {{ report_form.as_p }}
+    </fieldset>
+
+    <hr>
+
+    <!-- =============== DATES OF SERVICES =============== -->
+    <h3>Dates of Services</h3>
+    {{ dates_formset.management_form }}
+    <div id="dates-forms">
+      {% for form in dates_formset %}
+        <div class="ios-form-block date-form">
+          {{ form.non_field_errors }}
+          {{ form.as_p }}
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Hidden empty form template for new Date forms -->
+    <div id="empty-date-form" style="display:none;">
+      <div class="ios-form-block date-form">
+        {{ dates_formset.empty_form.as_p }}
+      </div>
+    </div>
+
+    <button type="button" class="ios-submit" onclick="addMoreDates()">
+      Add More Dates
+    </button>
+
+    <hr>
+
+    <!-- =============== VISITED LOCAL CONGREGATIONS =============== -->
+    <h3>Visited Local Congregations</h3>
+    {{ congregations_formset.management_form }}
+    <div id="congregations-forms">
+      {% for form in congregations_formset %}
+        <div class="ios-form-block congregation-form">
+          {{ form.non_field_errors }}
+          {{ form.as_p }}
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Hidden empty form template for new Congregation forms -->
+    <div id="empty-congregation-form" style="display:none;">
+      <div class="ios-form-block congregation-form">
+        {{ congregations_formset.empty_form.as_p }}
+      </div>
+    </div>
+
+    <button type="button" class="ios-submit" onclick="addMoreCongregations()">
+      Add More Congregations
+    </button>
+
+    <hr>
+
+    <button type="submit" class="ios-submit">
+      Submit Report
+    </button>
+  </form>
+</div>
+
+<script>
+function addMoreDates() {
+  // 1) Locate the hidden input tracking total forms: "dates-TOTAL_FORMS"
+  const totalFormsInput = document.getElementById('id_dates-TOTAL_FORMS');
+  const formCount = parseInt(totalFormsInput.value);
+
+  // 2) Clone the hidden empty form template
+  const emptyFormDiv = document.getElementById('empty-date-form').cloneNode(true);
+  emptyFormDiv.style.display = 'block';
+
+  // 3) Replace all occurrences of __prefix__ with the new index
+  const regex = new RegExp('__prefix__', 'g');
+  emptyFormDiv.innerHTML = emptyFormDiv.innerHTML.replace(regex, formCount);
+
+  // 4) Append the form to the main container
+  document.getElementById('dates-forms').appendChild(emptyFormDiv);
+
+  // 5) Increment the TOTAL_FORMS
+  totalFormsInput.value = formCount + 1;
+}
+
+function addMoreCongregations() {
+  // 1) "congregations-TOTAL_FORMS"
+  const totalFormsInput = document.getElementById('id_congregations-TOTAL_FORMS');
+  const formCount = parseInt(totalFormsInput.value);
+
+  // 2) Clone the empty form
+  const emptyFormDiv = document.getElementById('empty-congregation-form').cloneNode(true);
+  emptyFormDiv.style.display = 'block';
+
+  // 3) Replace __prefix__
+  const regex = new RegExp('__prefix__', 'g');
+  emptyFormDiv.innerHTML = emptyFormDiv.innerHTML.replace(regex, formCount);
+
+  // 4) Append
+  document.getElementById('congregations-forms').appendChild(emptyFormDiv);
+
+  // 5) Increment
+  totalFormsInput.value = formCount + 1;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Header Row with Back Button, Title, and Menu Button -->
+<div style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 100vw;
+    padding: 0 clamp(5px, 1vw, 10px);
+    box-sizing: border-box;
+    gap: clamp(5px, 1vw, 10px);
+    margin: 25px 0;
+    flex-wrap: nowrap;
+">
+    <!-- Back Button -->
+    <button onclick="window.history.back()" style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(10px, 2vw, 14px);
+        font-weight: bold;
+        color: #007bff;
+        padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 12px);
+        border-radius: 20px;
+        background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+    " onmouseover="this.style.background='linear-gradient(130deg, #bbdefb, #bbdefb)'; this.style.transform='scale(1.05)'" 
+      onmouseout="this.style.background='linear-gradient(130deg, #e3f2fd, #bbdefb)'; this.style.transform='scale(1)'">
+        <span style="font-size: clamp(14px, 2.5vw, 20px);">⬅️</span>
+    </button>
+
+    <!-- Finance Dashboard Header -->
+    <h2 class="finance-title" style="
+        font-size: clamp(16px, 4vw, 28px);
+        font-weight: 600;
+        margin: 0;
+        color: #333;
+        text-align: center;
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    ">
+        💵 Finance Management
+    </h2>
+
+    <!-- Menu Button Partial -->
+    {% include 'accounts/partials/menu_button_partial.html' %}
+</div>
+
+<!-- 📊 Finance Sections (Buttons) -->
+<div class="finance-buttons">
+    <!-- 🏦 Create Special Contribution Button -->
+    <a href="{% url 'special_contribution_create' %}" class="finance-button create-contribution-button">
+        <div class="button-content">
+            <span class="emoji">🏦</span>
+            <div class="text-container">
+                <span class="button-text">Create Special Contribution</span>
+                <span class="button-desc">Record a special contribution</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🙏 Create Pledge Button -->
+    <a href="{% url 'pledge_create' %}" class="finance-button create-pledge-button">
+        <div class="button-content">
+            <span class="emoji">🙏</span>
+            <div class="text-container">
+                <span class="button-text">Create Pledge</span>
+                <span class="button-desc">Register a new pledge</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 📋 Create Expenditure Category Button -->
+    <a href="{% url 'category_create' %}" class="finance-button create-category-button">
+        <div class="button-content">
+            <span class="emoji">📋</span>
+            <div class="text-container">
+                <span class="button-text">Create Expenditure Category</span>
+                <span class="button-desc">Add a new expense category</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 💰 Create Offering Category Button -->
+    <a href="{% url 'offering_category_create' %}" class="finance-button create-offering-category-button">
+        <div class="button-content">
+            <span class="emoji">💰</span>
+            <div class="text-container">
+                <span class="button-text">Create Offering Category</span>
+                <span class="button-desc">Add a new offering type</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 💰 Offerings Button -->
+    <a href="{% url 'offering_category_list' %}" class="finance-button offerings-button">
+        <div class="button-content">
+            <span class="emoji">💰</span>
+            <div class="text-container">
+                <span class="button-text">Offerings</span>
+                <span class="button-desc">Manage church offerings and donations</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🏦 Special Contributions Button -->
+    <a href="{% url 'special_contribution_list' %}" class="finance-button contributions-button">
+        <div class="button-content">
+            <span class="emoji">🏦</span>
+            <div class="text-container">
+                <span class="button-text">Special Contributions</span>
+                <span class="button-desc">Handle special church contributions</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🏠 Facilities Renting Button -->
+    <a href="{% url 'facility_renting_list' %}" class="finance-button facilities-button">
+        <div class="button-content">
+            <span class="emoji">🏠</span>
+            <div class="text-container">
+                <span class="button-text">Facilities Renting</span>
+                <span class="button-desc">Manage church facilities renting</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🙏 Pledges Button -->
+    <a href="{% url 'pledge_list' %}" class="finance-button pledges-button">
+        <div class="button-content">
+            <span class="emoji">🙏</span>
+            <div class="text-container">
+                <span class="button-text">Pledges</span>
+                <span class="button-desc">View all members' pledges</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 💸 Expenditure Button -->
+    <a href="{% url 'category_list' %}" class="finance-button expenditure-button">
+        <div class="button-content">
+            <span class="emoji">💸</span>
+            <div class="text-container">
+                <span class="button-text">Expenditure</span>
+                <span class="button-desc">Manage expenditure categories</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 📜 Report Button -->
+    <a href="{% url 'finance_general_report' %}" class="finance-button report-button">
+        <div class="button-content">
+            <span class="emoji">📜</span>
+            <div class="text-container">
+                <span class="button-text">Report</span>
+                <span class="button-desc">Generate church finance reports</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+</div>
+
+<!-- 📊 Finance Graphs Grid (2 per row) -->
+<div class="finance-graphs-grid">
+    <div class="graph-container">{% include 'finance/partials/offerings_trend.html' %}</div>
+    <div class="graph-container">{% include 'finance/partials/tithes_trend.html' %}</div>
+    <div class="graph-container">{% include 'finance/partials/special_contributions_bar.html' %}</div>
+    <div class="graph-container">{% include 'finance/partials/church_asset_chart.html' %}</div>
+</div>
+
+<!-- 🚀 Finance Page Styling -->
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        text-align: center;
+        width: 100%;
+        overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    .finance-title {
+        font-size: 28px;
+        font-weight: 600; /* iPhone-like weight */
+        margin: 25px 0;
+        color: #333;
+    }
+
+    .finance-buttons {
+        width: 100%;
+        max-width: 100%; /* Respect parent container */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px; /* iPhone-like spacing */
+        overflow-x: hidden;
+    }
+
+    .finance-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%; /* Full width of container */
+        height: 85px; /* Adjusted for description */
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600; /* iPhone-like weight */
+        padding: 0 20px;
+        color: white;
+        background-size: 200% 100%;
+        border-radius: 20px; /* Rounded iPhone corners */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+        transition: opacity 0.2s ease, background-position 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .button-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .emoji {
+        font-size: 28px;
+        margin-right: 12px;
+    }
+
+    .text-container {
+        flex-grow: 1;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .button-text {
+        font-size: 18px;
+    }
+
+    .button-desc {
+        font-size: 14px; /* Smaller for description */
+        font-weight: 400; /* Lighter weight */
+        color: rgba(255, 255, 255, 0.85); /* Slightly transparent white */
+        margin-top: 2px; /* Space between title and description */
+    }
+
+    .more-info {
+        font-size: 24px;
+        transition: transform 0.2s ease;
+    }
+
+    /* Button color gradients (unique and softened for iPhone aesthetic) */
+    .create-contribution-button {
+        background: linear-gradient(130deg, #42a5f5, #1976d2); /* Blue */
+    }
+    .create-pledge-button {
+        background: linear-gradient(130deg, #ab47bc, #8e24aa); /* Purple */
+    }
+    .create-category-button {
+        background: linear-gradient(130deg, #ffca28, #ffb300); /* Yellow-orange */
+    }
+    .create-offering-category-button {
+        background: linear-gradient(130deg, #ffeb3b, #fbc02d); /* Gold */
+    }
+    .offerings-button {
+        background: linear-gradient(130deg, #ffcc80, #ff9800); /* Light orange */
+    }
+    .contributions-button {
+        background: linear-gradient(130deg, #90caf9, #42a5f5); /* Light blue */
+    }
+    .facilities-button {
+        background: linear-gradient(130deg, #ff7043, #f4511e); /* Red-orange */
+    }
+    .pledges-button {
+        background: linear-gradient(130deg, #ce93d8, #ab47bc); /* Light purple */
+    }
+    .expenditure-button {
+        background: linear-gradient(130deg, #ff8a65, #ff5722); /* Deep orange */
+    }
+    .report-button {
+        background: linear-gradient(130deg, #9575cd, #7e57c2); /* Purple-blue */
+    }
+
+    /* Hover effects */
+    .finance-button:hover {
+        opacity: 0.9; /* Subtle fade for iPhone-like feedback */
+        background-position: right center; /* Gradient shift */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+    }
+    .finance-button:hover .more-info {
+        transform: translateX(5px); /* Gentle arrow movement */
+    }
+
+    /* 📊 Finance Graphs Grid (2 per row) */
+    .finance-graphs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+        margin-top: 20px;
+    }
+
+    .graph-container {
+        padding: 20px 0;
+        border-bottom: 2px solid #ddd;
+    }
+
+    @media screen and (max-width: 768px) {
+        .finance-button {
+            font-size: 16px;
+            height: 75px; /* Compact for mobile with description */
+            padding: 0 15px;
+        }
+        .emoji {
+            font-size: 24px;
+        }
+        .button-text {
+            font-size: 16px;
+        }
+        .button-desc {
+            font-size: 12px;
+        }
+        .more-info {
+            font-size: 20px;
+        }
+        .finance-graphs-grid {
+            grid-template-columns: 1fr; /* One graph per row on mobile */
+        }
+        .graph-container {
+            border-bottom: 1px solid #ddd; /* Lighter separators on mobile */
+        }
+    }
+</style>
+
+{% endblock %}

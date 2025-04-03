@@ -1,0 +1,43 @@
+<!-- finance/offering_category_confirm_delete.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2 style="color: #dc3545; text-align: center; margin-top: 20px;">
+  Confirm Delete
+</h2>
+
+<p style="text-align: center;">
+  Are you sure you want to delete the Offering Category 
+  "<strong>{{ category.name }}</strong>"?
+</p>
+
+<form method="POST" style="text-align: center; margin-top: 20px;">
+  {% csrf_token %}
+  
+  <button type="submit" style="
+    padding: 10px 16px;
+    border-radius: 15px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 10px;
+  ">
+    Yes, Delete
+  </button>
+
+  <a href="{% url 'offering_category_list' %}" style="
+    padding: 10px 16px;
+    border-radius: 15px;
+    background-color: #6c757d;
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+  ">
+    Cancel
+  </a>
+</form>
+{% endblock %}

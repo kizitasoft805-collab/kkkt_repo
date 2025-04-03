@@ -1,0 +1,208 @@
+{% load static %}
+
+<!-- Bottombar -->
+<footer class="bottombar" style="
+    /* 10px above a 50px-high bottom-fixed topbar */
+    position: fixed;
+    bottom: 60px;
+    right: 10px;
+    z-index: 1000;
+">
+    <!-- Arrow Icon (⬆️ by default) -->
+    <div id="bottombarToggle" style="
+        font-size: 20px;         /* Reduced from 24px */
+        cursor: pointer;
+        color: var(--arrow-color, #007bff);
+        background-color: var(--button-background, white);
+        width: 30px;             /* Reduced from 35px */
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0px 3px 6px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    "
+    onmouseover="this.style.backgroundColor='var(--button-hover-background, #e9ecef)'"
+    onmouseout="this.style.backgroundColor='var(--button-background, white)'">
+        <span id="arrowIcon">⬆️</span>
+    </div>
+</footer>
+
+<!-- Floating Buttons -->
+<div class="floating-buttons" id="floatingButtons" style="
+    position: fixed;
+    bottom: 50px; /* same as topbar height; toggles upward */
+    right: 10px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;              /* can reduce to 6px if you want even less spacing */
+    z-index: 1001;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+">
+    <!-- Close Icon (❌) -->
+    <div id="closeFloatingButtons" style="
+        font-size: 16px;    /* Reduced from 20px */
+        cursor: pointer;
+        color: white;
+        background-color: blue; /* Red for close button */
+        width: 30px;       /* Reduced from 35px */
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0px 3px 6px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    "
+    onmouseover="this.style.backgroundColor='blue'"
+    onmouseout="this.style.backgroundColor='blue'">
+        ❌
+    </div>
+
+    <!-- User Profile Picture -->
+    <a href="{% url 'accountant_upload_profile_picture' %}" style="text-decoration: none;">
+        {% if user.profile_picture %}
+            <img
+                src="{{ user.profile_picture.url }}"
+                alt="User Profile Picture"
+                style="
+                    width: 40px;   /* Reduced from 50px */
+                    height: 40px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: 2px solid var(--image-border-color);
+                    box-shadow: 0px 3px 6px rgba(0,0,0,0.2);
+                    margin-bottom: 8px; /* Reduced from 10px */
+                "
+            />
+        {% else %}
+            <img
+                src="{% static 'images/user.png' %}"
+                alt="Default User Icon"
+                style="
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: 2px solid var(--image-border-color);
+                    box-shadow: 0px 3px 6px rgba(0,0,0,0.2);
+                    margin-bottom: 8px;
+                "
+            />
+        {% endif %}
+    </a>
+
+    <!-- Floating Buttons with Emojis -->
+    <style>
+        .floating-button {
+            display: flex;
+            align-items: center;
+            gap: 6px;           /* Reduced from 8px */
+            text-decoration: none;
+            color: white;
+            padding: 6px 10px;  /* Reduced from 8px 12px */
+            width: 140px;       /* Reduced from 160px */
+            border-radius: 16px;
+            box-shadow: 0px 3px 6px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-size: 14px;    /* Label text size - tweak as needed */
+        }
+        .floating-button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+
+    <a href="{% url 'accountant_dashboard' %}" class="floating-button" style="background-color: #007bff;"
+       onmouseover="this.style.backgroundColor='#0056b3'"
+       onmouseout="this.style.backgroundColor='#007bff'">
+        <span style="font-size: 16px;">🏠</span>
+        <span>Home</span>
+    </a>
+
+    <a href="{% url 'parish_treasurer_details' %}" class="floating-button" style="background-color: #28a745;"
+       onmouseover="this.style.backgroundColor='#1c7430'"
+       onmouseout="this.style.backgroundColor='#28a745'">
+        <span style="font-size: 16px;">ℹ️</span>
+        <span>Details</span>
+    </a>
+
+    <a href="{% url 'accountant_news_home' %}" class="floating-button" style="background-color: #17a2b8;"
+       onmouseover="this.style.backgroundColor='#117a8b'"
+       onmouseout="this.style.backgroundColor='#17a2b8'">
+        <span style="font-size: 16px;">📰</span>
+        <span>News</span>
+    </a>
+
+    <a href="{% url 'accountant_notifications_home' %}" class="floating-button" style="background-color: #6f42c1;"
+       onmouseover="this.style.backgroundColor='#59369e'"
+       onmouseout="this.style.backgroundColor='#6f42c1'">
+        <span style="font-size: 16px;">🔔</span>
+        <span>Notifications</span>
+    </a>
+
+    <!-- Finance Button (💰) -->
+    <a href="{% url 'accountant_finance_home' %}" class="floating-button" style="background-color: #20c997;"
+       onmouseover="this.style.backgroundColor='#198754'"
+       onmouseout="this.style.backgroundColor='#20c997'">
+        <span style="font-size: 16px;">💰</span>
+        <span>Finance</span>
+    </a>
+
+    <!-- Properties Button (🏡) -->
+    <a href="{% url 'accountant_properties_home' %}" class="floating-button" style="background-color: #0dcaf0;"
+       onmouseover="this.style.backgroundColor='#0bbac8'"
+       onmouseout="this.style.backgroundColor='#0dcaf0'">
+        <span style="font-size: 16px;">🏡</span>
+        <span>Properties</span>
+    </a>
+</div>
+
+<!-- Styles for Light/Dark Mode -->
+<style>
+    :root {
+        --arrow-color: #007bff;
+        --button-background: white;
+        --button-hover-background: #e9ecef;
+        --image-border-color: #007bff;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --arrow-color: #90caf9;
+            --button-background: #1e1e1e;
+            --button-hover-background: #333333;
+            --image-border-color: #90caf9;
+        }
+    }
+</style>
+
+<script>
+    const bottombarToggle = document.getElementById('bottombarToggle');
+    const floatingButtons = document.getElementById('floatingButtons');
+    const closeFloatingButtons = document.getElementById('closeFloatingButtons');
+    const arrowIcon = document.getElementById('arrowIcon');
+    let menuVisible = false;
+
+    const toggleFloatingButtons = () => {
+        menuVisible = !menuVisible;
+        if (menuVisible) {
+            floatingButtons.style.display = 'flex';
+            floatingButtons.style.opacity = '1';
+            floatingButtons.style.transform = 'translateY(0)';
+            arrowIcon.textContent = '⬇️'; // expanded => down arrow
+        } else {
+            floatingButtons.style.opacity = '0';
+            floatingButtons.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                floatingButtons.style.display = 'none';
+            }, 300);
+            arrowIcon.textContent = '⬆️'; // collapsed => up arrow
+        }
+    };
+
+    bottombarToggle.addEventListener('click', toggleFloatingButtons);
+    closeFloatingButtons.addEventListener('click', toggleFloatingButtons);
+</script>

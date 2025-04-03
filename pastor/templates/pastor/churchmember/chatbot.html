@@ -1,0 +1,85 @@
+{% extends 'pastor_base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: auto; padding: 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+
+    <!-- Welcome Message -->
+    <h2 style="text-align: center;">🤖 Hello {{ user.church_member.full_name }}, i am maria welcome to chat with me!</h2>
+    <p style="text-align: center;">What do you want me to help you with today?</p>
+
+    <!-- FAQ Section -->
+    <div id="faq-container">
+        {% for question, answer in faq.items %}
+            <div class="faq-item" style="border-bottom: 1px solid #ddd;">
+                <button class="faq-btn" onclick="toggleAnswer(this)">
+                    <span class="question-text" style="flex: 1; color: green;">{{ forloop.counter }}. {{ question }}</span>
+                    <span class="icon" style="font-size: 18px;">➡️</span>
+                </button>
+                <div class="faq-answer" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out;">
+                    <p style="padding: 10px; font-size: 14px; line-height: 1.6;">{{ answer|safe }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Kizitasoft Company Message -->
+    <div style="text-align: center; margin-top: 20px; font-size: 14px; color: #444;">
+        <p>Welcome so much to <strong>Kizitasoft Company Limited</strong> for more services like this and more.</p>
+        <p>Visit our website: <a href="https://www.kizitasoft.co.tz" target="_blank" style="color: #007bff; text-decoration: none;">www.kizitasoft.co.tz</a></p>
+    </div>
+</div>
+
+<!-- Styling -->
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .faq-btn {
+        width: 100%;
+        text-align: left;
+        padding: 15px;
+        background: none;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: background 0.2s ease-in-out;
+    }
+
+    .question-text {
+        color: green; /* ✅ Apply green color to the questions */
+        font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+        .faq-btn {
+            font-size: 15px;
+        }
+        .faq-answer p {
+            font-size: 13px;
+        }
+    }
+</style>
+
+<!-- JavaScript for Toggle Animation and Icon Change -->
+<script>
+    function toggleAnswer(button) {
+        const answerContainer = button.nextElementSibling;
+        const icon = button.querySelector('.icon');
+
+        // Toggle the max-height for smooth slide effect
+        if (answerContainer.style.maxHeight && answerContainer.style.maxHeight !== "0px") {
+            answerContainer.style.maxHeight = "0";
+            icon.textContent = "➡️"; // Change back to arrow when collapsed
+        } else {
+            answerContainer.style.maxHeight = answerContainer.scrollHeight + "px";
+            icon.textContent = "✅"; // Change to green tick when expanded
+        }
+    }
+</script>
+{% endblock %}

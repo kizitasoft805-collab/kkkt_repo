@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 15px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        gap: 10px; /* Space between elements */
+    ">
+        <!-- Back Button -->
+        <button onclick="window.history.back()" style="
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(12px, 2.5vw, 14px);
+            font-weight: bold;
+            color: #007bff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        " onmouseover="this.style.background='linear-gradient(130deg, #bbdefb, #bbdefb)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='linear-gradient(130deg, #e3f2fd, #bbdefb)'; this.style.transform='scale(1)'">
+            <span style="font-size: clamp(16px, 3vw, 20px);">⬅️</span>
+        </button>
+
+        <!-- Page Title -->
+        <h2 style="
+            font-size: clamp(18px, 4vw, 22px); /* Scale with viewport, adjusted max */
+            font-weight: bold;
+            color: #007bff;
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+            white-space: normal; /* Allow wrapping */
+        ">
+            🛠️ Enter Leader Details for {{ church_member.full_name }}
+        </h2>
+
+        <!-- Menu Button Partial -->
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    <!-- Responsive Form -->
+    <form method="POST" enctype="multipart/form-data" style="
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+        width: 100%;
+        padding: 0 10px;
+        box-sizing: border-box;
+    ">
+        {% csrf_token %}
+        
+        <!-- Display Django messages if any -->
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color: {% if message.tags == 'success' %}green{% else %}red{% endif %}; text-align: center;">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Single Form Fields -->
+        <div style="width: 100%;">
+            <!-- Full Name (Read-Only) -->
+            <div style="margin-bottom: 10px;">
+                <label style="font-weight: bold;">👤 Full Name</label>
+                <input type="text" value="{{ church_member.full_name }}" readonly style="
+                    width: 100%;
+                    max-width: 100%;
+                    padding: 12px;
+                    font-size: 16px;
+                    border-radius: 8px;
+                    border: 1px solid #ccc;
+                    box-sizing: border-box;
+                    background-color: #f5f5f5; /* Light gray to indicate read-only */
+                ">
+            </div>
+
+            <!-- Hidden church_member field -->
+            <input type="hidden" name="church_member" value="{{ church_member.id }}">
+
+            <!-- Occupation -->
+            <div style="margin-bottom: 10px;">
+                <label for="{{ form.occupation.id_for_label }}" style="font-weight: bold;">
+                    {{ form.occupation.label }} *
+                </label>
+                {{ form.occupation }}
+                {% if form.occupation.errors %}
+                    <small style="color: red;">{{ form.occupation.errors|join:", " }}</small>
+                {% endif %}
+            </div>
+
+            <!-- Start Date -->
+            <div style="margin-bottom: 10px;">
+                <label for="{{ form.start_date.id_for_label }}" style="font-weight: bold;">
+                    {{ form.start_date.label }} *
+                </label>
+                {{ form.start_date }}
+                {% if form.start_date.errors %}
+                    <small style="color: red;">{{ form.start_date.errors|join:", " }}</small>
+                {% endif %}
+            </div>
+
+            <!-- Responsibilities -->
+            <div style="margin-bottom: 10px;">
+                <label for="{{ form.responsibilities.id_for_label }}" style="font-weight: bold;">
+                    {{ form.responsibilities.label }} *
+                </label>
+                {{ form.responsibilities }}
+                {% if form.responsibilities.errors %}
+                    <small style="color: red;">{{ form.responsibilities.errors|join:", " }}</small>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+            type="submit"
+            style="
+                width: 100%;
+                max-width: 100%;
+                background: #007bff;
+                color: white;
+                padding: 12px;
+                border: none;
+                border-radius: 8px;
+                font-size: 16px;
+                cursor: pointer;
+            "
+        >
+            ✅ Save Leader Details
+        </button>
+    </form>
+
+    <!-- Cancel Link -->
+    <a href="{% url 'church_member_list' %}"
+       style="
+           display: block;
+           margin-top: 15px;
+           text-align: center;
+           color: #dc3545;
+           font-weight: bold;
+           text-decoration: none;
+           width: 100%;
+       "
+    >
+        ❌ Cancel
+    </a>
+</div>
+
+<!-- Inline Styles -->
+<style>
+    input, select, textarea {
+        width: 100%;
+        max-width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+    input:focus, select:focus, textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    }
+
+    @media only screen and (max-width: 768px) {
+        form {
+            width: 100%;
+            padding: 0 10px;
+        }
+        input, select, textarea {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}

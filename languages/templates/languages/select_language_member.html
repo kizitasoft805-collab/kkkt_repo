@@ -1,0 +1,41 @@
+{% extends 'member_base.html' %}
+{% block title %}Select Language{% endblock title %}
+
+{% block content %}
+<h2>Select Your Language</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="iphone-btn">Save</button>
+</form>
+
+<!-- Inline CSS for iPhone-like button -->
+<style>
+    .iphone-btn {
+        display: inline-block;
+        background: linear-gradient(to bottom, #ffffff, #e6e6e6);
+        border: 1px solid #ccc;
+        color: #333;
+        border-radius: 20px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: bold;
+        text-decoration: none;
+        text-shadow: 0 1px 0 #fff;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        -webkit-appearance: none;  /* Remove default iOS button styling, if any */
+        cursor: pointer;
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .iphone-btn:hover {
+        background: linear-gradient(to bottom, #f2f2f2, #dcdcdc);
+    }
+
+    .iphone-btn:active {
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        background: linear-gradient(to bottom, #e6e6e6, #f9f9f9);
+    }
+</style>
+{% endblock content %}

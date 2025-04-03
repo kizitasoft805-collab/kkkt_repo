@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tithe List</title>
+</head>
+<body>
+
+    <!-- Include Header (Title + Create Button) -->
+    {% include 'finance/tithe/tithe_header.html' %}
+
+    <!-- Include Filter Partial -->
+    {% include 'finance/tithe/_tithe_filters.html' with years=years %}
+
+    <!-- Tithe Table -->
+    <div class="table-container" id="tithe-table-container">
+        {% include 'finance/tithe/tithe_table.html' %}
+    </div>
+
+    <!-- 🚀 JavaScript for Filtering -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const yearFilter = document.getElementById('year-filter');
+            const memberFilter = document.getElementById('member-filter');
+            const fromDate = document.getElementById('from-date');
+            const toDate = document.getElementById('to-date');
+            const rows = document.querySelectorAll('#tithe-table-body tr');
+            const totalAmountDisplay = document.getElementById('total-amount');
+
+            // ✅ Set Default Year to Current Year
+            const currentYear = new Date().getFullYear();
+            yearFilter.value = currentYear; // Set current year as the default
+            console.log(`Default year filter set to: ${currentYear}`);
+
+            function filterTithes() {
+                const year = yearFilter.value;
+                const member = memberFilter.value.toLowerCase();
+                const from = fromDate.value ? new Date(fromDate.value) : null;
+                const to = toDate.value ? new Date(toDate.value) : null;
+                let totalAmount = 0;
+                let visibleRows = 0;
+
+                rows.forEach(row => {
+                    const rowYear = row.getAttribute('data-year');
+                    const rowMember = row.getAttribute('data-member').toLowerCase();
+                    const rowDate = new Date(row.getAttribute('data-date'));
+                    const amount = parseFloat(row.getAttribute('data-amount'));
+
+                    let showRow = true;
+
+                    if (year && rowYear !== year) showRow = false;
+                    if (member && !rowMember.includes(member)) showRow = false;
+                    if (from && rowDate < from) showRow = false;
+                    if (to && rowDate > to) showRow = false;
+
+                    row.style.display = showRow ? '' : 'none';
+
+                    if (showRow) {
+                        totalAmount += amount;
+                        visibleRows++;
+                    }
+                });
+
+                totalAmountDisplay.textContent = `${totalAmount.toLocaleString()} TZS`;
+
+                const noResultsMessage = document.getElementById('no-results-message');
+                const table = document.querySelector('#tithe-table-container table');
+
+                if (visibleRows === 0) {
+                    if (!noResultsMessage) {
+                        const message = document.createElement('p');
+                        message.id = 'no-results-message';
+                        message.textContent = 'No results present in the current filtering.';
+                        message.style.textAlign = 'center';
+                        message.style.padding = '20px';
+                        message.style.fontWeight = 'bold';
+                        document.getElementById('tithe-table-container').appendChild(message);
+                    }
+                    table.style.display = 'none';
+                } else {
+                    if (noResultsMessage) noResultsMessage.remove();
+                    table.style.display = 'table';
+                }
+            }
+
+            // ✅ Event Listeners for Filters
+            yearFilter.addEventListener('change', filterTithes);
+            memberFilter.addEventListener('input', filterTithes);
+            fromDate.addEventListener('change', filterTithes);
+            toDate.addEventListener('change', filterTithes);
+
+            // ✅ Initial Calculation with Default Year Filter
+            filterTithes();
+        });
+    </script>
+
+</body>
+</html>
+
+{% endblock %}

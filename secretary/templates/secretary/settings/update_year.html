@@ -1,0 +1,58 @@
+<!-- settings/templates/settings/update_year.html -->
+
+{% extends 'secretary_base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+">
+    <h2 style="
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 20px;
+    ">
+        🖊️ Update Year
+    </h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green; font-size: 14px;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 400px;
+    ">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" style="
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(130deg, #ffc107, #ff9800);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span class="material-icons">save</span>
+            Update Year
+        </button>
+    </form>
+</div>
+{% endblock %}

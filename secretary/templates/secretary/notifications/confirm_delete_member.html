@@ -1,0 +1,66 @@
+{% extends "secretary_base.html" %}
+
+{% block content %}
+<h2 class="confirm-title">Are you sure?</h2>
+<p class="confirm-text">The notification for <strong>"{{ notification.church_member.full_name }}"</strong> will be permanently deleted.</p>
+
+<form method="POST" class="confirm-form">
+    {% csrf_token %}
+    <button type="submit" class="confirm-btn">✅ Yes, Delete</button>
+    <a href="{% url 'secretary_notification_list' %}" class="cancel-btn">❌ Cancel</a>
+</form>
+
+<!-- ✅ Same CSS as Above -->
+<style>
+    /* Center Content */
+    .confirm-title {
+        font-size: 22px;
+        text-align: center;
+        color: #333;
+    }
+
+    .confirm-text {
+        font-size: 16px;
+        text-align: center;
+        color: #555;
+        margin-bottom: 20px;
+    }
+
+    /* Form Styles */
+    .confirm-form {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    /* Buttons */
+    .confirm-btn, .cancel-btn {
+        padding: 8px 15px;
+        font-size: 14px;
+        border-radius: 20px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .confirm-btn {
+        background: red;
+        color: white;
+    }
+
+    .confirm-btn:hover {
+        background: darkred;
+    }
+
+    .cancel-btn {
+        background: #007bff;
+        color: white;
+    }
+
+    .cancel-btn:hover {
+        background: #0056b3;
+    }
+</style>
+{% endblock %}

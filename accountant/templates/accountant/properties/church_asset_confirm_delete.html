@@ -1,0 +1,101 @@
+{% extends 'accountant_base.html' %}
+
+{% block content %}
+<div class="container">
+    <!-- 🗑️ Header Title -->
+    <h2 class="header-title">🗑️ Delete Church Asset</h2>
+    
+    <!-- ⚠️ Warning Message -->
+    <div class="warning-message">
+        <p>Are you sure you want to delete the asset <strong>"{{ church_asset.name }}"</strong>?</p>
+        <p>This action <strong>cannot be undone</strong>. All associated media will be permanently removed.</p>
+    </div>
+
+    <!-- ❌ Delete Confirmation Form -->
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="delete-button">❌ Delete</button>
+        <a href="{% url 'accountant_church_assets_list' %}" class="cancel-button">⬅️ Cancel</a>
+    </form>
+</div>
+
+<!-- 🎨 **CSS Styling (No Frame, Free Layout)** -->
+<style>
+    /* ✅ Prevent Any Extra Margins or Frames */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* 🌟 Ensure the Template Fills the Viewport */
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+    }
+
+    /* 🔴 Header Title */
+    .header-title {
+        font-size: 22px;
+        font-weight: bold;
+        color: #dc3545;
+        margin-bottom: 15px;
+        margin-top: 40px; /* Adjusts spacing from topbar */
+    }
+
+    /* ⚠️ Warning Message */
+    .warning-message {
+        color: #d32f2f;
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    /* ❌ Delete & ⬅️ Cancel Buttons */
+    .delete-button, .cancel-button {
+        display: inline-block;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: bold;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .delete-button {
+        background: #dc3545;
+        color: white;
+    }
+
+    .cancel-button {
+        background: #6c757d;
+        color: white;
+    }
+
+    /* 🚀 Hover Effects */
+    .delete-button:hover {
+        background: #c82333;
+    }
+
+    .cancel-button:hover {
+        background: #5a6268;
+    }
+
+    /* 📱 Responsive Fixes */
+    @media screen and (max-width: 768px) {
+        .header-title {
+            font-size: 20px;
+        }
+        
+        .delete-button, .cancel-button {
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% if leaders_distribution_data %}
+    <h3>
+        🧑‍💼 Leaders Distribution Trend
+        <button id="downloadLeadersTrendChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <div class="leaders-trend-chart-wrapper">
+        <canvas id="leadersTrendChart"></canvas>
+    </div>
+
+    <p id="leadersTrendAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Limit the chart size on larger screens */
+        .leaders-trend-chart-wrapper {
+            max-width: 700px;
+            margin: 0 auto;
+            height: 400px; /* Ensure a reasonable height */
+        }
+
+        /* Improve visibility for mobile screens */
+        @media screen and (max-width: 600px) {
+            .leaders-trend-chart-wrapper {
+                max-width: 100%;
+                height: 500px; /* Increase height on mobile for better readability */
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const leadersTrendData = JSON.parse('{{ leaders_distribution_data|safe }}');
+
+        let leadersTrendChart;  // Store Chart.js instance globally
+
+        if (leadersTrendData.community_labels.length > 0 || leadersTrendData.zone_labels.length > 0) {
+            const ctx = document.getElementById('leadersTrendChart').getContext('2d');
+
+            leadersTrendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: leadersTrendData.community_labels.length > leadersTrendData.zone_labels.length ?
+                        leadersTrendData.community_labels : leadersTrendData.zone_labels,
+                    datasets: [
+                        {
+                            label: 'Total Leaders per Community',
+                            data: leadersTrendData.community_data,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            fill: false
+                        },
+                        {
+                            label: 'Total Leaders per Zone',
+                            data: leadersTrendData.zone_data,
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,  // Allow proper height scaling
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,  // Ensure readable increments
+                                autoSkip: false,  // Avoid skipping numbers on mobile
+                                maxRotation: 0,  // Keep numbers horizontal
+                                minRotation: 0
+                            }
+                        }
+                    }
+                }
+            });
+
+            document.getElementById("leadersTrendAnalysis").innerHTML = `<strong>${leadersTrendData.analysis}</strong>`;
+        } else {
+            document.getElementById("leadersTrendAnalysis").innerHTML = `<p>No leadership data available.</p>`;
+        }
+
+        // Function to Download Chart as Image
+        document.getElementById("downloadLeadersTrendChart").addEventListener("click", function() {
+            if (leadersTrendChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('leadersTrendChart').toDataURL('image/png');
+                link.download = 'Leaders_Distribution_Trend.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No leadership data available.</p>
+{% endif %}

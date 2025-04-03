@@ -1,0 +1,181 @@
+{% extends 'secretary_base.html' %}
+
+{% block content %}
+<!-- Header -->
+<h2 class="header-title">✏️ Update Church Member: {{ church_member.full_name }}</h2>
+
+<!-- Form -->
+<form method="POST" enctype="multipart/form-data" class="update-form">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group">
+        <label for="{{ field.id_for_label }}" class="form-label">
+            {{ field.label }}
+            {% if field.field.required %}
+            <span class="required">*</span>
+            {% endif %}
+        </label>
+        {{ field }}
+        {% if field.errors %}
+        <span class="error-message">{{ field.errors|join:", " }}</span>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <!-- Submit Button -->
+    <div class="button-container">
+        <button type="submit" class="submit-button">
+            <span class="material-icons">save</span> Update Church Member
+        </button>
+    </div>
+</form>
+
+<!-- Back Button -->
+<a href="{% url 'secretary_church_member_list' %}" class="back-button">
+    <span class="material-icons">arrow_back</span> Back to Members List
+</a>
+
+<!-- Styling -->
+<style>
+    /* General Layout */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* Header Title */
+    .header-title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+        margin: 20px 0;
+    }
+
+    /* Form */
+    .update-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Form Group */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+
+    .form-label {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    /* iPhone-like Fields */
+    .custom-input, .custom-textarea, .custom-file, .custom-checkbox {
+        border: 1px solid #ccc;
+        padding: 12px 15px;
+        border-radius: 25px; /* Rounded corners */
+        font-size: 14px;
+        width: 100%; /* Ensures all fields are the same size */
+        box-sizing: border-box; /* Prevents padding from affecting size */
+        transition: border-color 0.3s ease;
+    }
+
+    .custom-input:focus, .custom-textarea:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .custom-textarea {
+        resize: none;
+        height: 80px; /* Ensures textareas are the same size */
+    }
+
+    .custom-checkbox {
+        width: 20px;
+        height: 20px;
+        margin-top: 5px;
+    }
+
+    .error-message {
+        color: red;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .required {
+        color: red;
+    }
+
+    /* Submit Button */
+    .button-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .submit-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        background: linear-gradient(130deg, #4caf50, #388e3c);
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 25px; /* Rounded corners */
+        cursor: pointer;
+        transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .submit-button:hover {
+        transform: scale(1.05);
+    }
+
+    /* Back Button */
+    .back-button {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        color: white;
+        background: linear-gradient(130deg, #007bff, #0056b3);
+        padding: 10px 15px;
+        border-radius: 25px;
+        margin: 20px auto;
+        width: fit-content;
+        transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .back-button:hover {
+        transform: scale(1.05);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .header-title {
+            font-size: 20px;
+        }
+
+        .submit-button {
+            font-size: 14px;
+            padding: 10px 20px;
+        }
+
+        .back-button {
+            font-size: 12px;
+            padding: 8px 12px;
+        }
+    }
+</style>
+{% endblock %}

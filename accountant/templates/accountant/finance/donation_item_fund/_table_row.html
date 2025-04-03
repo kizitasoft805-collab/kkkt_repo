@@ -1,0 +1,40 @@
+<tr 
+    style="border-bottom: 1px solid #ccc;"
+    data-year="{{ item.year.year }}" 
+    data-period="{{ item.period }}" 
+    data-mass="{{ item.mass_name }}" 
+    data-date-created="{{ item.date_created|date:'Y-m-d' }}" 
+    data-amount="{{ item.amount }}"
+>
+    <td style="padding: 10px;">
+        <a href="{% url 'accountant_donation_item_fund_update' contribution.id item.id %}" style="
+            background-color: #ffc107;
+            color: black;
+            padding: 6px 10px;
+            border-radius: 50px;
+            text-decoration: none;
+            margin: 2px;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.1)'" 
+           onmouseout="this.style.transform='scale(1)'">✏️</a>
+
+        <a href="{% url 'accountant_donation_item_fund_delete' contribution.id item.id %}" style="
+            background-color: #dc3545;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 50px;
+            text-decoration: none;
+            margin: 2px;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.1)'" 
+           onmouseout="this.style.transform='scale(1)'">🗑️</a>
+    </td>
+    <td style="padding: 10px;">{{ item.period }}</td>
+    <td style="padding: 10px;">{{ item.mass_name }}</td>
+    <td style="padding: 10px;">{{ item.amount|floatformat:2 }} TZS</td>
+    <td style="padding: 10px;">{{ item.notes|default:"N/A" }}</td>
+    <td style="padding: 10px;">{{ item.date_created|date:"Y-m-d H:i" }}</td>
+    <td style="padding: 10px;">{{ item.date_updated|date:"Y-m-d H:i" }}</td>
+</tr>

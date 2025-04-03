@@ -1,0 +1,194 @@
+{% extends 'evangelist_base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+    padding: 10px;
+    box-sizing: border-box;
+">
+    <h2 style="
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    ">
+        🖼️ Provide Your Profile Picture
+    </h2>
+    <p style="font-size: 14px; color: #555; margin-bottom: 20px;">This picture will represent your identity.</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green; font-size: 14px;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" onsubmit="showLoading()" style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        max-width: 400px;
+    ">
+        {% csrf_token %}
+
+        <!-- Hidden Camera Input -->
+        <input type="file" name="cameraInput" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="handlePicture(event)">
+
+        <!-- Hidden File Input -->
+        <input type="file" name="fileInput" id="fileInput" accept="image/*" style="display: none;" onchange="handlePicture(event)">
+
+        <!-- Take Picture Button -->
+        <button type="button" id="takePictureButton" style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            background: linear-gradient(130deg, #4caf50, #388e3c);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span class="material-icons">camera_alt</span>
+            Take Picture
+        </button>
+
+        <!-- Upload Picture from Files Button -->
+        <button type="button" id="uploadFromFileButton" style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            background: linear-gradient(130deg, #007bff, #0056b3);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span class="material-icons">upload_file</span>
+            Upload from Files
+        </button>
+
+        <!-- Preview Container -->
+        <div id="previewContainer" style="margin: 10px 0;">
+            {% if user.profile_picture %}
+                <img id="imagePreview" src="{{ user.profile_picture.url }}" alt="Preview" style="
+                    max-width: 100%;
+                    border-radius: 15px;
+                    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+                    display: block;
+                ">
+            {% else %}
+                <img id="imagePreview" src="" alt="Preview" style="
+                    max-width: 100%;
+                    border-radius: 15px;
+                    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+                    display: none;
+                ">
+            {% endif %}
+        </div>
+
+        <!-- Upload Picture Button -->
+        <button type="submit" id="uploadButton" style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            background: linear-gradient(130deg, #2196f3, #1769aa);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span class="material-icons">cloud_upload</span>
+            <span id="uploadText">Upload Picture</span>
+        </button>
+
+        <!-- Remove Current Picture Button -->
+        {% if user.profile_picture %}
+            <button type="button" id="removePictureButton" style="
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 16px;
+                font-weight: 500;
+                background: linear-gradient(130deg, #f44336, #d32f2f);
+                color: white;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: background 0.3s ease, transform 0.2s ease;
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <span class="material-icons">delete</span>
+                Remove Current Picture
+            </button>
+        {% endif %}
+    </form>
+</div>
+
+<script>
+    function showLoading() {
+        let uploadButton = document.getElementById('uploadButton');
+        let uploadText = document.getElementById('uploadText');
+        
+        uploadButton.disabled = true;  // Disable button to prevent multiple clicks
+        uploadText.innerHTML = "Saving, please wait<span id='dots'>.</span>";
+        
+        let dots = document.getElementById('dots');
+        let count = 0;
+        setInterval(() => {
+            count = (count + 1) % 4;
+            dots.innerHTML = ".".repeat(count);
+        }, 500);
+    }
+
+    document.getElementById('takePictureButton').addEventListener('click', function () {
+        document.getElementById('cameraInput').click();
+    });
+
+    document.getElementById('uploadFromFileButton').addEventListener('click', function () {
+        document.getElementById('fileInput').click();
+    });
+
+    function handlePicture(event) {
+        const file = event.target.files[0];
+        if (file) {
+            previewImage(file);
+        }
+    }
+
+    function previewImage(file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const preview = document.getElementById('imagePreview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,206 @@
+{% if membership_distribution_data %}
+    <h3>👥 Membership Distribution</h3>
+
+    <div class="members-distribution-charts">
+        <!-- Community Chart -->
+        <div class="chart-wrapper">
+            <h4>
+                Community Distribution
+                <button id="downloadCommunityChart" style="background: none; border: none; cursor: pointer;">
+                    📥 Download Graph
+                </button>
+            </h4>
+            <div class="chart-container">
+                <canvas id="membersCommunityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Zone Chart -->
+        <div class="chart-wrapper">
+            <h4>
+                Zone Distribution
+                <button id="downloadZoneChart" style="background: none; border: none; cursor: pointer;">
+                    📥 Download Graph
+                </button>
+            </h4>
+            <div class="chart-container">
+                <canvas id="membersZoneChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Apostolic Movements Chart -->
+        <div class="chart-wrapper">
+            <h4>
+                Apostolic Movements Distribution
+                <button id="downloadMovementChart" style="background: none; border: none; cursor: pointer;">
+                    📥 Download Graph
+                </button>
+            </h4>
+            <div class="chart-container">
+                <canvas id="membersMovementChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <p id="membersAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* 🌐 Layout for the Three Graphs in One Row on Large Screens */
+        .members-distribution-charts {
+            display: flex;
+            flex-wrap: nowrap; /* Keep in one row on large screens */
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto; /* Center the group horizontally */
+        }
+
+        /* Each Chart Box (Title + Chart) */
+        .chart-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Fixed Size for Each Chart Container (Square) */
+        .chart-container {
+            width: 300px;  /* Adjust as needed */
+            height: 300px; /* Ensures a square shape */
+            position: relative;
+        }
+
+        /* 📱 Responsive Adjustments */
+        @media screen and (max-width: 1000px) {
+            .members-distribution-charts {
+                flex-wrap: wrap;  /* Wrap on mid-size screens */
+            }
+        }
+        @media screen and (max-width: 600px) {
+            .chart-container {
+                width: 280px;
+                height: 280px;
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const membersData = JSON.parse('{{ membership_distribution_data|safe }}');
+
+        // Store references to each Chart.js instance
+        let communityChart, zoneChart, movementChart;
+
+        // ---------- Community Doughnut Chart ----------
+        const communityCtx = document.getElementById('membersCommunityChart').getContext('2d');
+        communityChart = new Chart(communityCtx, {
+            type: 'doughnut',
+            data: {
+                labels: membersData.community_labels,
+                datasets: [{
+                    data: membersData.community_data,
+                    backgroundColor: membersData.community_labels.map((_, index) => `hsl(${index * 40}, 70%, 50%)`)
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // ---------- Zone Pie Chart ----------
+        const zoneCtx = document.getElementById('membersZoneChart').getContext('2d');
+        zoneChart = new Chart(zoneCtx, {
+            type: 'pie',
+            data: {
+                labels: membersData.zone_labels,
+                datasets: [{
+                    data: membersData.zone_data,
+                    backgroundColor: membersData.zone_labels.map((_, index) => `hsl(${index * 40}, 70%, 50%)`)
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // ---------- Apostolic Movements Line Chart ----------
+        const movementCtx = document.getElementById('membersMovementChart').getContext('2d');
+        movementChart = new Chart(movementCtx, {
+            type: 'line',
+            data: {
+                labels: membersData.movement_labels,
+                datasets: [{
+                    label: 'Total Members',
+                    data: membersData.movement_data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Display analysis text below the charts
+        document.getElementById("membersAnalysis").innerHTML = `<strong>${membersData.analysis}</strong>`;
+
+        // ---------- Download Buttons for Each Chart ----------
+        document.getElementById("downloadCommunityChart").addEventListener("click", function() {
+            if (communityChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('membersCommunityChart').toDataURL('image/png');
+                link.download = 'Community_Distribution.png';
+                link.click();
+            }
+        });
+
+        document.getElementById("downloadZoneChart").addEventListener("click", function() {
+            if (zoneChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('membersZoneChart').toDataURL('image/png');
+                link.download = 'Zone_Distribution.png';
+                link.click();
+            }
+        });
+
+        document.getElementById("downloadMovementChart").addEventListener("click", function() {
+            if (movementChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('membersMovementChart').toDataURL('image/png');
+                link.download = 'Movements_Distribution.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No membership data available.</p>
+{% endif %}

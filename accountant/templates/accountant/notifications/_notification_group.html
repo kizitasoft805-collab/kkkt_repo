@@ -1,0 +1,152 @@
+<!-- Title Block with Actions -->
+<div class="notification-group-container">
+    <div class="notification-group-header">
+        <h3>{{ title }} <small>({{ notifications.0.time_since }})</small></h3>
+
+        <div class="notification-group-actions">
+            <!-- Delete Group Icon -->
+            <a href="{% url 'accountant_delete_notification' delete_type='group' identifier=title %}" class="group-delete-btn">
+                🗑️
+            </a>
+
+            <!-- Full Screen View Button -->
+            <button class="group-fullscreen-btn" onclick="openFullScreenView('{{ title }}', '{{ group_id }}')">
+                🔍 View All in Full Screen
+            </button>
+        </div>
+    </div>
+
+    <!-- Search Field for Filtering Members -->
+    <div class="notification-group-search">
+        <input type="text" class="group-search-input" id="group-search-{{ group_id }}" placeholder="🔍 Search member by name..." onkeyup="filterGroupMembers('{{ group_id }}')">
+    </div>
+</div>
+
+<!-- Messages List (Only Show First 5 Initially) -->
+<div class="notification-group-messages" id="group-{{ group_id }}">
+    {% for notification in notifications|slice:":5" %}
+        {% include 'accountant/notifications/_notification_message.html' with notification=notification %}
+    {% endfor %}
+</div>
+
+<!-- Show More Button (If More Than 5 Notifications Exist) -->
+{% if notifications|length > 5 %}
+    <button class="group-show-more-btn" id="show-more-btn-{{ group_id }}" onclick="toggleShowMore('{{ group_id }}')">
+        👁️ See More ({{ notifications|length }})
+    </button>
+
+    <!-- Hidden Full List of Notifications -->
+    <div class="notification-group-hidden" id="hidden-group-{{ group_id }}" style="display: none;">
+        {% for notification in notifications %}
+            {% include 'accountant/notifications/_notification_message.html' with notification=notification %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- ✅ CSS for Notification Group with iPhone-Like Search -->
+<style>
+    .notification-group-container {
+        background: #f0f8ff;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 20px 0;
+        color: #333;
+    }
+
+    /* Header */
+    .notification-group-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .notification-group-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .group-delete-btn,
+    .group-fullscreen-btn {
+        background: transparent;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .group-delete-btn {
+        color: red;
+    }
+
+    .group-fullscreen-btn {
+        color: #007bff;
+    }
+
+    /* 🔍 iPhone-Like Search Field */
+    .notification-group-search {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .group-search-input {
+        width: 90%;
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 25px; /* Rounded corners for iPhone look */
+        outline: none;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        background: #f8f8f8;
+        text-align: center;
+    }
+
+    /* Hover & Focus Effects */
+    .group-search-input:focus {
+        border-color: #007bff;
+        background: white;
+        box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.2);
+    }
+
+    /* Show More Button */
+    .group-show-more-btn {
+        display: block;
+        margin: 10px auto;
+        background: transparent;
+        color: #007bff;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+</style>
+
+<!-- ✅ JavaScript for Filtering & Show More -->
+<script>
+    function filterGroupMembers(groupId) {
+        let searchValue = document.getElementById(`group-search-${groupId}`).value.toLowerCase();
+        let messages = document.querySelectorAll(`#group-${groupId} .message-card, #hidden-group-${groupId} .message-card`);
+
+        messages.forEach(card => {
+            let name = card.querySelector(".name").textContent.toLowerCase();
+            if (name.includes(searchValue)) {
+                card.style.display = "flex";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+
+    function toggleShowMore(groupId) {
+        let hiddenDiv = document.getElementById(`hidden-group-${groupId}`);
+        let showMoreBtn = document.getElementById(`show-more-btn-${groupId}`);
+
+        if (hiddenDiv.style.display === "none" || hiddenDiv.style.display === "") {
+            hiddenDiv.style.display = "block";
+            showMoreBtn.innerHTML = "👁️ See Less";
+        } else {
+            hiddenDiv.style.display = "none";
+            showMoreBtn.innerHTML = `👁️ See More (${hiddenDiv.children.length})`;
+        }
+    }
+</script>

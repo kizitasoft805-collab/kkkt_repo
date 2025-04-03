@@ -1,0 +1,94 @@
+{% load static %}
+
+<!-- finance/report_partials/table_j.html -->
+<h4>Table J — Signatures & Stamps</h4>
+
+<!-- 
+  JavaScript to quickly preload images so that by the time
+  the <img> tags are rendered, the images are already in the cache. 
+-->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // List of images to preload
+  const imagesToPreload = [
+    "{% static 'images/signature1.png' %}",
+    "{% static 'images/signature2.png' %}",
+    "{% static 'images/signature3.png' %}",
+    "{% static 'images/stamp1.png' %}",
+    "{% static 'images/stamp2.png' %}"
+  ];
+
+  imagesToPreload.forEach((imgSrc) => {
+    const img = new Image();
+    img.src = imgSrc; // This preloads the image in the background
+  });
+});
+</script>
+
+<div style="margin-top: 20px;">
+  <!-- Secretary/Treasurer of the Fellowship -->
+  <p>
+    Secretary/Treasurer of the Fellowship 
+    <u>Baraka Kibiki</u>
+    <br>
+    Signature:
+    <img 
+      src="{% static 'images/signature1.png' %}" 
+      alt="Signature 1" 
+      style="height: 50px; vertical-align: middle; margin-left: 10px;"
+      loading="lazy"
+    >
+    <br>
+    Date: 
+    <strong>{{ current_datetime|date:"d M Y, H:i" }}</strong>
+  </p>
+
+  <!-- Leader of the Fellowship Rev. Donald Kiwanga -->
+  <p>
+    Leader of the Fellowship (<em>Name</em>): Rev. Donald Kiwanga
+    <br>
+    Signature:
+    <img 
+      src="{% static 'images/signature2.png' %}" 
+      alt="Signature 2" 
+      style="height: 50px; vertical-align: middle; margin-left: 10px;"
+      loading="lazy"
+    >
+    <br>
+    Date: 
+    <strong>{{ current_datetime|date:"d M Y, H:i" }}</strong>
+  </p>
+
+  <!-- Secretary/Treasurer of the Diocese -->
+  <p>
+    Secretary/Treasurer of the Diocese 
+    <u>KEWIN COSTA</u>
+    <br>
+    Signature:
+    <img 
+      src="{% static 'images/signature3.png' %}" 
+      alt="Signature 3" 
+      style="height: 50px; vertical-align: middle; margin-left: 10px;"
+      loading="lazy"
+    >
+    <br>
+    Date:
+    <strong>{{ current_datetime|date:"d M Y, H:i" }}</strong>
+  </p>
+</div>
+
+<!-- Display stamps in a "fashioned manner" -->
+<div style="margin-top: 40px;">
+  <img 
+    src="{% static 'images/stamp1.png' %}" 
+    alt="Stamp 1" 
+    style="height: 80px; margin-right: 50px;"
+    loading="lazy"
+  >
+  <img 
+    src="{% static 'images/stamp2.png' %}" 
+    alt="Stamp 2" 
+    style="height: 80px;"
+    loading="lazy"
+  >
+</div>

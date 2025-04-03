@@ -1,0 +1,47 @@
+<!-- finance/report_partials/table_b.html -->
+<h4>Table B — Special Diocesan Contributions for {{ current_month }}/{{ current_year }}</h4>
+<table style="border-collapse: collapse; width: 100%; margin-bottom: 1em;">
+  <thead>
+    <tr style="background-color: #0edb67;">
+      <th style="padding: 8px; border: 1px solid #ccc;">B</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">Special Diocesan Contribution</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">Amount(TZS)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in diocesan_data %}
+      <tr>
+        <!-- B column -->
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ forloop.counter }}
+        </td>
+        
+        <!-- The name of the special contribution (e.g., "Church Renovation Fund") -->
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ item.special_contribution.name }}
+        </td>
+
+        <!-- The monthly sum for that contribution -->
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ item.total_amount|floatformat:2 }}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if diocesan_total and diocesan_total > 0 %}
+  <p>
+    <strong>Total (Table B): {{ diocesan_total|floatformat:2 }} TZS</strong>
+  </p>
+
+  <!-- Display sum of Table A + Table B -->
+  <p>
+    <strong>
+      Sum of Table A + Table B: 
+      {{ sum_table_a_b|floatformat:2 }} TZS
+    </strong>
+  </p>
+{% else %}
+  <p><em>No Special Diocesan Contributions this month.</em></p>
+{% endif %}

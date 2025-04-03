@@ -1,0 +1,159 @@
+{% extends 'accountant_base.html' %}
+
+{% block content %}
+<!-- 💰 Finance Dashboard Header -->
+<h2 class="finance-title">💵 Finance Management</h2>
+
+<!-- 📊 Finance Sections (Grid Layout) -->
+<div class="finance-grid">
+    <!-- Offerings (Sadaka) Box -->
+    <a href="{% url 'accountant_offerings_list' %}" class="finance-box offerings-box">
+        <div class="box-content">
+            <div>
+                <h3>💰 Offerings</h3>
+                <p>Manage church offerings and donations.</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- Tithe (Zaka) Box -->
+    <a href="{% url 'accountant_tithe_list' %}" class="finance-box tithe-box">
+        <div class="box-content">
+            <div>
+                <h3>💵 Tithe</h3>
+                <p>Monitor and manage tithe payments.</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- Contributions Box -->
+    <a href="{% url 'accountant_special_contribution_list' %}" class="finance-box contributions-box">
+        <div class="box-content">
+            <div>
+                <h3>🏦 Special Contributions</h3>
+                <p>Handle special church contributions.</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- Facilities Box -->
+    <a href="{% url 'accountant_facility_renting_list' %}" class="finance-box facilities-box">
+        <div class="box-content">
+            <div>
+                <h3>🏠 Facilities Renting</h3>
+                <p>Manage church facilities and assets renting.</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+</div>
+
+<!-- 📊 Finance Graphs Grid (2 per row) -->
+<div class="finance-graphs-grid">
+    <div class="graph-container">{% include 'finance/partials/offerings_trend.html' %}</div>
+    <div class="graph-container">{% include 'finance/partials/tithes_trend.html' %}</div>
+    <div class="graph-container">{% include 'finance/partials/special_contributions_bar.html' %}</div>
+    <div class="graph-container">{% include 'finance/partials/church_asset_chart.html' %}</div>
+</div>
+
+<!-- 🚀 Finance Page Styling -->
+<style>
+    /* 🌍 General Layout */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* 💵 Finance Dashboard Title */
+    .finance-title {
+        font-size: 26px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    /* 📊 Finance Grid (Single Row on Large Screens) */
+    .finance-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    .finance-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 23%;
+        min-width: 250px;
+        height: 120px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 15px;
+        border-radius: 15px;
+        color: white;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+        text-align: center;
+    }
+
+    /* 🎨 Unique Box Colors */
+    .offerings-box { background: linear-gradient(130deg, #FFD700, #DAA520); } /* Gold */
+    .tithe-box { background: linear-gradient(130deg, #4CAF50, #388E3C); } /* Green */
+    .contributions-box { background: linear-gradient(130deg, #2196F3, #1976D2); } /* Blue */
+    .facilities-box { background: linear-gradient(130deg, #FF5733, #C70039); } /* Red */
+
+    /* Hover Effects */
+    .finance-box:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* 🏹 More Info Arrow */
+    .more-info {
+        font-size: 24px;
+        transition: transform 0.2s ease;
+    }
+
+    .finance-box:hover .more-info {
+        transform: translateX(5px);
+    }
+
+    /* 📊 Finance Graphs Grid (2 per Row on Large Screens) */
+    .finance-graphs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* 2 graphs per row */
+        gap: 20px;
+        width: 100%;
+        max-width: 1200px;
+        margin: auto;
+        margin-top: 20px;
+    }
+
+    /* 🖼 Graph Containers with Separation */
+    .graph-container {
+        padding: 20px 0;
+        border-bottom: 2px solid #ddd; /* Separator Line Between Graphs */
+    }
+
+    /* 📱 Responsive Design */
+    @media screen and (max-width: 1024px) {
+        .finance-box { width: 45%; } /* Two per row on medium screens */
+    }
+
+    @media screen and (max-width: 768px) {
+        .finance-box { width: 90%; } /* Stack on smaller screens */
+        .finance-graphs-grid { grid-template-columns: 1fr; } /* One graph per row on mobile */
+        .graph-container { border-bottom: 1px solid #ddd; } /* Lighter separators on mobile */
+    }
+</style>
+
+{% endblock %}

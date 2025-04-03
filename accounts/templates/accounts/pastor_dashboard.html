@@ -1,0 +1,197 @@
+{% extends 'pastor_base.html' %}
+
+{% block content %}
+<!-- 🙋‍♂️ Member Dashboard Header -->
+<h2 class="dashboard-title">
+    👤 Hello {{ request.user.church_member.full_name }} with ID {{ request.user.church_member.member_id }},
+    welcome to pastor dashboard!
+</h2>
+
+<!-- 📊 Member Dashboard Sections -->
+<div class="dashboard-grid">
+
+    <!-- 🏠 Home Box -->
+    <a href="{% url 'pastor_report' %}" class="dashboard-box home-box">
+        <div class="box-content">
+            <div>
+                <h3>🏠 General analysis</h3>
+                <p>Dashboard general analysis</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 📋 Details Box -->
+    <a href="{% url 'pastor_details' %}" class="dashboard-box details-box">
+        <div class="box-content">
+            <div>
+                <h3>📋 Details</h3>
+                <p>View Personal Details</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 📝 Posts Box -->
+    <a href="{% url 'all_reports' %}" class="dashboard-box posts-box">
+        <div class="box-content">
+            <div>
+                <h3>📝 Report</h3>
+                <p>Create and manage your monthly reports</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <a href="{% url 'pastor_members_home' %}" class="dashboard-box notifications-box">
+        <div class="box-content">
+            <div>
+                <h3>🧑‍💼 Members</h3>
+                <p>Manage all members and their details</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <a href="{% url 'pastor_leaders_home' %}" class="dashboard-box tithe-box">
+        <div class="box-content">
+            <div>
+                <h3>👥 Leaders</h3>
+                <p>Manage all leaders and their details</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🆘 Help Box -->
+    <a href="{% url 'pastor_chatbot' %}" class="dashboard-box help-box">
+        <div class="box-content">
+            <div>
+                <h3>🆘 Help</h3>
+                <p>Get Support & Assistance</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🌐 Public Posts Box -->
+    <a href="{% url 'public_news_list' %}" class="dashboard-box public-posts-box">
+        <div class="box-content">
+            <div>
+                <h3>🌐 Public Page</h3>
+                <p>View public page</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+</div>
+
+<!-- 🚀 iPhone-Like Dashboard Styling -->
+<style>
+    /* 🌍 General Styles */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* 🏛️ Dashboard Title */
+    .dashboard-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 20px 0;
+        color: #007bff;
+    }
+
+    /* 📊 Dashboard Grid */
+    .dashboard-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 900px;
+        margin: auto;
+    }
+
+    /* 📦 Box Styling */
+    .dashboard-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 320px;
+        height: 100px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 15px 20px;
+        border-radius: 15px;
+        color: white;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    /* 🎨 Unique Box Colors */
+    .home-box {
+        background: linear-gradient(130deg, #007bff, #0056b3);
+    }
+
+    .details-box {
+        background: linear-gradient(130deg, #6F42C1, #512DA8);
+    }
+
+    .posts-box {
+        background: linear-gradient(130deg, #FFC107, #FFA000);
+    }
+
+    .notifications-box {
+        background: linear-gradient(130deg, #17A2B8, #117A8B);
+    }
+
+    .tithe-box {
+        background: linear-gradient(130deg, #28a745, #218838);
+    }
+
+    .pledges-box {
+        background: linear-gradient(130deg, #FF5722, #E64A19); /* A bold orange-red gradient */
+    }
+
+    .help-box {
+        background: linear-gradient(130deg, #FF5733, #C70039); /* Vibrant red gradient */
+    }
+
+    .public-posts-box {
+        background: linear-gradient(130deg, #9c27b0, #7b1fa2); /* Purple */
+    }
+
+    /* 🏹 More Info Arrow */
+    .box-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .more-info {
+        font-size: 24px;
+        transition: transform 0.2s ease;
+    }
+
+    /* 🚀 Hover Effects */
+    .dashboard-box:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .dashboard-box:hover .more-info {
+        transform: translateX(5px);
+    }
+
+    /* 📱 Responsive Design */
+    @media screen and (max-width: 600px) {
+        .dashboard-box {
+            width: 90%;
+        }
+    }
+</style>
+{% endblock %}

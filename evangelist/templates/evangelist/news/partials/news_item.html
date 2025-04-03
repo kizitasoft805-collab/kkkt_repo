@@ -1,0 +1,60 @@
+<div style="padding: 15px; margin-bottom: 10px; width: 100%; text-align: left;">
+    <h3 style="font-size: 22px; font-weight: bold; color: #007bff; margin-bottom: 5px;">
+        {{ news.title }}
+    </h3>
+
+    <p style="color: #555; font-size: 18px; line-height: 1.5; word-wrap: break-word; max-width: 100%;">
+        {{ news.content|truncatewords:40 }}
+    </p>
+
+    <!-- Time & Date Created -->
+    <p style="font-size: 14px; color: #777; margin-top: 5px; white-space: normal;">
+        ⏳ Created {{ news.time_since_created }} | 📅 {{ news.created_at|date:"F d, Y" }}
+    </p>
+
+    <!-- Likes, Comments, and Eye Icon Row -->
+    <div style="display: flex; align-items: center; margin-top: 10px;">
+        <!-- Like Button -->
+        <button class="like-button" data-news-id="{{ news.id }}" style="
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        ">
+            {% if news.user_has_liked %}
+                💖
+            {% else %}
+                ❤️
+            {% endif %}
+        </button>
+        <span class="like-count" id="like-count-{{ news.id }}" style="margin-left: 5px; font-size: 18px; color: #333;">
+            {{ news.like_count }}
+        </span>
+
+        <!-- Comments Count (Click to Open Modal) -->
+        <span class="open-comment-modal" data-news-id="{{ news.id }}" style="
+            margin-left: 20px; 
+            font-size: 18px; 
+            color: #007bff; 
+            cursor: pointer;
+        ">
+            💬 <span id="comment-count-{{ news.id }}">{{ news.comment_count }}</span>
+        </span>
+
+        <!-- Eye Icon (Click to Open News Detail) -->
+        <span class="open-news-detail" data-news-id="{{ news.id }}" style="
+            margin-left: 20px; 
+            font-size: 20px; 
+            color: #007bff; 
+            cursor: pointer;
+        ">
+            👁️
+        </span>
+    </div>
+
+    <!-- Include Comment Section -->
+    {% include "evangelist/news/partials/_comment_section.html" %}
+
+    <!-- Include News Detail Section -->
+    {% include "evangelist/news/partials/_news_detail.html" %}
+</div>

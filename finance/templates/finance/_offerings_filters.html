@@ -1,0 +1,188 @@
+<!-- _offerings_filters.html -->
+<!-- 
+  iPhone-like filter rows for Offerings. 
+  Now includes: Year, MassName, CollectedBy, RecordedBy, Category, DateRange
+-->
+
+<div style="
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+    max-width: 100%;    
+    margin: 0 auto;
+">
+
+    <!-- Row 1: Year + Mass Name -->
+    <div style="
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        background: linear-gradient(130deg, #fce3ff, #ffd3e3);
+        border-radius: 15px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    ">
+        <label style="color: green; font-weight: bold; margin-bottom: 5px;">📅 Year</label>
+        <select id="filterYear" style="
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            outline: none;
+        ">
+            <option value="">📅 All Years</option>
+            {% for year in years %}
+                <option value="{{ year.year }}"
+                    {% if year.is_current %} selected {% endif %}
+                >{{ year.year }}</option>
+            {% endfor %}
+        </select>
+
+        <label style="color: green; font-weight: bold; margin-top: 10px;">📖 Mass Name</label>
+        <input
+            type="text"
+            id="filterMassName"
+            placeholder="Search by Mass Name..."
+            style="
+                padding: 10px;
+                border-radius: 25px;
+                border: 1px solid #ccc;
+                outline: none;
+            "
+        >
+    </div>
+
+    <!-- Row 2: Collected By + Recorded By + Category -->
+    <div style="
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        background: linear-gradient(130deg, #d3ffc8, #c8fff4);
+        border-radius: 15px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    ">
+
+        <label style="color: green; font-weight: bold; margin-bottom: 5px;">👤 Collected By</label>
+        <select id="filterCollectedBy" style="
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            outline: none;
+        ">
+            <option value="">All Collectors</option>
+            {% for member in collected_by_members %}
+                <option value="{{ member.full_name }}">{{ member.full_name }}</option>
+            {% endfor %}
+        </select>
+
+        <label style="color: green; font-weight: bold; margin-top: 10px;">📝 Recorded By</label>
+        <select id="filterRecordedBy" style="
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            outline: none;
+        ">
+            <option value="">All Recorders</option>
+            {% for leader in recorded_by_leaders %}
+                <option value="{{ leader.full_name }}">{{ leader.full_name }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- NEW: Category Filter -->
+        <label style="color: green; font-weight: bold; margin-top: 10px;">🔖 Category</label>
+        <select id="filterCategory" style="
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            outline: none;
+        ">
+            <option value="">All Categories</option>
+            {% for cat in all_offering_categories %}
+                <option value="{{ cat.name }}">{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Row 3: Start Date + End Date -->
+    <div style="
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        background: linear-gradient(130deg, #e3f7ff, #e3ffd7);
+        border-radius: 15px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    ">
+        <label style="color: green; font-weight: bold; margin-bottom: 5px;">📅 Date Range</label>
+        <div style="display: flex; gap: 10px;">
+            <input
+                type="date"
+                id="filterStartDate"
+                style="
+                    padding: 10px;
+                    border-radius: 25px;
+                    border: 1px solid #ccc;
+                    outline: none;
+                    flex: 1;
+                "
+            >
+            <input
+                type="date"
+                id="filterEndDate"
+                style="
+                    padding: 10px;
+                    border-radius: 25px;
+                    border: 1px solid #ccc;
+                    outline: none;
+                    flex: 1;
+                "
+            >
+        </div>
+    </div>
+</div>
+
+<!-- 💰 Total After Filtering -->
+<p id="filteredTotal" style="
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: green;
+    margin: 0;
+">
+    💰 Total Amount: 0 TZS
+</p>
+
+<!-- 🚨 No Results Message -->
+<p id="noResultsMessage" style="
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    margin-top: 10px;
+    display: none;
+">
+    ❌ No results matching the current filtering.
+</p>
+
+<!-- 📜 JavaScript for Dynamic Filtering & Date Parsing -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // We add "filterCategory" to the array of filters.
+    let filters = [
+        "filterYear",
+        "filterMassName",
+        "filterCollectedBy",
+        "filterRecordedBy",
+        "filterCategory",  // newly added
+        "filterStartDate",
+        "filterEndDate"
+    ];
+
+    filters.forEach(id => {
+        let el = document.getElementById(id);
+        el.addEventListener("input", filterOfferings);
+        el.addEventListener("change", filterOfferings);
+    });
+});
+</script>

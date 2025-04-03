@@ -1,0 +1,101 @@
+<!-- Table Wrapper -->
+<div class="table-container" style="width: 100%; overflow-x: auto;">
+    <table class="styled-table"
+           style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 1rem; border: 1px solid #ddd; table-layout: auto;">
+        <thead>
+            <tr>
+                <th>🔢 S/N</th>
+                <th>🔢 Member ID</th>
+                <th>✅ Status</th>
+                <th>🖼️ Passport</th>
+                <th>📛 Full Name</th>
+                <th>⚥ Gender</th>
+                <th>📞 Phone</th>
+                <th>🏡 Community (Zone)</th>
+                <th>⏳ Created</th>
+                <th>⚙️ Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in church_members %}
+                {% include 'pastor/members/partials/_church_member_row.html' with member=member counter=forloop.counter %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if not church_members %}
+    <p class="no-results"
+       style="color: red; font-size: 1.2rem; text-align: center; margin-top: 20px;">
+        ❌ No church members found. 
+    </p>
+{% endif %}
+
+<!-- ✅ Inline Table Styling -->
+<style>
+    /* 📌 Table Styling */
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 16px;
+        text-align: left;
+        min-width: 800px;
+        overflow: hidden;
+    }
+
+    /* 📌 Table Header */
+    .styled-table thead {
+        display: table-header-group;
+    }
+
+    .styled-table thead tr {
+        background-color: #007bff;
+        color: white;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .styled-table th, .styled-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+        white-space: nowrap;
+    }
+
+
+    /* 🖼️ Profile Picture */
+    .profile-pic {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ccc;
+    }
+
+    /* ✅ Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .styled-table {
+            font-size: 14px;
+            min-width: 100%;
+        }
+
+        .styled-table th, .styled-table td {
+            padding: 8px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .styled-table {
+            font-size: 13px;
+        }
+
+        .styled-table th, .styled-table td {
+            padding: 6px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+        }
+    }
+</style>

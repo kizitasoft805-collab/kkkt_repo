@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>View Church Location</title>
+
+    <!-- Leaflet CSS (Required for OpenStreetMap) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Remove Any Margins, Paddings, and Frames */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* Fullscreen Map */
+        #map {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Floating Top Buttons (Centered) */
+        .top-buttons {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .top-buttons a, .top-buttons button {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            border-radius: 50%;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .top-buttons a:hover, .top-buttons button:hover {
+            transform: scale(1.1);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        /* My Location Button */
+        #myLocation {
+            background: red;
+        }
+
+        #myLocation:hover {
+            background: darkred;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Top Buttons (Centered) -->
+    <div class="top-buttons">
+        <!-- 📰 Posts & Updates -->
+        <a href="{% url 'public_news_list' %}" title="Posts & Updates">
+            <i class="fas fa-newspaper"></i>
+        </a>
+
+        <!-- 🔑 Login -->
+        <a href="{% url 'login' %}" title="Login">
+            <i class="fas fa-sign-in-alt"></i>
+        </a>
+
+        <!-- ❓ Forgot Password -->
+        <a href="{% url 'forgot_password' %}" title="Forgot Password">
+            <i class="fas fa-key"></i>
+        </a>
+
+        <!-- 📝 Request Account -->
+        <a href="{% url 'request_account' %}" title="Request Account">
+            <i class="fas fa-user-plus"></i>
+        </a>
+
+        <!-- 📍 My Location (Fetches Current User Location) -->
+        <button id="myLocation" title="My Location">
+            <i class="fas fa-map-marker-alt"></i>
+        </button>
+    </div>
+
+    <!-- Fullscreen Map Container -->
+    <div id="map"></div>
+
+    <!-- Leaflet JavaScript (Required for OpenStreetMap) -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            {% if active_location %}
+                var latitude = {{ active_location.latitude }};
+                var longitude = {{ active_location.longitude }};
+            {% else %}
+                alert("⚠️ No active church location found.");
+                return;
+            {% endif %}
+
+            // Initialize the map
+            var map = L.map("map").setView([latitude, longitude], 15); // Zoom level 15
+
+            // Add OpenStreetMap tiles
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "&copy; OpenStreetMap contributors"
+            }).addTo(map);
+
+            // Add marker for the active church location (Blue)
+            var churchMarker = L.marker([latitude, longitude], { icon: L.icon({
+                iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", // Blue icon
+                iconSize: [30, 30]
+            }) }).addTo(map)
+                .bindPopup("📍 Active Church Location")
+                .openPopup();
+
+            // My Location button event listener
+            document.getElementById("myLocation").addEventListener("click", function() {
+                if (!navigator.geolocation) {
+                    alert("Geolocation is not supported by your browser.");
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var userLat = position.coords.latitude;
+                    var userLng = position.coords.longitude;
+
+                    // Remove previous marker if exists
+                    if (typeof userMarker !== "undefined") {
+                        map.removeLayer(userMarker);
+                    }
+                    if (typeof pathLine !== "undefined") {
+                        map.removeLayer(pathLine);
+                    }
+
+                    // Add user's location marker (Red)
+                    userMarker = L.marker([userLat, userLng], { icon: L.icon({
+                        iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684913.png", // Red icon
+                        iconSize: [30, 30]
+                    }) }).addTo(map)
+                        .bindPopup("📍 Your Current Location")
+                        .openPopup();
+
+                    // Draw line from user's location to church location
+                    pathLine = L.polyline([[latitude, longitude], [userLat, userLng]], { color: "red", weight: 3 }).addTo(map);
+
+                    // Recenter map to show both points
+                    var bounds = L.latLngBounds([
+                        [latitude, longitude],
+                        [userLat, userLng]
+                    ]);
+                    map.fitBounds(bounds);
+                }, function() {
+                    alert("Unable to retrieve your location.");
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+{% if settings_distribution_data %}
+    <h3>
+        🏷️ Settings Distribution Overview
+        <button id="downloadSettingsBarChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <div class="settings-chart-wrapper">
+        <canvas id="settingsBarChart"></canvas>
+    </div>
+
+    <p id="settingsAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Limit the chart size on larger screens */
+        .settings-chart-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            height: 400px; /* Provide a decent default height */
+        }
+
+        @media screen and (max-width: 600px) {
+            .settings-chart-wrapper {
+                max-width: 100%;
+                height: 450px; /* Increase slightly on small screens for readability */
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const settingsData = JSON.parse('{{ settings_distribution_data|safe }}');
+
+        let settingsBarChart; // Reference for Chart.js
+
+        if (settingsData.labels.length > 0) {
+            const ctx = document.getElementById('settingsBarChart').getContext('2d');
+
+            settingsBarChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: settingsData.labels, // Now only "Years", "Outstations", "Cells"
+                    datasets: [{
+                        label: 'Count',
+                        data: settingsData.data, // Uses counts for years, outstations, cells
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)', // Years
+                            'rgba(54, 162, 235, 0.6)',  // Outstations
+                            'rgba(75, 192, 192, 0.6)'   // Cells
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Display the analysis text (e.g., "There are 5 year(s), 3 outstation(s), and 10 cell(s).")
+            document.getElementById("settingsAnalysis").innerHTML = `<strong>${settingsData.analysis}</strong>`;
+        } else {
+            document.getElementById("settingsAnalysis").innerHTML = `<p>No settings data available.</p>`;
+        }
+
+        // Download button logic
+        document.getElementById("downloadSettingsBarChart").addEventListener("click", function() {
+            if (settingsBarChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('settingsBarChart').toDataURL('image/png');
+                link.download = 'Settings_Distribution_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No settings data available.</p>
+{% endif %}

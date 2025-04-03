@@ -1,0 +1,62 @@
+<div id="tithe-filters" style="padding: 15px; border-bottom: 1px solid #ccc; margin-bottom: 20px; text-align: left;">
+    
+    <!-- Common styles for filter containers -->
+    <style>
+        .filter-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .filter-input {
+            padding: 12px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 16px; /* More rounded corners */
+            outline: none;
+            font-size: 14px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .filter-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+            background: #ffffff;
+        }
+    </style>
+
+    <!-- 📅 Year Filter -->
+    <label for="year-filter" class="filter-label">📅 Filter by Year:</label>
+    <select id="year-filter" class="filter-input">
+        <option value="">All Years</option>
+        {% for year in years %}
+            <option value="{{ year.year }}">{{ year.year }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- 👤 Member Name Filter -->
+    <label for="member-filter" class="filter-label">👤 Filter by Member Name:</label>
+    <input type="text" id="member-filter" placeholder="Search Member Name..." class="filter-input">
+
+    <!-- 📆 Date Range Filter -->
+    <label class="filter-label">📆 Filter by Date Range:</label>
+    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <div style="flex: 1;">
+            <label class="filter-label" style="font-size: 13px; margin-bottom: 3px;">From Date:</label>
+            <input type="date" id="from-date" class="filter-input">
+        </div>
+        <div style="flex: 1;">
+            <label class="filter-label" style="font-size: 13px; margin-bottom: 3px;">To Date:</label>
+            <input type="date" id="to-date" class="filter-input">
+        </div>
+    </div>
+
+    <!-- 💰 Total Amount Display -->
+    <h4 style="font-weight: bold; text-align: center; margin-top: 15px; color: #28a745;">
+        💰 Total Amount: <span id="total-amount">0 TZS</span>
+    </h4>
+</div>

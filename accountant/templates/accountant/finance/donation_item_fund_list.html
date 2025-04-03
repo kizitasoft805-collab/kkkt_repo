@@ -1,0 +1,18 @@
+{% extends 'accountant_base.html' %}
+
+{% block content %}
+
+    <!-- 📋 Title & Add Button Section -->
+    {% include 'accountant/finance/donation_item_fund/_header.html' with contribution=contribution %}
+
+    <!-- 🔍 Filter Section -->
+    {% include 'accountant/finance/donation_item_fund/_filters.html' with donation_items=donation_items %}
+
+    <!-- 📝 Donation Item Table Section -->
+    {% if donation_items %}
+        {% include 'accountant/finance/donation_item_fund/_table.html' with donation_items=donation_items contribution=contribution %}
+    {% else %}
+        {% include 'accountant/finance/donation_item_fund/_no_data.html' %}
+    {% endif %}
+
+{% endblock %}

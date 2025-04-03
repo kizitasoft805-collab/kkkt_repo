@@ -1,0 +1,47 @@
+<!-- 🔍 Search Form -->
+<div class="search-form" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+    <input type="text" id="searchName" placeholder="🔍 Search by name..." 
+           style="width: 100%; padding: 12px; border-radius: 25px; border: 1px solid #ccc; font-size: 14px; text-align: center;">
+
+    <select id="typeFilter"
+            style="width: 100%; padding: 12px; border-radius: 25px; border: 1px solid #ccc; font-size: 14px; text-align: center;">
+        <option value="all">📂 Filter by Type</option>
+        {% for type, label in church_assets.model.ASSET_TYPE_CHOICES %}
+            <option value="{{ type }}">{{ label }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- JavaScript for Real-Time Filtering -->
+<script>
+    function filterChurchAssets() {
+        let nameFilter = document.getElementById("searchName").value.toLowerCase();
+        let typeFilter = document.getElementById("typeFilter").value;
+        let assets = document.querySelectorAll(".church-asset-row");
+
+        let totalQuantity = 0;
+        let totalValue = 0;
+
+        assets.forEach(asset => {
+            let name = asset.getAttribute("data-name").toLowerCase();
+            let type = asset.getAttribute("data-type");
+
+            let showByName = name.includes(nameFilter);
+            let showByType = (typeFilter === "all" || type === typeFilter);
+
+            if (showByName && showByType) {
+                asset.style.display = "table-row";
+                totalQuantity += parseInt(asset.getAttribute("data-quantity"));
+                totalValue += parseInt(asset.getAttribute("data-value"));
+            } else {
+                asset.style.display = "none";
+            }
+        });
+
+        document.getElementById("totalQuantity").textContent = totalQuantity;
+        document.getElementById("totalValue").textContent = "TZS " + totalValue.toLocaleString();
+    }
+
+    document.getElementById("searchName").addEventListener("input", filterChurchAssets);
+    document.getElementById("typeFilter").addEventListener("change", filterChurchAssets);
+</script>

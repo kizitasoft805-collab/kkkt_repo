@@ -1,0 +1,70 @@
+/* General topbar styling */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #007bff; /* Blue background */
+    padding: 10px 20px;
+    color: #fff;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Toggle button styling */
+.toggle-button {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+/* Search field styling */
+.search-field {
+    flex: 1;
+    margin: 0 20px;
+    position: relative;
+}
+
+.search-field input {
+    width: 100%;
+    padding: 8px 40px 8px 10px;
+    border-radius: 999px;
+    border: none;
+    font-size: 14px;
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: #999;
+    cursor: pointer;
+}
+
+/* Topbar icons */
+.topbar-icons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #fff;
+}
+
+.topbar-icon {
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.topbar-icon:hover {
+    color: #ffdd57; /* Highlight color on hover */
+}

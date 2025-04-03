@@ -1,0 +1,247 @@
+<!-- _offerings_table.html -->
+
+<div id="offeringsTableWrapper" style="overflow-x: auto; border-radius: 10px;">
+    <table id="offeringsTable" style="
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+    ">
+        <thead>
+            <tr style="background: #007bff; color: white; font-weight: bold;">
+                <th style="padding: 10px;">#️⃣ S/N</th>
+                <th style="padding: 10px;">📅 Date Given</th>
+                <th style="padding: 10px;">💰 Amount (TZS)</th>
+                <th style="padding: 10px;">🙋‍♂️ Collected By</th>
+                <th style="padding: 10px;">📝 Recorded By</th>
+                <th style="padding: 10px;">🔖 Category</th> <!-- NEW Category Column -->
+                <th style="padding: 10px;">⛪ Mass Name</th>
+                <th style="padding: 10px;">🗒️ Notes</th>
+                <th style="padding: 10px;">⏳ Date Created</th>
+                <th style="padding: 10px;">🔄 Date Updated</th>
+                <th style="padding: 10px;">⚡ Actions</th>
+            </tr>
+        </thead>
+
+        <tbody id="offeringsTableBody">
+            {% for offering in offerings %}
+            <tr class="offering-row" style="border-bottom: 1px solid #ddd; transition: background 0.3s;">
+                <!-- #️⃣ Serial Number -->
+                <td style="padding: 10px;">{{ forloop.counter }}</td>
+
+                <!-- 📅 Date Given & Service Time -->
+                <td class="date-given" style="padding: 10px;">
+                    {{ offering.date_given|date:"l, d M Y" }} ({{ offering.service_time }})
+                </td>
+
+                <!-- 💰 Amount -->
+                <td class="amount" style="padding: 10px; font-weight: bold; color: #28a745;">
+                    {{ offering.amount|floatformat:2 }}
+                </td>
+
+                <!-- 🙋‍♂️ Collected By -->
+                <td class="collected-by" style="padding: 10px;">
+                    {{ offering.collected_by.full_name|default:"-" }}
+                </td>
+
+                <!-- 📝 Recorded By -->
+                <td class="recorded-by" style="padding: 10px;">
+                    {{ offering.recorded_by.full_name|default:"-" }}
+                </td>
+
+                <!-- 🔖 Category -->
+                <td class="offering-category" style="padding: 10px;">
+                    {{ offering.offering_category.name }}
+                </td>
+
+                <!-- ⛪ Mass Name -->
+                <td class="mass-name" style="padding: 10px;">
+                    {{ offering.mass_name }}
+                </td>
+
+                <!-- 🗒️ Notes -->
+                <td style="padding: 10px;">
+                    {{ offering.notes|default:"-" }}
+                </td>
+
+                <!-- ⏳ Date Created -->
+                <td style="padding: 10px;">
+                    {{ offering.date_created|date:"d M Y, H:i" }}
+                    <br>
+                    <small style="color: #6c757d;">({{ offering.time_since_created }} ago)</small>
+                </td>
+
+                <!-- 🔄 Date Updated -->
+                <td style="padding: 10px;">
+                    {{ offering.date_updated|date:"d M Y, H:i" }}
+                    <br>
+                    <small style="color: #6c757d;">({{ offering.time_since_updated }} ago)</small>
+                </td>
+
+                <!-- ⚡ Actions -->
+                <td style="padding: 10px; display: flex; justify-content: center; gap: 5px;">
+                    <!-- UPDATED LINK: references cat_pk & pk -->
+                    <a href="{% url 'offerings_update_by_category' offering.offering_category.pk offering.pk %}"
+                       style="
+                           display: inline-flex;
+                           align-items: center;
+                           gap: 5px;
+                           padding: 8px 12px;
+                           font-size: 14px;
+                           text-decoration: none;
+                           background: linear-gradient(130deg, #FFC107, #FFB300);
+                           color: black;
+                           border-radius: 20px;
+                           transition: 0.2s ease-in-out;
+                           font-weight: bold;
+                           box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+                       "
+                    >✏️ Edit</a>
+
+                    <a href="{% url 'offerings_delete' offering.pk %}" style="
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 5px;
+                        padding: 8px 12px;
+                        font-size: 14px;
+                        text-decoration: none;
+                        background: linear-gradient(130deg, #FF3D00, #D32F2F);
+                        color: white;
+                        border-radius: 20px;
+                        transition: 0.2s ease-in-out;
+                        font-weight: bold;
+                        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+                    ">🗑️ Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="11" class="no-results" style="
+                    text-align: center; 
+                    font-style: italic; 
+                    color: #777; 
+                    padding: 10px;">
+                    ❌ No offerings recorded yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- 🚨 No Results Matching -->
+<p id="noResultsMessage" style="
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    margin-top: 10px;
+    display: none;
+">
+    ❌ No results matching the current filtering.
+</p>
+
+<!-- Filtering & Date Parsing JS -->
+<script>
+function parseDateFromCell(dateStr) {
+    // afterComma => "12 Jan 2025 (Morning)"
+    let afterComma = dateStr.split(",")[1]?.trim() || "";
+    let splitted = afterComma.split("(")[0]?.trim(); // "12 Jan 2025"
+    let parts = splitted.split(" "); // e.g. ["12", "Jan", "2025"]
+    if (parts.length < 3) return new Date(); // fallback
+
+    let day = parts[0];
+    let monthName = parts[1];
+    let year = parts[2];
+
+    let months = {
+        Jan: "01", Feb: "02", Mar: "03", Apr: "04",
+        May: "05", Jun: "06", Jul: "07", Aug: "08",
+        Sep: "09", Oct: "10", Nov: "11", Dec: "12"
+    };
+    let month = months[monthName] || "01";
+
+    return new Date(`${year}-${month}-${day}`);
+}
+
+function filterOfferings() {
+    let year = document.getElementById("filterYear")?.value || "";
+    let massName = document.getElementById("filterMassName")?.value.toLowerCase() || "";
+    let collectedBy = document.getElementById("filterCollectedBy")?.value || "";
+    let recordedBy = document.getElementById("filterRecordedBy")?.value || "";
+    let categoryFilter = document.getElementById("filterCategory")?.value || "";
+    let startDate = document.getElementById("filterStartDate")?.value;
+    let endDate = document.getElementById("filterEndDate")?.value;
+
+    let rows = document.querySelectorAll(".offering-row");
+    let totalAmount = 0;
+    let visibleRows = 0;
+
+    rows.forEach(row => {
+        let dateGivenText = row.querySelector(".date-given")?.textContent.trim() || "";
+        let rowDate = parseDateFromCell(dateGivenText);
+
+        let massNameText = row.querySelector(".mass-name")?.textContent.toLowerCase() || "";
+        let collectedByText = row.querySelector(".collected-by")?.textContent.trim() || "";
+        let recordedByText = row.querySelector(".recorded-by")?.textContent.trim() || "";
+        let categoryCellText = row.querySelector(".offering-category")?.textContent.trim() || "";
+
+        let amountText = row.querySelector(".amount")?.textContent.replace(/,/g, '') || "0";
+        let rowAmount = parseFloat(amountText) || 0;
+
+        let rowYear = rowDate.getFullYear().toString();
+
+        let showRow = true;
+
+        // Year
+        if (year && rowYear !== year) showRow = false;
+
+        // Mass Name
+        if (massName && !massNameText.includes(massName)) showRow = false;
+
+        // CollectedBy
+        if (collectedBy && collectedByText !== collectedBy) showRow = false;
+
+        // RecordedBy
+        if (recordedBy && recordedByText !== recordedBy) showRow = false;
+
+        // Category
+        if (categoryFilter && categoryCellText !== categoryFilter) showRow = false;
+
+        // Date Range
+        if (startDate) {
+            let sDate = new Date(startDate);
+            if (rowDate < sDate) showRow = false;
+        }
+        if (endDate) {
+            let eDate = new Date(endDate);
+            if (rowDate > eDate) showRow = false;
+        }
+
+        if (showRow) {
+            row.style.display = "";
+            totalAmount += rowAmount;
+            visibleRows++;
+        } else {
+            row.style.display = "none";
+        }
+    });
+
+    let filteredTotalElement = document.getElementById("filteredTotal");
+    let noResultsMessage = document.getElementById("noResultsMessage");
+    let tableWrapper = document.getElementById("offeringsTableWrapper");
+
+    if (visibleRows > 0) {
+        filteredTotalElement.textContent = `💰 Total Filtered Amount: ${totalAmount.toLocaleString()} TZS`;
+        tableWrapper.style.display = "";
+        noResultsMessage.style.display = "none";
+    } else {
+        filteredTotalElement.textContent = "💰 Total Amount: 0 TZS";
+        tableWrapper.style.display = "none";
+        noResultsMessage.style.display = "block";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    filterOfferings(); // Run once on load
+});
+</script>

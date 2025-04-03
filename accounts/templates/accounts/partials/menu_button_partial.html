@@ -1,0 +1,292 @@
+<!-- accounts/templates/accounts/partials/menu_button_partial.html -->
+<div class="menu-button-container">
+    <!-- Single Menu Button -->
+    <button class="menu-toggle-button" onclick="toggleMenu()">
+        <span class="emoji">☰</span> Menu
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div class="menu-dropdown" id="menuDropdown">
+        <!-- Admin Section -->
+        <div class="menu-section">
+            <button class="section-toggle" onclick="toggleSection(this)">Admin <span class="toggle-icon">▼</span></button>
+            <div class="section-content">
+                <a href="{% url 'admin_dashboard' %}" class="menu-item"><span class="emoji">🏠</span> Admin Dashboard</a>
+                <a href="{% url 'upload_profile_picture' %}" class="menu-item"><span class="emoji">📸</span> Upload Profile Picture</a>
+                <a href="{% url 'superuser_detail' %}" class="menu-item"><span class="emoji">👤</span> Superuser Detail</a>
+                <a href="{% url 'general_analysis' %}" class="menu-item"><span class="emoji">📊</span> General Analysis</a>
+            </div>
+        </div>
+
+        <!-- Finance Section -->
+        <div class="menu-section">
+            <button class="section-toggle" onclick="toggleSection(this)">Finance <span class="toggle-icon">▼</span></button>
+            <div class="section-content">
+                <a href="{% url 'finance_home' %}" class="menu-item"><span class="emoji">💰</span> Finance Home</a>
+                <a href="{% url 'offerings_list' %}" class="menu-item"><span class="emoji">🎁</span> Offerings List</a>
+                <a href="{% url 'facility_renting_create' %}" class="menu-item"><span class="emoji">🏢</span> Facility Renting Create</a>
+                <a href="{% url 'facility_renting_list' %}" class="menu-item"><span class="emoji">📋</span> Facility Renting List</a>
+                <a href="{% url 'special_contribution_create' %}" class="menu-item"><span class="emoji">🤲</span> Special Contribution Create</a>
+                <a href="{% url 'special_contribution_list' %}" class="menu-item"><span class="emoji">📑</span> Special Contribution List</a>
+                <a href="{% url 'all_donation_item_funds' %}" class="menu-item"><span class="emoji">🎀</span> All Donation Item Funds</a>
+                <a href="{% url 'pledge_create' %}" class="menu-item"><span class="emoji">🤝</span> Pledge Create</a>
+                <a href="{% url 'pledge_list' %}" class="menu-item"><span class="emoji">📝</span> Pledge List</a>
+                <a href="{% url 'category_create' %}" class="menu-item"><span class="emoji">🏷️</span> Category Create</a>
+                <a href="{% url 'category_list' %}" class="menu-item"><span class="emoji">📇</span> Category List</a>
+                <a href="{% url 'expenditure_list_all' %}" class="menu-item"><span class="emoji">💳</span> Expenditure List All</a>
+                <a href="{% url 'finance_general_report' %}" class="menu-item"><span class="emoji">📈</span> Finance General Report</a>
+                <a href="{% url 'offering_category_create' %}" class="menu-item"><span class="emoji">🎴</span> Offering Category Create</a>
+                <a href="{% url 'offering_category_list' %}" class="menu-item"><span class="emoji">📚</span> Offering Category List</a>
+            </div>
+        </div>
+
+        <!-- Leaders Section -->
+        <div class="menu-section">
+            <button class="section-toggle" onclick="toggleSection(this)">Leaders <span class="toggle-icon">▼</span></button>
+            <div class="section-content">
+                <a href="{% url 'create_leader' %}" class="menu-item"><span class="emoji">👑</span> Create Leader</a>
+                <a href="{% url 'leader_list' %}" class="menu-item"><span class="emoji">👥</span> Leader List</a>
+                <a href="{% url 'inactive_leader_list' %}" class="menu-item"><span class="emoji">🚫</span> Inactive Leader List</a>
+                <a href="{% url 'leaders_home' %}" class="menu-item"><span class="emoji">🏡</span> Leaders Home</a>
+            </div>
+        </div>
+
+        <!-- Members Section -->
+        <div class="menu-section">
+            <button class="section-toggle" onclick="toggleSection(this)">Members <span class="toggle-icon">▼</span></button>
+            <div class="section-content">
+                <a href="{% url 'create_church_member' %}" class="menu-item"><span class="emoji">🙋</span> Create Church Member</a>
+                <a href="{% url 'members_home' %}" class="menu-item"><span class="emoji">🏠</span> Members Home</a>
+                <a href="{% url 'church_member_list' %}" class="menu-item"><span class="emoji">👨‍👩‍👧‍👦</span> Church Member List</a>
+                <a href="{% url 'inactive_church_member_list' %}" class="menu-item"><span class="emoji">⛔</span> Inactive Church Member List</a>
+                <a href="{% url 'church_members_report' %}" class="menu-item"><span class="emoji">📉</span> Church Members Report</a>
+            </div>
+        </div>
+
+        <!-- News Section -->
+        <div class="menu-section">
+            <button class="section-toggle" onclick="toggleSection(this)">News <span class="toggle-icon">▼</span></button>
+            <div class="section-content">
+                <a href="{% url 'create_news' %}" class="menu-item"><span class="emoji">📰</span> Create News</a>
+                <a href="{% url 'news_list' %}" class="menu-item"><span class="emoji">📃</span> News List</a>
+                <a href="{% url 'public_news_list' %}" class="menu-item"><span class="emoji">🌐</span> Public News List</a>
+                <a href="{% url 'news_home' %}" class="menu-item"><span class="emoji">🏡</span> News Home</a>
+            </div>
+        </div>
+
+        <!-- Notifications Section -->
+        <div class="menu-section">
+            <button class="section-toggle" onclick="toggleSection(this)">Notifications <span class="toggle-icon">▼</span></button>
+            <div class="section-content">
+                <a href="{% url 'notifications_home' %}" class="menu-item"><span class="emoji">🔔</span> Notifications Home</a>
+                <a href="{% url 'create_notification' %}" class="menu-item"><span class="emoji">✉️</span> Create Notification</a>
+                <a href="{% url 'notification_list' %}" class="menu-item"><span class="emoji">📬</span> Notification List</a>
+            </div>
+        </div>
+
+        <!-- Properties Section -->
+        <div class="menu-section">
+            <button class="section-toggle" onclick="toggleSection(this)">Properties <span class="toggle-icon">▼</span></button>
+            <div class="section-content">
+                <a href="{% url 'properties_home' %}" class="menu-item"><span class="emoji">🏰</span> Properties Home</a>
+                <a href="{% url 'create_church_assets' %}" class="menu-item"><span class="emoji">🔨</span> Create Church Assets</a>
+                <a href="{% url 'upload_church_asset_media' %}" class="menu-item"><span class="emoji">📷</span> Upload Church Asset Media</a>
+                <a href="{% url 'church_assets_list' %}" class="menu-item"><span class="emoji">🛠️</span> Church Assets List</a>
+            </div>
+        </div>
+
+        <!-- Sacraments Section -->
+        <div class="menu-section">
+            <button class="section-toggle" onclick="toggleSection(this)">Sacraments <span class="toggle-icon">▼</span></button>
+            <div class="section-content">
+                <a href="{% url 'sacraments_home' %}" class="menu-item"><span class="emoji">⛪</span> Sacraments Home</a>
+                <a href="{% url 'baptized_members' %}" class="menu-item"><span class="emoji">💧</span> Baptized Members</a>
+                <a href="{% url 'add_baptism_members' %}" class="menu-item"><span class="emoji">➕</span> Add Baptism Members</a>
+                <a href="{% url 'confirmed_members' %}" class="menu-item"><span class="emoji">✝️</span> Confirmed Members</a>
+                <a href="{% url 'add_confirmation_members' %}" class="menu-item"><span class="emoji">➕</span> Add Confirmation Members</a>
+                <a href="{% url 'create_marriage' %}" class="menu-item"><span class="emoji">💍</span> Create Marriage</a>
+                <a href="{% url 'marriage_list' %}" class="menu-item"><span class="emoji">💒</span> Marriage List</a>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="menu-section">
+            <button class="section-toggle" onclick="toggleSection(this)">Settings <span class="toggle-icon">▼</span></button>
+            <div class="section-content">
+                <a href="{% url 'create_year' %}" class="menu-item"><span class="emoji">📅</span> Create Year</a>
+                <a href="{% url 'year_list' %}" class="menu-item"><span class="emoji">🗓️</span> Year List</a>
+                <a href="{% url 'settings_home' %}" class="menu-item"><span class="emoji">⚙️</span> Settings Home</a>
+                <a href="{% url 'create_outstation' %}" class="menu-item"><span class="emoji">🏡</span> Create Outstation</a>
+                <a href="{% url 'outstation_list' %}" class="menu-item"><span class="emoji">🗺️</span> Outstation List</a>
+                <a href="{% url 'create_cell' %}" class="menu-item"><span class="emoji">🤝</span> Create Cell</a>
+                <a href="{% url 'cell_list' %}" class="menu-item"><span class="emoji">🙏</span> Cell List</a>
+                <a href="{% url 'set_church_location' %}" class="menu-item"><span class="emoji">📍</span> Set Church Location</a>
+                <a href="{% url 'location_list' %}" class="menu-item"><span class="emoji">🗺️</span> Church Map</a>
+                <a href="{% url 'update_church_location' %}" class="menu-item"><span class="emoji">✏️</span> Update Church Location</a>
+                <a href="{% url 'view_church_location' %}" class="menu-item"><span class="emoji">👁️</span> View Church Location</a>
+                <a href="{% url 'delete_church_location' %}" class="menu-item"><span class="emoji">🗑️</span> Delete Church Location</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🚀 Styling -->
+<style>
+    .menu-button-container {
+        position: relative;
+    }
+
+    .menu-toggle-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        background: linear-gradient(130deg, #007bff, #0056d2);
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        transition: transform 0.2s ease, opacity 0.2s ease;
+        white-space: nowrap;
+        max-width: 120px; /* Limit button width */
+    }
+
+    .menu-toggle-button:hover {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+
+    .menu-toggle-button .emoji {
+        margin-right: 6px;
+        font-size: 18px;
+    }
+
+    .menu-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0; /* Align to right to avoid overflow */
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        max-height: 50vh; /* Limit height to half viewport */
+        overflow-y: auto;
+        z-index: 1000;
+        width: 280px; /* Fixed width */
+        max-width: 90vw; /* Respect viewport width */
+        padding: 10px 0;
+        box-sizing: border-box;
+    }
+
+    .menu-section {
+        margin: 5px 0;
+    }
+
+    .section-toggle {
+        width: 100%;
+        text-align: left;
+        padding: 8px 15px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        background: #f5f5f5;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .section-toggle:hover {
+        background: #e0e0e0;
+    }
+
+    .toggle-icon {
+        float: right;
+        font-size: 12px;
+    }
+
+    .section-content {
+        display: none; /* Hidden by default */
+        padding-left: 10px;
+    }
+
+    .section-content.active {
+        display: block;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 15px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        text-decoration: none;
+        transition: background 0.2s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .menu-item .emoji {
+        margin-right: 8px;
+        font-size: 16px;
+    }
+
+    .menu-item:hover {
+        background: #f0f0f0;
+    }
+
+    .menu-dropdown.active {
+        display: block;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .menu-toggle-button {
+            font-size: 12px;
+            padding: 6px 12px;
+            max-width: 100px;
+        }
+        .menu-dropdown {
+            width: 240px;
+            max-width: 85vw;
+        }
+        .section-toggle {
+            font-size: 13px;
+            padding: 6px 12px;
+        }
+        .menu-item {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+    }
+</style>
+
+<!-- JavaScript for Toggle -->
+<script>
+    function toggleMenu() {
+        const dropdown = document.getElementById('menuDropdown');
+        dropdown.classList.toggle('active');
+    }
+
+    function toggleSection(button) {
+        const content = button.nextElementSibling;
+        content.classList.toggle('active');
+        const icon = button.querySelector('.toggle-icon');
+        icon.textContent = content.classList.contains('active') ? '▲' : '▼';
+    }
+
+    document.addEventListener('click', function(event) {
+        const container = document.querySelector('.menu-button-container');
+        if (!container.contains(event.target)) {
+            document.getElementById('menuDropdown').classList.remove('active');
+            document.querySelectorAll('.section-content.active').forEach(section => {
+                section.classList.remove('active');
+                section.previousElementSibling.querySelector('.toggle-icon').textContent = '▼';
+            });
+        }
+    });
+</script>

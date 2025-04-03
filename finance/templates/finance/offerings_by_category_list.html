@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2 style="text-align: center; color: #007bff; margin-bottom: 20px;">
+  Offerings for Category: {{ category.name }}
+</h2>
+
+<!-- FILTERS (Client-Side Only) -->
+<div style="
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 800px;
+  margin: 0 auto 20px;
+">
+  <!-- Row 1: Year, Collected By, Recorded By -->
+  <div style="
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  ">
+    <!-- Year -->
+    <div style="flex: 1; min-width: 180px;">
+      <label for="id_year" style="font-weight: bold; margin-bottom: 5px; display: block;">
+        Year
+      </label>
+      <select id="id_year" style="
+        padding: 14px;
+        border-radius: 15px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        width: 100%;
+        box-sizing: border-box;
+      ">
+        <option value="">All Years</option>
+        {% for y in years %}
+          <option value="{{ y.year }}"
+            {% if y.is_current %}selected{% endif %}
+          >
+            {{ y.year }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Collected By -->
+    <div style="flex: 1; min-width: 180px;">
+      <label for="id_collected_by" style="font-weight: bold; margin-bottom: 5px; display: block;">
+        Collected By
+      </label>
+      <select id="id_collected_by" style="
+        padding: 14px;
+        border-radius: 15px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        width: 100%;
+        box-sizing: border-box;
+      ">
+        <option value="">All</option>
+        {% for member in collected_by_members %}
+          <option value="{{ member.full_name }}">
+            {{ member.full_name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Recorded By -->
+    <div style="flex: 1; min-width: 180px;">
+      <label for="id_recorded_by" style="font-weight: bold; margin-bottom: 5px; display: block;">
+        Recorded By
+      </label>
+      <select id="id_recorded_by" style="
+        padding: 14px;
+        border-radius: 15px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        width: 100%;
+        box-sizing: border-box;
+      ">
+        <option value="">All</option>
+        {% for member in recorded_by_members %}
+          <option value="{{ member.full_name }}">
+            {{ member.full_name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <!-- Row 2: Mass Name -->
+  <div style="display: flex; flex-direction: column;">
+    <label for="id_mass_name" style="font-weight: bold; margin-bottom: 5px; display: block;">
+      Mass Name
+    </label>
+    <input type="text"
+           id="id_mass_name"
+           placeholder="Search by Mass Name..."
+           style="
+             padding: 14px;
+             border-radius: 15px;
+             border: 1px solid #ccc;
+             font-size: 16px;
+             width: 100%;
+             box-sizing: border-box;
+           "
+    >
+  </div>
+
+  <!-- Row 3: From Date + To Date -->
+  <div style="
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  ">
+    <!-- From Date -->
+    <div style="flex: 1; min-width: 180px;">
+      <label for="id_from_date" style="font-weight: bold; margin-bottom: 5px; display: block;">
+        From Date
+      </label>
+      <input type="date"
+             id="id_from_date"
+             style="
+               padding: 14px;
+               border-radius: 15px;
+               border: 1px solid #ccc;
+               font-size: 16px;
+               width: 100%;
+               box-sizing: border-box;
+             "
+      >
+    </div>
+
+    <!-- To Date -->
+    <div style="flex: 1; min-width: 180px;">
+      <label for="id_to_date" style="font-weight: bold; margin-bottom: 5px; display: block;">
+        To Date
+      </label>
+      <input type="date"
+             id="id_to_date"
+             style="
+               padding: 14px;
+               border-radius: 15px;
+               border: 1px solid #ccc;
+               font-size: 16px;
+               width: 100%;
+               box-sizing: border-box;
+             "
+      >
+    </div>
+  </div>
+</div>
+
+<!-- TOTAL + TABLE -->
+<div style="max-width: 1200px; margin: 0 auto;">
+  <!-- Overall Total -->
+  <h4 style="font-weight: bold; color: #28a745; margin-bottom: 15px;">
+    Total Offerings (Filtered):
+    <span id="id_total_offerings" style="color: #dc3545;">
+      {{ total_offerings|floatformat:2 }}
+    </span> TZS
+  </h4>
+
+  <!-- Offerings Table -->
+  {% if offerings %}
+    <div style="overflow-x: auto; border-radius: 10px;">
+      <table id="offeringsTable" style="width: 100%; border-collapse: collapse; text-align: center;">
+        <thead>
+          <tr style="background: #007bff; color: white; font-weight: bold;">
+            <th style="padding: 10px;">#</th>
+            <th style="padding: 10px;">Date Given</th>
+            <th style="padding: 10px;">Service Time</th>
+            <th style="padding: 10px;">Amount (TZS)</th>
+            <th style="padding: 10px;">Collected By</th>
+            <th style="padding: 10px;">Recorded By</th>
+            <th style="padding: 10px;">Mass Name</th>
+            <th style="padding: 10px;">Notes</th>
+            <th style="padding: 10px;">Date Created</th>
+            <th style="padding: 10px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for off in offerings %}
+            <tr style="border-bottom: 1px solid #ddd;"
+                data-year="{% if off.year %}{{ off.year.year }}{% endif %}"
+                data-collected-by="{% if off.collected_by %}{{ off.collected_by.full_name|lower }}{% endif %}"
+                data-recorded-by="{% if off.recorded_by %}{{ off.recorded_by.full_name|lower }}{% endif %}"
+                data-mass-name="{{ off.mass_name|default_if_none:''|lower }}"
+                data-date-given="{{ off.date_given|date:'Y-m-d' }}"
+                data-amount="{{ off.amount }}"
+            >
+              <td style="padding: 8px;">{{ forloop.counter }}</td>
+              <td style="padding: 8px;">{{ off.date_given|date:"d M Y" }}</td>
+              <td style="padding: 8px;">{{ off.service_time }}</td>
+              <td style="padding: 8px; font-weight: bold; color: #28a745;">
+                {{ off.amount|floatformat:2 }}
+              </td>
+              <td style="padding: 8px;">
+                {% if off.collected_by %}
+                  {{ off.collected_by.full_name }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td style="padding: 8px;">
+                {% if off.recorded_by %}
+                  {{ off.recorded_by.full_name }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td style="padding: 8px;">{{ off.mass_name|default_if_none:"-" }}</td>
+              <td style="padding: 8px;">{{ off.notes|default:"-" }}</td>
+              <td style="padding: 8px;">{{ off.date_created|date:"d M Y, H:i" }}</td>
+
+              <!-- Round Buttons in One Line -->
+              <td style="white-space: nowrap; padding: 8px;">
+                <!-- Update (📝) -->
+                <a
+                  href="{% url 'offerings_update_by_category' cat_pk=category.pk pk=off.pk %}"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 40px;
+                    height: 40px;
+                    margin-right: 8px;
+                    background-color: #17a2b8;
+                    color: #fff;
+                    border-radius: 50%;
+                    text-decoration: none;
+                    font-size: 18px;
+                  "
+                  title="Update"
+                >
+                  📝
+                </a>
+
+                <!-- Delete (🗑️) -->
+                <a
+                  href="{% url 'offerings_delete' pk=off.pk %}"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 40px;
+                    height: 40px;
+                    background-color: #dc3545;
+                    color: #fff;
+                    border-radius: 50%;
+                    text-decoration: none;
+                    font-size: 18px;
+                  "
+                  title="Delete"
+                >
+                  🗑️
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="font-style: italic; color: #999; margin-top: 15px;">
+      No offerings found in this category (or none match your filter).
+    </p>
+  {% endif %}
+</div>
+
+<!-- JavaScript for Client-Side Filtering -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const yearSelect        = document.getElementById("id_year");
+  const collectedBySelect = document.getElementById("id_collected_by");
+  const recordedBySelect  = document.getElementById("id_recorded_by");
+  const massNameInput     = document.getElementById("id_mass_name");
+  const fromDateInput     = document.getElementById("id_from_date");
+  const toDateInput       = document.getElementById("id_to_date");
+
+  const tableRows = document.querySelectorAll("#offeringsTable tbody tr");
+  const totalOfferingsElement = document.getElementById("id_total_offerings");
+
+  function filterRows() {
+    const selectedYear        = yearSelect.value.trim();
+    const selectedCollectedBy = collectedBySelect.value.trim().toLowerCase();
+    const selectedRecordedBy  = recordedBySelect.value.trim().toLowerCase();
+    const massNameFilter      = massNameInput.value.trim().toLowerCase();
+    const fromDate            = fromDateInput.value;
+    const toDate              = toDateInput.value;
+
+    let total = 0;
+
+    tableRows.forEach((row) => {
+      const rowYear        = (row.getAttribute("data-year") || "").trim();
+      const rowCollectedBy = (row.getAttribute("data-collected-by") || "").trim();
+      const rowRecordedBy  = (row.getAttribute("data-recorded-by") || "").trim();
+      const rowMassName    = (row.getAttribute("data-mass-name") || "").trim();
+      const rowDateGiven   = row.getAttribute("data-date-given");
+      const rowAmount      = parseFloat(row.getAttribute("data-amount")) || 0;
+
+      let visible = true;
+
+      if (selectedYear && rowYear !== selectedYear) {
+        visible = false;
+      }
+      if (selectedCollectedBy && rowCollectedBy !== selectedCollectedBy) {
+        visible = false;
+      }
+      if (selectedRecordedBy && rowRecordedBy !== selectedRecordedBy) {
+        visible = false;
+      }
+      if (massNameFilter && !rowMassName.includes(massNameFilter)) {
+        visible = false;
+      }
+      if (fromDate && rowDateGiven < fromDate) {
+        visible = false;
+      }
+      if (toDate && rowDateGiven > toDate) {
+        visible = false;
+      }
+
+      row.style.display = visible ? "" : "none";
+      if (visible) {
+        total += rowAmount;
+      }
+    });
+
+    totalOfferingsElement.textContent = total.toFixed(2);
+  }
+
+  yearSelect.addEventListener("change", filterRows);
+  collectedBySelect.addEventListener("change", filterRows);
+  recordedBySelect.addEventListener("change", filterRows);
+  massNameInput.addEventListener("input", filterRows);
+  fromDateInput.addEventListener("change", filterRows);
+  toDateInput.addEventListener("change", filterRows);
+
+  filterRows();
+});
+</script>
+{% endblock %}

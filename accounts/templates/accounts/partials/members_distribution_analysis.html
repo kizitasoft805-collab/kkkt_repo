@@ -1,0 +1,81 @@
+{% if members_distribution_data %}
+    <h3>
+        🙍‍♂️ Members Distribution by Cell
+        <button id="downloadMembersChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <div style="display: flex; justify-content: center;">
+        <canvas id="membersDistributionChart" width="200" height="200"></canvas>
+    </div>
+
+    <p id="membersAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Parse JSON data from Django
+        const membersData = JSON.parse('{{ members_distribution_data|safe }}');
+
+        let membersChart;  // Store Chart.js instance globally
+
+        if (membersData.labels.length > 0) {
+            const doughnutCtx = document.getElementById('membersDistributionChart').getContext('2d');
+
+            // Generate dynamic colors for each cell
+            const backgroundColors = membersData.labels.map((_, index) => `hsl(${index * 40}, 70%, 50%)`);
+
+            // Create Doughnut Chart with Data Labels (Percentages & Cell Names)
+            membersChart = new Chart(doughnutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: membersData.labels,
+                    datasets: [{
+                        data: membersData.data,
+                        backgroundColor: backgroundColors,
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        datalabels: {
+                            color: '#000',  // Set label text color to black for readability
+                            anchor: 'center',
+                            align: 'center',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function(value, ctx) {
+                                return `${ctx.chart.data.labels[ctx.dataIndex]}: ${value}%`;
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Display analysis
+            document.getElementById("membersAnalysis").innerHTML = `<strong>${membersData.analysis}</strong>`;
+        } else {
+            document.getElementById("membersAnalysis").innerHTML = `<p>No member data available.</p>`;
+        }
+
+        // Function to Download Chart as Image
+        document.getElementById("downloadMembersChart").addEventListener("click", function() {
+            if (membersChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('membersDistributionChart').toDataURL('image/png');
+                link.download = 'Members_Distribution_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No member data available.</p>
+{% endif %}

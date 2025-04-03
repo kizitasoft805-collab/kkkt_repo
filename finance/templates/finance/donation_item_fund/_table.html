@@ -1,0 +1,20 @@
+<div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; text-align: center;">
+        <thead style="background-color: #007bff; color: white;">
+            <tr>
+                <th style="padding: 12px;">⚙️ Actions</th>
+                <th style="padding: 12px;">📅 Period</th>
+                <th style="padding: 12px;">⛪ Mass Name</th>
+                <th style="padding: 12px;">💰 Amount (TZS)</th>
+                <th style="padding: 12px;">📝 Notes</th>
+                <th style="padding: 12px;">📆 Date Created</th>
+                <th style="padding: 12px;">🕰️ Date Updated</th>
+            </tr>
+        </thead>
+        <tbody id="donation-item-table-body">
+            {% for item in donation_items %}
+                {% include 'finance/donation_item_fund/_table_row.html' with item=item contribution=contribution %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

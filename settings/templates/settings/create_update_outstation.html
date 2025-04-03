@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="outstation-container">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div class="header-row">
+        <!-- Back Button -->
+        <button onclick="window.history.back()" class="back-btn">
+            <span class="emoji">⬅️</span>
+        </button>
+
+        <!-- Page Title -->
+        <h2 class="outstation-title">
+            {% if outstation %} ✏️ Update OutStation {% else %} 🏡 Create a New OutStation {% endif %}
+        </h2>
+
+        <!-- Menu Button Partial -->
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    <form method="POST" class="outstation-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="form-label">OutStation Name:</label>
+            {{ form.name }}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Description:</label>
+            {{ form.description }}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Location:</label>
+            {{ form.location }}
+        </div>
+
+        <button type="submit" class="submit-btn">
+            {% if outstation %} ✅ Update OutStation {% else %} ➕ Create OutStation {% endif %}
+        </button>
+    </form>
+</div>
+
+<!-- Success Message -->
+
+<style>
+    /* 🌟 Overall Free Layout */
+    .outstation-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        text-align: center;
+        width: 100vw; /* Ensures full width */
+        max-width: 100%;
+        overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    /* Header Row Styling */
+    .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        gap: 10px; /* Space between elements */
+    }
+
+    .outstation-title {
+        font-size: clamp(18px, 4vw, 26px); /* Scale with viewport */
+        font-weight: bold;
+        color: #007bff;
+        margin: 0; /* Remove default margin */
+        flex-grow: 1; /* Take available space */
+        text-align: center;
+        white-space: normal; /* Allow wrapping */
+    }
+
+    /* Back Button Styling */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(12px, 2.5vw, 14px);
+        font-weight: bold;
+        color: #007bff;
+        padding: 8px 12px;
+        border-radius: 20px;
+        background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0; /* Prevent shrinking too much */
+    }
+
+    .back-btn .emoji {
+        font-size: clamp(16px, 3vw, 20px);
+    }
+
+    .back-btn:hover {
+        background: #bbdefb;
+        transform: scale(1.05);
+    }
+
+    /* 📌 Form Styling */
+    .outstation-form {
+        width: 95%; /* Ensures form takes almost full viewport width */
+        max-width: 500px; /* Prevents fields from being too large on desktops */
+        text-align: left;
+    }
+
+    /* 🎨 Form Input Fields */
+    .form-group {
+        width: 100%;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .form-label {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+        text-align: left;
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%; /* Make inputs fill full width */
+        max-width: 100%; /* Ensure no overflow */
+        padding: 14px;
+        font-size: 18px;
+        border-radius: 30px; /* iPhone-like rounded input */
+        border: 1px solid #ccc;
+        outline: none;
+        transition: all 0.3s ease;
+        background: none;
+        color: black;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        text-align: left;
+    }
+
+    .form-group textarea {
+        resize: none;
+        height: 100px;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+
+    /* 📌 Submit Button */
+    .submit-btn {
+        width: auto;
+        padding: 14px 20px;
+        font-size: 18px;
+        border-radius: 30px;
+        border: none;
+        background: #28a745;
+        color: white;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        display: block;
+        margin: 10px auto;
+    }
+
+    .submit-btn:hover {
+        background: #218838;
+        transform: scale(1.05);
+    }
+
+    /* 📌 Ensuring Form Fields Fit Perfectly on Phones */
+    @media (max-width: 768px) {
+        .outstation-form {
+            width: 100%;
+            padding: 0 5%;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+        }
+    }
+</style>
+
+{% endblock %}

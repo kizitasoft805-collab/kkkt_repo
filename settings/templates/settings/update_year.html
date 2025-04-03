@@ -1,0 +1,99 @@
+<!-- settings/templates/settings/update_year.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+        padding: 0 10px; /* Adjusted padding */
+        box-sizing: border-box;
+        gap: 10px; /* Space between elements */
+    ">
+        <!-- Back Button -->
+        <button onclick="window.history.back()" style="
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(12px, 2.5vw, 14px);
+            font-weight: bold;
+            color: #007bff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        " onmouseover="this.style.background='linear-gradient(130deg, #bbdefb, #bbdefb)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='linear-gradient(130deg, #e3f2fd, #bbdefb)'; this.style.transform='scale(1)'">
+            <span style="font-size: clamp(16px, 3vw, 20px);">⬅️</span>
+        </button>
+
+        <!-- Page Title -->
+        <h2 style="
+            font-size: clamp(18px, 4vw, 24px); /* Scale with viewport, max matches original */
+            font-weight: bold;
+            color: #007bff;
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+            white-space: normal; /* Allow wrapping */
+        ">
+            ✏️ Update Year
+        </h2>
+
+        <!-- Menu Button Partial -->
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green; font-size: 14px;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 400px;
+    ">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" style="
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(130deg, #ffc107, #ff9800);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            💾 Update Year
+        </button>
+    </form>
+</div>
+{% endblock %}

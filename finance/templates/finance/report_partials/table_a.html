@@ -1,0 +1,37 @@
+<!-- finance/report_partials/table_a.html -->
+
+<h4>Table A — Offerings for {{ current_month }}/{{ current_year }}</h4>
+<table style="border-collapse: collapse; width: 100%; margin-bottom: 1em;">
+  <thead>
+    <tr style="background-color: #7af86e;">
+      <th style="padding: 8px; border: 1px solid #eef1f1;">A</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">Main Offering</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">Amount(TZS)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in categories_data %}
+      <tr>
+        <!-- A Column: uses forloop.counter -->
+        <td style="padding: 8px; border: 1px solid #ccc;">{{ forloop.counter }}</td>
+
+        <!-- Main Offering Column: category name -->
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ item.category.name }}
+        </td>
+
+        <!-- Amount Column: sum for this month/year -->
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ item.total_amount|floatformat:2 }}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Table A Grand Total -->
+{% if table_a_total %}
+  <p><strong>Total (Table A): {{ table_a_total|floatformat:2 }} TZS</strong></p>
+{% else %}
+  <p><em>No offerings found this month.</em></p>
+{% endif %}

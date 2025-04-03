@@ -1,0 +1,91 @@
+<!-- settings/templates/settings/create_year.html -->
+
+{% extends 'secretary_base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Align content near the top */
+    min-height: 100vh;
+    padding: 20px;
+    padding-top: 10px; /* Adjust space from the topbar */
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+">
+
+    <!-- Back Button -->
+    <div style="
+        align-self: flex-start; /* Align button to the left */
+        margin-bottom: 20px;
+    ">
+        <a href="{% url 'secretary_year_list' %}" style="
+            display: inline-flex; /* Flex for alignment */
+            align-items: center; /* Vertically align content */
+            gap: 5px; /* Space between icon and text */
+            font-size: 14px;
+            font-weight: bold;
+            color: #007bff;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        " onmouseover="this.style.backgroundColor='#bbdefb'; this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span class="material-icons" style="font-size: 20px;">arrow_back</span>
+            
+        </a>
+    </div>
+
+    <!-- Page Title -->
+    <h2 style="
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 20px;
+    ">
+        🗓️ Create Year
+    </h2>
+
+    <!-- Display Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green; font-size: 14px;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Form -->
+    <form method="POST" style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 400px;
+    ">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" style="
+            display: inline-flex; /* Use flex for alignment */
+            align-items: center; /* Align icon and text vertically */
+            justify-content: center;
+            gap: 10px; /* Space between icon and text */
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(130deg, #007bff, #0056b3);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <span class="material-icons" style="font-size: 20px;">add_circle</span>
+            Create Year
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% if special_contributions_data %}
+    <h3>
+        🏆 Special Contributions Overview (Current Year)
+        <button id="downloadSpecialContributionsChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <!-- Responsive Chart Container -->
+    <div class="special-contributions-chart-container">
+        <canvas id="specialContributionsChart"></canvas>
+    </div>
+
+    <p id="specialContributionsAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* 📊 Increase Y-Axis Length & Responsive Sizing */
+        .special-contributions-chart-container {
+            max-width: 700px;
+            height: 500px; /* Increased height for better visibility */
+            margin: 0 auto;
+        }
+
+        /* Ensure Proper Sizing on Smaller Screens */
+        @media screen and (max-width: 600px) {
+            .special-contributions-chart-container {
+                max-width: 100%;
+                height: 550px;  /* Increased height for small viewports */
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const specialData = JSON.parse('{{ special_contributions_data|safe }}');
+
+        let specialChart;  // Store Chart.js instance globally
+
+        if (specialData.labels.length > 0) {
+            const ctx = document.getElementById('specialContributionsChart').getContext('2d');
+
+            specialChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: specialData.labels,
+                    datasets: [{
+                        label: 'Total Amount (TZS)',
+                        data: specialData.data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,  // Ensures proper aspect ratio
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMin: 0,
+                            suggestedMax: Math.max(...specialData.data) + 10,  // Auto-adjust Y-axis
+                            ticks: {
+                                stepSize: 5,  // Ensures proper spacing
+                                font: {
+                                    size: 14  // Larger font for readability
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Display analysis
+            document.getElementById("specialContributionsAnalysis").innerHTML = `<strong>${specialData.analysis}</strong>`;
+        } else {
+            document.getElementById("specialContributionsAnalysis").innerHTML = `<p>No Special Contributions data available for the current year.</p>`;
+        }
+
+        // Function to Download Chart as Image
+        document.getElementById("downloadSpecialContributionsChart").addEventListener("click", function() {
+            if (specialChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('specialContributionsChart').toDataURL('image/png');
+                link.download = 'Special_Contributions_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No Special Contributions data available for the current year.</p>
+{% endif %}

@@ -1,0 +1,188 @@
+{% extends 'secretary_base.html' %}
+
+{% block content %}
+<!-- ✅ Page Title (No Background) -->
+<h2 style="
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 15px;
+">
+    ➕ Create Church Members
+</h2>
+
+<!-- ✅ Responsive Form without Frames or Background Colors -->
+<form method="POST" enctype="multipart/form-data" style="
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    width: 100%;
+    padding: 0 10px; /* no frame, just minimal padding */
+    box-sizing: border-box;
+">
+    {% csrf_token %}
+    
+    <!-- Management Form for FormSet -->
+    {{ formset.management_form }}
+    
+    <!-- Display Django messages if any -->
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green; text-align: center;">
+                {{ message }}
+            </p>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Where multiple member forms are displayed -->
+    <div id="formset-container" style="width: 100%;">
+        <!-- Render each form in the formset -->
+        {% for form in formset.forms %}
+            <div style="margin-bottom: 20px;">
+                <h3 style="font-size: 18px; color: #333; margin-bottom: 10px;">
+                    ➕ Add New Church Member {{ forloop.counter }}
+                </h3>
+
+                {% for field in form.visible_fields %}
+                    <div style="margin-bottom: 10px;">
+                        <label for="{{ field.id_for_label }}" style="font-weight: bold;">
+                            {{ field.label }}{% if field.field.required %} *{% endif %}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <small style="color: red;">
+                                {{ field.errors|join:", " }}
+                            </small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- ✅ “Add More Form” Button (No Gradient) -->
+    <button
+        type="button"
+        id="add-more-button"
+        style="
+            width: 100%;
+            max-width: 100%;
+            background: #4caf50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        "
+    >
+        ➕ Add More Form
+    </button>
+
+    <!-- ✅ Submit Button (No Gradient) -->
+    <button
+        type="submit"
+        style="
+            width: 100%;
+            max-width: 100%;
+            background: #007bff;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        "
+    >
+        ✅ Save Church Members
+    </button>
+</form>
+
+<!-- ❌ Cancel Link (No Frame) -->
+<a href="{% url 'secretary_church_member_list' %}"
+   style="
+       display: block;
+       margin-top: 15px;
+       text-align: center;
+       color: #dc3545;
+       font-weight: bold;
+       text-decoration: none;
+       width: 100%;
+   "
+>
+    ❌ Cancel
+</a>
+
+<!-- === Empty Form Template for duplicating (No Background) === -->
+<template id="empty-form-template">
+    <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 18px; color: #333; margin-bottom: 10px;">
+            ➕ Add New Church Member __FORM_INDEX__
+        </h3>
+        {{ formset.empty_form.as_p|safe }}
+    </div>
+</template>
+
+<!-- === JavaScript: Cloning Empty Form + Updating TOTAL_FORMS === -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addMoreButton = document.getElementById('add-more-button');
+        const formsetContainer = document.getElementById('formset-container');
+        let totalFormsInput = document.getElementById('id_form-TOTAL_FORMS');
+        let totalForms = parseInt(totalFormsInput.value);
+
+        // Grab empty form HTML
+        const emptyFormTemplate = document.getElementById('empty-form-template').innerHTML;
+
+        addMoreButton.addEventListener('click', () => {
+            // Replace placeholders: __prefix__ => totalForms
+            // Also insert a dynamic __FORM_INDEX__ for the heading
+            let newFormHtml = emptyFormTemplate
+                .replace(/__prefix__/g, totalForms)
+                .replace(/__FORM_INDEX__/g, totalForms + 1);
+
+            // Create new div and inject
+            const newDiv = document.createElement('div');
+            newDiv.innerHTML = newFormHtml;
+
+            // Append new form to container
+            formsetContainer.appendChild(newDiv);
+
+            // Increment form count
+            totalForms++;
+            totalFormsInput.value = totalForms;
+        });
+    });
+</script>
+
+<!-- ✅ Inline Styles for Full Viewport Adaptation & iPhone-Like Inputs (No extra backgrounds) -->
+<style>
+    /* iPhone-like inputs (rounded corners, focus glow) */
+    input, select, textarea {
+        width: 100%;
+        max-width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+    input:focus, select:focus, textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    }
+
+    /* Mobile Optimization */
+    @media only screen and (max-width: 768px) {
+        form {
+            width: 100%;
+            padding: 0 10px;
+        }
+        input, select, textarea {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}

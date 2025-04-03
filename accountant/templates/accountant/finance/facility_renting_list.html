@@ -1,0 +1,24 @@
+{% extends 'accountant_base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <!-- 📋 Title & Add Button -->
+    {% include 'accountant/finance/facility_renting/_header.html' %}
+
+    <!-- ✅ Filter Section (New) -->
+    {% include 'accountant/finance/facility_renting/_filters.html' with years=years properties=properties %}
+
+    <!-- ✅ Display Messages -->
+    {% include 'accountant/finance/facility_renting/_messages.html' %}
+
+    <!-- 📊 Renting Table -->
+    {% if rentings %}
+        {% include 'accountant/finance/facility_renting/_table.html' with rentings=rentings %}
+    {% else %}
+        <p style="text-align: center; font-weight: bold; color: #6c757d; margin-top: 20px;">
+            No facility rentings found.
+        </p>
+    {% endif %}
+
+{% endblock %}

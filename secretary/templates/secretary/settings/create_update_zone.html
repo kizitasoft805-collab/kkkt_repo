@@ -1,0 +1,139 @@
+{% extends 'secretary_base.html' %}
+
+{% block content %}
+<div class="zone-container">
+    <h2 class="zone-title">
+        {% if zone %} ✏️ Update Zone {% else %} 🏡 Create a New Zone {% endif %}
+    </h2>
+
+    <form method="POST" class="zone-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="form-label">Zone Name:</label>
+            {{ form.name }}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Description:</label>
+            {{ form.description }}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Location:</label>
+            {{ form.location }}
+        </div>
+
+        <button type="submit" class="submit-btn">
+            {% if zone %} ✅ Update Zone {% else %} ➕ Create Zone {% endif %}
+        </button>
+    </form>
+</div>
+
+<!-- Success Message -->
+
+<style>
+    /* 🌟 Overall Free Layout */
+    .zone-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        text-align: center;
+        width: 100vw; /* Ensures full width */
+        max-width: 100%;
+    }
+
+    .zone-title {
+        font-size: 26px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 20px;
+    }
+
+    /* 📌 Form Styling */
+    .zone-form {
+        width: 95%; /* Ensures form takes almost full viewport width */
+        max-width: 500px; /* Prevents fields from being too large on desktops */
+        text-align: left;
+    }
+
+    /* 🎨 Form Input Fields */
+    .form-group {
+        width: 100%;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .form-label {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+        text-align: left;
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%; /* Make inputs fill full width */
+        max-width: 100%; /* Ensure no overflow */
+        padding: 14px;
+        font-size: 18px;
+        border-radius: 30px; /* iPhone-like rounded input */
+        border: 1px solid #ccc;
+        outline: none;
+        transition: all 0.3s ease;
+        background: none;
+        color: black;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        text-align: left;
+    }
+
+    .form-group textarea {
+        resize: none;
+        height: 100px;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+
+    /* 📌 Submit Button */
+    .submit-btn {
+        width: auto;
+        padding: 14px 20px;
+        font-size: 18px;
+        border-radius: 30px;
+        border: none;
+        background: #28a745;
+        color: white;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        display: block;
+        margin: 10px auto;
+    }
+
+    .submit-btn:hover {
+        background: #218838;
+        transform: scale(1.05);
+    }
+
+    /* 📌 Ensuring Form Fields Fit Perfectly on Phones */
+    @media (max-width: 768px) {
+        .zone-form {
+            width: 100%;
+            padding: 0 5%;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+        }
+    }
+</style>
+
+{% endblock %}

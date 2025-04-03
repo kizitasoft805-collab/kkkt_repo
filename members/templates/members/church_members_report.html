@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="report-container">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div class="header-row">
+        <!-- Back Button -->
+        <button onclick="window.history.back()" class="back-btn">
+            <span class="emoji">⬅️</span>
+        </button>
+
+        <!-- Report Title -->
+        <h1 class="report-title">Church Members Report</h1>
+
+        <!-- Menu Button Partial -->
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    <button class="print-button" onclick="window.print()">
+        🖨️ Print
+    </button>
+
+    <div class="print-area">
+        <!-- ============= 1) Basic Totals ============= -->
+        <div class="report-section">
+            <h2>Basic Totals</h2>
+            <ul>
+                <li><strong>Total Members:</strong> {{ total_members }}</li>
+                <li><strong>Total Active Members:</strong> {{ total_active }}</li>
+                <li><strong>Total Inactive Members:</strong> {{ total_inactive }}</li>
+                <li><strong>Active Males:</strong> {{ active_male }}</li>
+                <li><strong>Active Females:</strong> {{ active_female }}</li>
+                <li><strong>Inactive Males:</strong> {{ inactive_male }}</li>
+                <li><strong>Inactive Females:</strong> {{ inactive_female }}</li>
+            </ul>
+        </div>
+
+        <!-- ============= 2) Outstation & Cell Stats ============= -->
+        <div class="report-section">
+            <h2>Outstation & Cell Statistics</h2>
+            <p><strong>Total Outstations:</strong> {{ total_outstations }}</p>
+            <p><strong>Total Cells:</strong> {{ total_cells }}</p>
+
+            <div class="table-responsive">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Cell (Outstation)</th>
+                            <th rowspan="2">Total Members</th>
+                            <th colspan="2">Overall Status</th>
+                            <th colspan="2">Active Gender</th>
+                            <th colspan="2">Inactive Gender</th>
+                        </tr>
+                        <tr>
+                            <th>Active</th>
+                            <th>Inactive</th>
+                            <th>Male</th>
+                            <th>Female</th>
+                            <th>Male</th>
+                            <th>Female</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cstats in cell_stats_list %}
+                        <tr>
+                            <td>{{ cstats.cell_display }}</td>
+                            <td>{{ cstats.total_members }}</td>
+                            <td>{{ cstats.active_members }}</td>
+                            <td>{{ cstats.inactive_members }}</td>
+                            <td>{{ cstats.active_male }}</td>
+                            <td>{{ cstats.active_female }}</td>
+                            <td>{{ cstats.inactive_male }}</td>
+                            <td>{{ cstats.inactive_female }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                <strong>Largest Cell:</strong>
+                {% if largest_cell %}
+                    <span class="highlight">{{ largest_cell.cell_display }}</span> 
+                    ({{ largest_cell.total_members }} total)
+                {% else %}
+                    None
+                {% endif %}
+            </p>
+            <p>
+                <strong>Smallest Cell:</strong>
+                {% if smallest_cell %}
+                    <span class="highlight">{{ smallest_cell.cell_display }}</span>
+                    ({{ smallest_cell.total_members }} total)
+                {% else %}
+                    None
+                {% endif %}
+            </p>
+
+            <h3>Cell Active Members - Sacramental & Marital Breakdown</h3>
+            <div class="table-responsive">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Cell (Outstation)</th>
+                            <th colspan="2">Baptized</th>
+                            <th colspan="2">Confirmed</th>
+                            <th colspan="2">Married (M/F)</th>
+                            <th colspan="2">Unmarried (M/F)</th>
+                        </tr>
+                        <tr>
+                            <th><span style="color:green;">✔️</span></th>
+                            <th><span style="color:red;">❌</span></th>
+                            <th><span style="color:green;">✔️</span></th>
+                            <th><span style="color:red;">❌</span></th>
+                            <th>M</th><th>F</th>
+                            <th>M</th><th>F</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cstats in cell_stats_list %}
+                        <tr>
+                            <td>{{ cstats.cell_display }}</td>
+                            <td>{{ cstats.active_baptized }}</td>
+                            <td>{{ cstats.active_unbaptized }}</td>
+                            <td>{{ cstats.active_confirmed }}</td>
+                            <td>{{ cstats.active_unconfirmed }}</td>
+                            <td>{{ cstats.married_males }}</td>
+                            <td>{{ cstats.married_females }}</td>
+                            <td>{{ cstats.unmarried_males }}</td>
+                            <td>{{ cstats.unmarried_females }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============= 3) Overall Sacramental & Marital Stats (Active) ============= -->
+        <div class="report-section">
+            <h2>Overall Sacramental & Marital (Active Only)</h2>
+            <ul>
+                <li>Baptized: {{ active_baptized }}</li>
+                <li>Unbaptized: {{ active_unbaptized }}</li>
+                <li>Confirmed: {{ active_confirmed }}</li>
+                <li>Unconfirmed: {{ active_unconfirmed }}</li>
+                <li>Married Males: {{ married_males }}</li>
+                <li>Unmarried Males: {{ unmarried_males }}</li>
+                <li>Married Females: {{ married_females }}</li>
+                <li>Unmarried Females: {{ unmarried_females }}</li>
+            </ul>
+        </div>
+
+        <!-- ============= 4) Comments/Advice ============= -->
+        <div class="report-section">
+            <h2>Comments & Advice</h2>
+            <p>{{ comments_explanations_advice }}</p>
+        </div>
+    </div> <!-- end .print-area -->
+</div>
+
+<style>
+    /* Container */
+    .report-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        width: 100%;
+        overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    /* Header Row Styling */
+    .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+        padding: 0 10px;
+        box-sizing: border-box;
+        gap: 10px; /* Space between elements */
+    }
+
+    /* Back Button Styling */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(12px, 2.5vw, 14px);
+        font-weight: bold;
+        color: #007bff;
+        padding: 8px 12px;
+        border-radius: 20px;
+        background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0; /* Prevent shrinking too much */
+    }
+
+    .back-btn .emoji {
+        font-size: clamp(16px, 3vw, 20px);
+    }
+
+    .back-btn:hover {
+        background: #bbdefb;
+        transform: scale(1.05);
+    }
+
+    /* Report Title */
+    .report-title {
+        font-size: clamp(1.5rem, 4vw, 2rem); /* Responsive scaling */
+        margin: 0; /* Adjusted for header row */
+        flex-grow: 1; /* Take available space */
+        text-align: center;
+        white-space: normal; /* Allow wrapping */
+    }
+
+    /* Minimal styling for clarity */
+    .report-section {
+        margin-bottom: 2rem;
+    }
+    .report-section h2 {
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 0.5rem;
+    }
+
+    .print-button {
+        background-color: #007AFF;
+        color: #fff;
+        padding: 0.7rem 1.2rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-bottom: 1rem;
+    }
+    .print-button:hover {
+        background-color: #005BB5;
+    }
+
+    .table-responsive {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+    }
+
+    .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+    }
+
+    .stats-table th, .stats-table td {
+        border: 1px solid #ccc;
+        padding: 0.5rem;
+        text-align: center;
+    }
+
+    .highlight {
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    @media print {
+        body {
+            visibility: hidden !important;
+            position: relative !important;
+        }
+        .print-area {
+            visibility: visible !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            background-color: #fff;
+            overflow: visible !important;
+            z-index: 9999 !important;
+        }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .report-title {
+            font-size: clamp(1.2rem, 3.5vw, 1.5rem); /* Smaller on small screens */
+        }
+    }
+</style>
+{% endblock %}

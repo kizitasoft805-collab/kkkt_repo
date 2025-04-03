@@ -1,0 +1,125 @@
+{% extends 'secretary_base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Page Header -->
+<h2 class="header-title">🧑‍💼 Leaders Management</h2>
+
+<!-- Leaders Summary Boxes -->
+<div class="summary-boxes">
+    <!-- ✅ Active Leaders Box -->
+    <a href="{% url 'secretary_leader_list' %}" class="summary-box active-box">
+        <div class="box-content">
+            <div>
+                <h3>✅ Active Leaders</h3>
+                <!-- Show the total number of leaders who are Active -->
+                <p class="count">{{ total_active_leaders }}</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- ❌ Inactive Leaders Box -->
+    <a href="{% url 'secretary_inactive_leader_list' %}" class="summary-box inactive-box">
+        <div class="box-content">
+            <div>
+                <h3>❌ Inactive Leaders</h3>
+                <!-- Show the total number of leaders who are Inactive -->
+                <p class="count">{{ total_inactive_leaders }}</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+</div>
+
+<!-- 📊 Leaders Distribution Analysis Graph -->
+<div class="leaders-distribution-section">
+    {% include 'leaders/partials/leaders_distribution_trend.html' %}
+</div>
+
+<!-- 🚀 iPhone-Like Styling -->
+<style>
+    /* 🌍 General Layout */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* 🔹 Header Title */
+    .header-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    /* 📊 Summary Boxes */
+    .summary-boxes {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 800px;
+        margin: auto;
+    }
+
+    /* 📦 Leader Box Styling */
+    .summary-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 300px;
+        height: 80px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 15px 20px;
+        border-radius: 15px;
+        color: white;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    /* 🎨 Box Colors */
+    .active-box {
+        background: linear-gradient(130deg, #4CAF50, #388E3C); /* Green */
+    }
+
+    .inactive-box {
+        background: linear-gradient(130deg, #FF5722, #E64A19); /* Red-Orange */
+    }
+
+    /* 🏹 More Info Arrow */
+    .box-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .more-info {
+        font-size: 24px;
+        transition: transform 0.2s ease;
+    }
+
+    /* 🏠 Hover Effects */
+    .summary-box:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .summary-box:hover .more-info {
+        transform: translateX(5px);
+    }
+
+    /* 📱 Responsive Design */
+    @media screen and (max-width: 600px) {
+        .summary-box {
+            width: 90%;
+        }
+    }
+</style>
+
+{% endblock %}

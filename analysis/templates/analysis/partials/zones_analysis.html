@@ -1,0 +1,93 @@
+{% if zones_data %}
+    <h3>
+        Zones Membership Analysis
+        <button id="downloadZonesChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <!-- Container for the line chart -->
+    <div class="zones-chart-container">
+        <canvas id="zonesLineChart"></canvas>
+    </div>
+
+    <!-- Graph Description -->
+    <p id="zonesAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .zones-chart-container {
+            max-width: 700px; /* Reasonable default width */
+            height: 400px;    /* Reasonable default height */
+            margin: 0 auto;
+        }
+        @media screen and (max-width: 600px) {
+            .zones-chart-container {
+                max-width: 100%;
+                height: 450px; /* slightly bigger for mobile readability */
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const zonesData = JSON.parse('{{ zones_data|safe }}');
+
+        let zonesChart; // Chart.js instance
+
+        if (zonesData.labels.length > 0) {
+            const ctx = document.getElementById('zonesLineChart').getContext('2d');
+
+            zonesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: zonesData.labels,    // e.g. ["Zone A", "Zone B", ...]
+                    datasets: [{
+                        label: 'Members in Each Zone',
+                        data: zonesData.data,     // e.g. [10, 15, 8, ...]
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Display the analysis
+            document.getElementById("zonesAnalysis").innerHTML = `<strong>${zonesData.analysis}</strong>`;
+        } else {
+            document.getElementById("zonesAnalysis").innerHTML = `<p>No zone data available.</p>`;
+        }
+
+        // Download button logic
+        document.getElementById("downloadZonesChart").addEventListener("click", function() {
+            if (zonesChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('zonesLineChart').toDataURL('image/png');
+                link.download = 'Zones_Members_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No zone analysis data provided.</p>
+{% endif %}

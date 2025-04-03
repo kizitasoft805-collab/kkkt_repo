@@ -1,0 +1,118 @@
+<h4 class="text-center">📩 Messages Sent</h4>
+
+<!-- Delete All Button -->
+<div class="text-right mb-3">
+    <a href="{% url 'secretary_delete_all_sms' %}" class="btn btn-danger delete-all-btn">🗑️ Delete All</a>
+</div>
+
+<div class="table-container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Action</th>  <!-- ✅ Delete Column -->
+                <th>Date Sent</th>
+                <th>Name</th>
+                <th>Phone Number</th>
+                <th>Message</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for msg in messages_info %}
+            <tr 
+                data-name="{{ msg.name|lower }}" 
+                data-phone="{{ msg.phone }}" 
+                data-date="{{ msg.sent_at|date:'Y-m-d' }}">
+                
+                <td>
+                    <a href="{% url 'secretary_delete_sms' msg.id %}" class="btn btn-sm btn-danger delete-btn">🗑️ Delete</a>
+                </td>
+                <td>{{ msg.sent_at|date:"Y-m-d" }}</td>  <!-- ✅ Ensure date format for filtering -->
+                <td>{{ msg.name }}</td>
+                <td>{{ msg.phone }}</td>
+                <td>{{ msg.message }}</td>
+                <td class="status-column">
+                    <span class="whatsapp-tick">✔✔</span> Delivered
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center text-muted">No messages sent yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Table Styling -->
+{% include "secretary/sms/_table_styles.html" %}
+
+<style>
+    /* Button Styling */
+    .delete-btn, .delete-all-btn {
+        font-size: 14px;
+        padding: 6px 12px;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .delete-btn {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .delete-all-btn {
+        background-color: #c82333;
+        color: white;
+        font-weight: bold;
+    }
+
+    .delete-btn:hover, .delete-all-btn:hover {
+        background-color: #b21f2d;
+    }
+</style>
+
+<!-- JavaScript for Efficient Filtering -->
+<script>
+    function updateFilteredCount() {
+        let visibleRows = document.querySelectorAll(".table tbody tr:not([style*='display: none'])").length;
+        document.getElementById("filteredCount").innerText = visibleRows > 0 ? visibleRows : 0;
+    }
+
+    function filterMessages() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll(".table tbody tr");
+
+        rows.forEach(row => {
+            let name = row.getAttribute("data-name");  // Fetch from data attribute
+            let phone = row.getAttribute("data-phone"); // Fetch from data attribute
+            
+            if (name.includes(input) || phone.includes(input)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        updateFilteredCount();
+    }
+
+    function filterByDate() {
+        let fromDate = document.getElementById("fromDate").value;
+        let toDate = document.getElementById("toDate").value;
+        let rows = document.querySelectorAll(".table tbody tr");
+
+        rows.forEach(row => {
+            let rowDate = row.getAttribute("data-date");  // Fetch from data attribute
+
+            if ((fromDate === "" || rowDate >= fromDate) &&
+                (toDate === "" || rowDate <= toDate)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        updateFilteredCount();
+    }
+</script>

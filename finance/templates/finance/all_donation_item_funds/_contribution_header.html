@@ -1,0 +1,54 @@
+<h3 style="
+    background-color: #007bff; 
+    color: white; 
+    padding: 10px; 
+    border-radius: 8px;
+    font-size: 22px;
+    margin-bottom: 10px;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+">
+    🎯 {{ contribution.name }}
+    <span class="contribution-total" 
+          data-contribution="{{ contribution.name }}" 
+          style="background-color: #28a745; 
+                 padding: 5px 15px; 
+                 border-radius: 20px; 
+                 font-size: 16px; 
+                 font-weight: bold; 
+                 color: white;">
+        💰 0 TZS
+    </span>
+</h3>
+
+<!-- JavaScript for Calculating Contribution Totals -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const contributionName = "{{ contribution.name }}";
+        const totalDisplay = document.querySelector(`.contribution-total[data-contribution='${contributionName}']`);
+
+        function calculateContributionTotal() {
+            const rows = document.querySelectorAll(`table[data-contribution='${contributionName}'] tbody tr`);
+            let totalAmount = 0;
+
+            rows.forEach(row => {
+                if (row.style.display !== 'none') { // Only consider visible (filtered) rows
+                    const amountCell = row.querySelector('[data-amount]');
+                    if (amountCell) {
+                        const amount = parseFloat(amountCell.dataset.amount) || 0;
+                        totalAmount += amount;
+                    }
+                }
+            });
+
+            totalDisplay.textContent = `💰 ${totalAmount.toLocaleString()} TZS`;
+        }
+
+        // Trigger calculation initially
+        calculateContributionTotal();
+
+        // Listen for custom event triggered by filters
+        document.addEventListener('filterApplied', calculateContributionTotal);
+    });
+</script>

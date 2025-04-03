@@ -1,0 +1,23 @@
+{
+  "name": "PARISH MKW",
+  "short_name": "PARISH MKW",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "description": "Church Management System for Mkwawa Kigango",
+  "icons": [
+    {
+      "src": "/static/images/church.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/images/church.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

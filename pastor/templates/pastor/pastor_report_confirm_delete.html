@@ -1,0 +1,89 @@
+{% extends 'pastor_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .delete-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-align: center;
+  }
+
+  .delete-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .delete-warning {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #555;
+  }
+
+  .delete-info {
+    display: inline-block;
+    text-align: left;
+    margin-bottom: 2rem;
+  }
+  .delete-info li {
+    margin: 0.5rem 0;
+  }
+
+  /* Buttons */
+  .delete-button,
+  .cancel-button {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    text-decoration: none; /* for the anchor version */
+    margin: 0 0.5rem;
+  }
+
+  .delete-button {
+    background-color: #e53e3e; /* red */
+    color: #fff;
+  }
+  .delete-button:hover {
+    background-color: #c53030;
+  }
+
+  .cancel-button {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+  .cancel-button:hover {
+    background-color: #e2e2e2;
+  }
+</style>
+
+<div class="delete-container">
+  <h1 class="delete-title">Delete Pastor Report</h1>
+
+  <p class="delete-warning">
+    Are you sure you want to permanently delete this report?
+  </p>
+
+  <ul class="delete-info">
+    <li><strong>Month:</strong> {{ report.month }}</li>
+    <li><strong>Year:</strong> {{ report.year.year }}</li>
+    <li><strong>Date Created:</strong> {{ report.date_created }}</li>
+    <!-- Add any other key fields if desired -->
+  </ul>
+
+  <form method="post" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit" class="delete-button">
+      Yes, Delete
+    </button>
+  </form>
+
+  <a href="{% url 'pastor_report_detail' report.pk %}" class="cancel-button">
+    Cancel
+  </a>
+</div>
+{% endblock %}

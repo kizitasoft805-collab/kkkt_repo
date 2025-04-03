@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="center-container">
+    <h2 class="text-danger fw-bold">⚠️ Confirm Deletion</h2>
+    <p class="lead text-dark">
+        Are you sure you want to delete <strong>ALL SMS messages</strong>? <br>
+        <span class="text-muted">This action <u>cannot</u> be undone.</span>
+    </p>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger action-btn">🗑️ Yes, Delete All</button>
+        <a href="{% url 'sms_status' %}" class="btn btn-secondary action-btn">❌ Cancel</a>
+    </form>
+</div>
+
+<!-- Inline Styling for a Fully Centered Layout -->
+<style>
+    /* Center Everything on the Page */
+    .center-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;  /* Adjusts based on viewport height */
+        text-align: center;
+    }
+
+    /* General Typography */
+    h2 {
+        font-size: 26px;
+        margin-bottom: 15px;
+    }
+
+    .lead {
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    /* Buttons */
+    .action-btn {
+        font-size: 18px;
+        padding: 12px 20px;
+        border-radius: 6px;
+        margin: 10px;
+        text-decoration: none;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+        font-weight: bold;
+    }
+
+    .btn-danger:hover {
+        background-color: #b21f2d;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        font-weight: bold;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+</style>
+{% endblock %}

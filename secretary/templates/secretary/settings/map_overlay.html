@@ -1,0 +1,157 @@
+<!-- Leaflet CSS (Required for OpenStreetMap) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+<!-- Leaflet JavaScript (Required for OpenStreetMap) -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<!-- Map Overlay -->
+<div id="mapOverlay" class="map-overlay">
+    
+    <!-- Right Floating Controls: Close & Confirm -->
+    <div class="right-controls">
+        <button class="icon-btn close-btn" onclick="closeMap()">✖</button>
+        <button id="submitLocation" class="icon-btn confirm-btn" style="display: none;">✔</button>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+</div>
+
+<style>
+    /* Fullscreen Map Overlay */
+    .map-overlay {
+        display: none; /* Initially Hidden */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+    }
+
+    /* Map Fullscreen */
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Right Floating Controls */
+    .right-controls {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 1001;
+    }
+
+    /* Icon Button Style */
+    .icon-btn {
+        background: none;
+        border: none;
+        font-size: 26px;
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .close-btn {
+        color: red;
+    }
+
+    .confirm-btn {
+        color: green;
+    }
+
+    .icon-btn:hover {
+        transform: scale(1.2);
+    }
+</style>
+
+<script>
+    var map;
+    var marker;
+    var geocoder;
+
+    function initMap() {
+        console.log("🗺 Initializing the map...");
+
+        if (!map) {
+            map = L.map("map", {
+                center: [-6.7923542, 39.208328],  // Default center (Dar es Salaam)
+                zoom: 15
+            });
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add built-in search bar to the map
+            geocoder = L.Control.geocoder({
+                defaultMarkGeocode: false
+            }).on("markgeocode", function (e) {
+                var latlng = e.geocode.center;
+                map.setView(latlng, 15);
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+                marker = L.marker(latlng).addTo(map);
+                window.selectedLocation = {
+                    lat: latlng.lat,
+                    lng: latlng.lng
+                };
+                document.getElementById("submitLocation").style.display = "block"; // Show button
+            }).addTo(map);
+
+            // Capture click event on the map
+            map.on("click", function (e) {
+                console.log("📌 Location selected:", e.latlng);
+
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+                marker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
+                document.getElementById("submitLocation").style.display = "block"; // Show button
+
+                // Store the selected location
+                window.selectedLocation = {
+                    lat: e.latlng.lat,
+                    lng: e.latlng.lng
+                };
+            });
+        }
+
+        setTimeout(() => {
+            map.invalidateSize(); // Fix map rendering issue
+        }, 300);
+    }
+
+    function openMap() {
+        console.log("📢 Opening map...");
+        document.getElementById("mapOverlay").style.display = "block";
+        initMap();
+    }
+
+    function closeMap() {
+        console.log("❌ Closing map...");
+        document.getElementById("mapOverlay").style.display = "none";
+    }
+
+    document.getElementById("submitLocation").addEventListener("click", function () {
+        if (window.selectedLocation) {
+            console.log("✔ Confirmed Location:", window.selectedLocation);
+
+            document.getElementById("id_latitude").value = window.selectedLocation.lat;
+            document.getElementById("id_longitude").value = window.selectedLocation.lng;
+        }
+        closeMap();
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("openMap").addEventListener("click", openMap);
+    });
+</script>

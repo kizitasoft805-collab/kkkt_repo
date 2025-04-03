@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>📢 Notification List</h2>
+
+<!-- Search Field for Filtering by Title -->
+<div class="title-search-container">
+    <input type="text" id="search-title" placeholder="🔍 Search notification by title..." onkeyup="filterNotificationsByTitle()">
+</div>
+
+<div id="notifications-container">
+    {% if grouped_notifications %}
+        {% for title, notifications in grouped_notifications.items %}
+            <div class="notification-block" data-title="{{ title|lower }}">
+                {% include 'notifications/_notification_group.html' with title=title notifications=notifications group_id=forloop.counter %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-notifications">No notifications found.</p>
+    {% endif %}
+</div>
+
+<!-- ✅ Include Partial for Fullscreen Notification Details -->
+{% include 'notifications/_notification_details.html' %}
+
+<!-- ✅ CSS for Title Search Field -->
+<style>
+    .title-search-container {
+        width: 100%;
+        background: white;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+    }
+
+    #search-title {
+        width: 90%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 25px; /* iPhone-Like Round Corners */
+        outline: none;
+        text-align: center;
+        transition: all 0.2s ease-in-out;
+    }
+
+    #search-title:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    .notification-block {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+
+<!-- ✅ JavaScript for Filtering Without AJAX -->
+<script>
+    function filterNotificationsByTitle() {
+        let searchValue = document.getElementById("search-title").value.toLowerCase();
+        let notificationBlocks = document.querySelectorAll(".notification-block");
+
+        let found = false;
+        notificationBlocks.forEach(block => {
+            let title = block.getAttribute("data-title");
+
+            if (title.includes(searchValue)) {
+                block.classList.remove("hidden");
+                found = true;
+            } else {
+                block.classList.add("hidden");
+            }
+        });
+
+        // Show message if no results are found
+        let noResultsMessage = document.querySelector(".no-notifications");
+        if (!found) {
+            noResultsMessage.style.display = "block";
+        } else {
+            noResultsMessage.style.display = "none";
+        }
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,99 @@
+{% if properties_radar_data %}
+    <h3>
+        🏠 Church Properties Radar Analysis
+        <button id="downloadPropertiesRadarChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <!-- Responsive Container for the Chart -->
+    <div class="properties-radar-chart-wrapper">
+        <canvas id="propertiesRadarChart"></canvas>
+    </div>
+
+    <p id="propertiesRadarAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Limit the chart size on larger screens */
+        .properties-radar-chart-wrapper {
+            max-width: 600px; /* Adjust as needed */
+            margin: 0 auto;   /* Center the chart */
+        }
+
+        /* On smaller screens, let it expand to the full width */
+        @media screen and (max-width: 600px) {
+            .properties-radar-chart-wrapper {
+                max-width: 100%;
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const propertiesRadarData = JSON.parse('{{ properties_radar_data|safe }}');
+
+        let propertiesRadarChart;  // Store Chart.js instance globally
+
+        if (propertiesRadarData.labels.length > 0) {
+            const radarCtx = document.getElementById('propertiesRadarChart').getContext('2d');
+
+            // Generate dynamic colors for each data point
+            const backgroundColors = [
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(255, 159, 64, 0.6)',
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(153, 102, 255, 0.6)'
+            ];
+
+            // Create Radar Chart
+            propertiesRadarChart = new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: propertiesRadarData.labels,
+                    datasets: [{
+                        label: 'Total Assets',
+                        data: propertiesRadarData.data,
+                        backgroundColor: backgroundColors[0],
+                        borderColor: backgroundColors[1],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Display analysis
+            document.getElementById("propertiesRadarAnalysis").innerHTML = `<strong>${propertiesRadarData.analysis}</strong>`;
+        } else {
+            document.getElementById("propertiesRadarAnalysis").innerHTML = `<p>No property data available.</p>`;
+        }
+
+        // Function to Download Chart as Image
+        document.getElementById("downloadPropertiesRadarChart").addEventListener("click", function() {
+            if (propertiesRadarChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('propertiesRadarChart').toDataURL('image/png');
+                link.download = 'Church_Properties_Radar_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No property data available.</p>
+{% endif %}

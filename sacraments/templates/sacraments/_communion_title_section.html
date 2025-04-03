@@ -1,0 +1,110 @@
+<h2 style="text-align: center; margin-top: 20px;">⛪ First Communion Members</h2>
+
+<!-- Total First Communion Members -->
+<div style="text-align: center; margin-bottom: 20px; font-size: 18px; font-weight: bold;">
+    <p>👥 Total Members: <span id="totalMembers">{{ communion_members|length }}</span></p>
+    <p>👨‍🦰 Male: <span id="totalMale">{{ total_male }}</span> | 👩 Female: <span id="totalFemale">{{ total_female }}</span></p>
+</div>
+
+<!-- Filter Section -->
+<div style="text-align: center; margin: 20px;">
+    
+    <!-- Name Filter -->
+    <div style="margin-bottom: 15px;">
+        <input type="text" id="searchName" placeholder="🔍 Search by Name..." 
+               style="width: 90%; max-width: 500px; padding: 12px; border: 1px solid #ddd; 
+                      border-radius: 25px; font-size: 16px; outline: none; 
+                      box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);">
+    </div>
+
+    <!-- Date Range Filter -->
+    <div style="margin-bottom: 15px;">
+        <label for="fromDate" style="display: block; font-size: 16px; margin-bottom: 5px;">📅 From Date:</label>
+        <input type="date" id="fromDate" 
+               style="width: 90%; max-width: 500px; padding: 12px; border: 1px solid #ddd; 
+                      border-radius: 25px; font-size: 16px; outline: none; 
+                      box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);">
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <label for="toDate" style="display: block; font-size: 16px; margin-bottom: 5px;">📅 To Date:</label>
+        <input type="date" id="toDate" 
+               style="width: 90%; max-width: 500px; padding: 12px; border: 1px solid #ddd; 
+                      border-radius: 25px; font-size: 16px; outline: none; 
+                      box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);">
+    </div>
+
+    <!-- Status Filter -->
+    <div style="margin-bottom: 15px;">
+        <label for="statusFilter" style="display: block; font-size: 16px; margin-bottom: 5px;">🔍 Filter by Status:</label>
+        <select id="statusFilter"
+                style="width: 90%; max-width: 500px; padding: 12px; border: 1px solid #ddd; 
+                       border-radius: 25px; font-size: 16px; outline: none; 
+                       box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);">
+            <option value="all">All Members</option>
+            <option value="Active">Active Members</option>
+            <option value="Inactive">Inactive Members</option>
+        </select>
+    </div>
+</div>
+
+<script>
+    function filterMembers() {
+        let nameFilter = document.getElementById("searchName").value.toLowerCase();
+        let fromDate = document.getElementById("fromDate").value;
+        let toDate = document.getElementById("toDate").value;
+        let statusFilter = document.getElementById("statusFilter").value;
+
+        let members = document.querySelectorAll(".member-item");
+        let total = 0;
+        let maleCount = 0;
+        let femaleCount = 0;
+
+        members.forEach(member => {
+            let name = member.querySelector(".member-name").textContent.toLowerCase();
+            let communionDate = member.getAttribute("data-communion-date");
+            let gender = member.getAttribute("data-gender");
+            let status = member.getAttribute("data-status");
+
+            let showByName = name.includes(nameFilter);
+            let showByDate = true;
+            let showByStatus = statusFilter === "all" || status === statusFilter;
+
+            if (fromDate || toDate) {
+                if (communionDate) {
+                    let communionTimestamp = new Date(communionDate).getTime();
+                    let fromTimestamp = fromDate ? new Date(fromDate).getTime() : null;
+                    let toTimestamp = toDate ? new Date(toDate).getTime() : null;
+
+                    showByDate = (!fromTimestamp || communionTimestamp >= fromTimestamp) &&
+                                 (!toTimestamp || communionTimestamp <= toTimestamp);
+                } else {
+                    showByDate = false;
+                }
+            }
+
+            if (showByName && showByDate && showByStatus) {
+                member.style.display = "flex";
+                total++;
+                if (gender === "Male") {
+                    maleCount++;
+                } else if (gender === "Female") {
+                    femaleCount++;
+                }
+            } else {
+                member.style.display = "none";
+            }
+        });
+
+        // Update total counts dynamically
+        document.getElementById("totalMembers").textContent = total;
+        document.getElementById("totalMale").textContent = maleCount;
+        document.getElementById("totalFemale").textContent = femaleCount;
+    }
+
+    // Automatically filter when any input field is changed
+    document.getElementById("searchName").addEventListener("input", filterMembers);
+    document.getElementById("fromDate").addEventListener("change", filterMembers);
+    document.getElementById("toDate").addEventListener("change", filterMembers);
+    document.getElementById("statusFilter").addEventListener("change", filterMembers);
+</script>

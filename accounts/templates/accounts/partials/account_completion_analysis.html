@@ -1,0 +1,86 @@
+{% if account_completion_data %}
+    <h3>
+        🔐 Account Completion Analysis
+        <button id="downloadAccountCompletionChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <div style="display: flex; justify-content: center;">
+        <canvas id="accountCompletionDoughnut" width="200" height="200"></canvas>
+    </div>
+
+    <p id="accountCompletionAnalysis"></p>
+
+    <!-- Include Chart.js and Chart.js Datalabels Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+    <script>
+        // Parse JSON data from Django
+        const accountCompletionData = JSON.parse('{{ account_completion_data|safe }}');
+
+        let accountCompletionChart;  // Store Chart.js instance globally
+
+        if (accountCompletionData.labels.length > 0) {
+            const doughnutCtx = document.getElementById('accountCompletionDoughnut').getContext('2d');
+
+            const backgroundColors = [
+                'rgba(75, 192, 192, 0.6)',  // Completed
+                'rgba(255, 99, 132, 0.6)'   // Missing
+            ];
+
+            // Create Doughnut Chart with Data Labels (Percentages)
+            accountCompletionChart = new Chart(doughnutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: accountCompletionData.labels,
+                    datasets: [{
+                        data: accountCompletionData.data,
+                        backgroundColor: backgroundColors,
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        datalabels: {
+                            color: '#000',  // Set label text color to black
+                            anchor: 'center',
+                            align: 'center',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function(value, ctx) {
+                                const percentage = value.toFixed(2) + "%";
+                                return percentage;
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Display analysis
+            document.getElementById("accountCompletionAnalysis").innerHTML = `<strong>${accountCompletionData.analysis}</strong>`;
+        } else {
+            document.getElementById("accountCompletionAnalysis").innerHTML = `<p>No account data available.</p>`;
+        }
+
+        // Function to Download Chart as Image
+        document.getElementById("downloadAccountCompletionChart").addEventListener("click", function() {
+            if (accountCompletionChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('accountCompletionDoughnut').toDataURL('image/png');
+                link.download = 'Account_Completion_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No account data available.</p>
+{% endif %}

@@ -1,0 +1,155 @@
+<div class="filter-container">
+    <div class="filter-group">
+        <label for="search-recipients">🔍 Search by Name:</label>
+        <input type="text" id="search-recipients" placeholder="Type name..." onkeyup="filterRecipients()">
+    </div>
+
+    <div class="filter-group">
+        <label for="filter-recipients">📋 Filter by Type:</label>
+        <select id="filter-recipients" onchange="filterRecipients()">
+            <option value="all" selected>All Members (Includes Leaders)</option>
+            <option value="leaders">Only Leaders</option>
+        </select>
+    </div>
+
+    <!-- ✅ Check All Checkbox (Resets After Filtering) -->
+    <div class="filter-group">
+        <label>
+            <input type="checkbox" id="check-all" onclick="toggleCheckAll()">
+            Select All Visible Recipients
+        </label>
+    </div>
+</div>
+
+<!-- Recipients List Container -->
+<div id="recipients-list-container">
+    {% include 'notifications/_recipients_list.html' %}
+</div>
+
+<!-- ✅ Inline CSS for iPhone-like Fields & Orange Text -->
+<style>
+    /* 🌍 Prevent horizontal shaking */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* 📜 Filter Container (Ensures Full Width) */
+    .filter-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* 📌 Individual Filter Row */
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        width: 100%;
+    }
+
+    /* ✅ Label Styling (Orange Color) */
+    .filter-group label {
+        font-weight: bold;
+        font-size: 16px;
+        color: orange;
+    }
+
+    /* 📌 iPhone-like Input Fields */
+    .filter-group input,
+    .filter-group select {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 25px;
+        border: 1px solid #ccc;
+        outline: none;
+        background: #f9f9f9;
+        transition: 0.3s;
+    }
+
+    /* 📌 Highlight Input on Focus */
+    .filter-group input:focus,
+    .filter-group select:focus {
+        border: 1px solid #007bff;
+        background: white;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+
+    /* ✅ Styling for "Check All" */
+    #check-all {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+        cursor: pointer;
+    }
+</style>
+
+<!-- ✅ JavaScript for Dynamic Filtering & Check All -->
+<script>
+    let checkedRecipients = new Set(); // Store checked members
+
+    function filterRecipients() {
+        const searchValue = document.getElementById("search-recipients").value.toLowerCase();
+        const filterType = document.getElementById("filter-recipients").value;
+        const recipients = document.querySelectorAll(".recipient-item");
+
+        // ✅ Uncheck "Check All" after filtering
+        document.getElementById("check-all").checked = false;
+
+        recipients.forEach(item => {
+            const name = item.querySelector(".recipient-name").textContent.toLowerCase();
+            const isLeader = item.getAttribute("data-is-leader") === "true";
+            const matchesSearch = name.includes(searchValue);
+            const matchesFilter = filterType === "all" || (filterType === "leaders" && isLeader);
+
+            // Show or hide based on filtering
+            if (matchesSearch && matchesFilter) {
+                item.style.display = "flex"; // Show matching recipient
+            } else {
+                item.style.display = "none"; // Hide non-matching recipient
+            }
+        });
+
+        // ✅ Restore previously checked members
+        document.querySelectorAll("input[name='recipients']").forEach(input => {
+            if (checkedRecipients.has(input.value)) {
+                input.checked = true;
+            }
+        });
+    }
+
+    function toggleCheckAll() {
+        const checkAll = document.getElementById("check-all").checked;
+
+        document.querySelectorAll(".recipient-item").forEach(item => {
+            if (item.style.display !== "none") { // ✅ Only check visible recipients
+                const checkbox = item.querySelector("input[name='recipients']");
+                checkbox.checked = checkAll;
+                if (checkAll) {
+                    checkedRecipients.add(checkbox.value);
+                } else {
+                    checkedRecipients.delete(checkbox.value);
+                }
+            }
+        });
+    }
+
+    // ✅ Save individual selections
+    document.addEventListener("change", function(event) {
+        if (event.target.name === "recipients") {
+            if (event.target.checked) {
+                checkedRecipients.add(event.target.value);
+            } else {
+                checkedRecipients.delete(event.target.value);
+            }
+        }
+    });
+</script>

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}
+Delete Pledge
+{% endblock title %}
+
+{% block styles %}
+<style>
+  .delete-confirm-wrapper {
+    max-width: 600px;
+    margin: 2rem auto;
+    text-align: center;
+  }
+
+  .delete-btn, .cancel-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  .delete-btn {
+    background-color: #dc3545; /* Red */
+    margin-right: 10px;
+  }
+  .delete-btn:hover {
+    background-color: #c82333;
+  }
+
+  .cancel-btn {
+    background-color: #6c757d; /* Gray */
+  }
+  .cancel-btn:hover {
+    background-color: #5a6268;
+  }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="delete-confirm-wrapper">
+  <h2>Delete Pledge</h2>
+  <hr>
+
+  <p>
+    Are you sure you want to delete the following pledge?
+  </p>
+
+  <ul style="list-style: none;">
+    <li><strong>Envelope #:</strong> {{ pledge.envelope_number }}</li>
+    <li><strong>Member:</strong> {{ pledge.member.full_name }} ({{ pledge.member.phone_number }})</li>
+    <li><strong>Pledge Amount:</strong> {{ pledge.pledge_amount }}</li>
+    <li><strong>Pledge for Construction:</strong> {{ pledge.pledge_for_construction }}</li>
+    <li><strong>Date Given:</strong> {{ pledge.date_given }}</li>
+  </ul>
+
+  <form method="POST" style="margin-top: 1rem;">
+    {% csrf_token %}
+    <button type="submit" class="delete-btn">Yes, Delete</button>
+    <a href="{% url 'pledge_list' %}" class="cancel-btn">Cancel</a>
+  </form>
+</div>
+{% endblock content %}

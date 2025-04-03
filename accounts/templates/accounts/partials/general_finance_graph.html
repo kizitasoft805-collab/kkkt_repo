@@ -1,0 +1,120 @@
+<!-- general_finance_graph.html -->
+
+{% if general_finance_data %}
+    <h3>
+        📊 General Finance Analysis (Current Year: Offerings, Facility Renting, Special Contributions)
+        <button 
+            id="downloadFinanceChart" 
+            style="background: none; border: none; cursor: pointer;"
+        >
+            📥 Download Graph
+        </button>
+    </h3>
+    
+    <!-- Responsive Container for the Chart -->
+    <div class="finance-chart-container">
+        <canvas id="generalFinanceChart"></canvas>
+    </div>
+    
+    <p id="financeAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* 📊 Increased Y-Axis Length & Improved Responsiveness */
+        .finance-chart-container {
+            max-width: 700px;
+            height: 500px; /* Increased height for better visibility */
+            margin: 0 auto;
+        }
+
+        /* Ensure Proper Sizing on Smaller Screens */
+        @media screen and (max-width: 600px) {
+            .finance-chart-container {
+                max-width: 100%;
+                height: 550px; /* Increased height for small viewports */
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const financeData = JSON.parse('{{ general_finance_data|safe }}');
+
+        let financeChart;  // Store Chart.js instance globally
+
+        if (financeData.labels.length > 0) {
+            const ctx = document.getElementById('generalFinanceChart').getContext('2d');
+
+            financeChart = new Chart(ctx, {
+                type: 'bar', // We'll use a combined bar + line approach
+                data: {
+                    labels: financeData.labels,
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: 'Total Amount (TZS)',
+                            data: financeData.data,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            type: 'line',
+                            label: 'Trend Line',
+                            data: financeData.data,
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,  // Ensures chart scales correctly
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMin: 0,
+                            // Dynamically sets the max to be slightly above the largest data value
+                            suggestedMax: Math.max(...financeData.data) + 10,
+                            ticks: {
+                                stepSize: 5,
+                                font: {
+                                    size: 14  // Larger font for better visibility
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Display analysis
+            document.getElementById('financeAnalysis').innerHTML =
+                `<strong>${financeData.analysis}</strong>`;
+        } else {
+            // If no labels or data exist
+            document.getElementById('financeAnalysis').innerHTML =
+                '<p>No financial data available for the current year.</p>';
+        }
+
+        // Function to download the chart as an image
+        document.getElementById('downloadFinanceChart').addEventListener('click', function() {
+            if (financeChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('generalFinanceChart').toDataURL('image/png');
+                link.download = 'General_Finance_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No financial data available for the current year.</p>
+{% endif %}

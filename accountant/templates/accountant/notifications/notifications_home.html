@@ -1,0 +1,132 @@
+{% extends 'accountant_base.html' %}
+
+{% block content %}
+<!-- 📢 Notifications Home Header -->
+<h2 class="notifications-title">📢 Notifications & SMS</h2>
+
+<!-- 🔔 Notifications Dashboard -->
+<div class="notifications-grid">
+    <!-- 📩 Send SMS & Notifications Box -->
+    <a href="{% url 'accountant_create_notification' %}" class="notifications-box send-box">
+        <div class="box-content">
+            <div>
+                <h3>📩 Send SMS & Notifications</h3>
+                <p>Broadcast messages to members</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 📤 Sent SMS & Notifications Box -->
+    <a href="{% url 'accountant_notification_list' %}" class="notifications-box sent-box">
+        <div class="box-content">
+            <div>
+                <h3>📤 Sent SMS & Notifications</h3>
+                <p>View sent messages history</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 💰 Check Balance & Buy SMS Box -->
+    <a href="#" class="notifications-box balance-box">
+        <div class="box-content">
+            <div>
+                <h3>💰 Check Balance & Buy SMS</h3>
+                <p>Monitor SMS credits & purchase more</p>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+</div>
+
+<!-- 🎨 Notifications Styling -->
+<style>
+    /* 🌍 General Styles */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* 📢 Notifications Title */
+    .notifications-title {
+        font-size: 26px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    /* 🔔 Notifications Grid */
+    .notifications-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+    }
+
+    /* 📦 Notifications Box Styling */
+    .notifications-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 320px;
+        height: 100px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 15px 20px;
+        border-radius: 15px;
+        color: white;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    /* 🎨 Unique Colors for Each Box */
+    .send-box {
+        background: linear-gradient(130deg, #007bff, #0056b3); /* Blue */
+    }
+
+    .sent-box {
+        background: linear-gradient(130deg, #28a745, #1f8d41); /* Green */
+    }
+
+    .balance-box {
+        background: linear-gradient(130deg, #ff9800, #e65100); /* Orange */
+    }
+
+    /* 🏹 More Info Arrow */
+    .box-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .more-info {
+        font-size: 24px;
+        transition: transform 0.2s ease;
+    }
+
+    /* 🚀 Hover Effects */
+    .notifications-box:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .notifications-box:hover .more-info {
+        transform: translateX(5px);
+    }
+
+    /* 📱 Responsive Design */
+    @media screen and (max-width: 600px) {
+        .notifications-box {
+            width: 90%;
+        }
+    }
+</style>
+
+{% endblock %}

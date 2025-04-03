@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="offering-form-container" style="max-width: 600px; margin: 20px auto;">
+
+  <!-- Heading -->
+  <h2 style="
+    font-size: 24px;
+    color: #007bff; 
+    text-align: center;
+    margin-bottom: 15px;
+  ">
+    {% if form.instance.pk %}
+      Update Offering
+      {% if chosen_category %}
+        <span style="font-size: 18px; color: #555;">
+          ({{ chosen_category.name }})
+        </span>
+      {% endif %}
+    {% else %}
+      Create Offering
+      {% if chosen_category %}
+        <span style="font-size: 18px; color: #555;">
+          ({{ chosen_category.name }})
+        </span>
+      {% endif %}
+    {% endif %}
+  </h2>
+
+  <!-- Form -->
+  <form method="POST" novalidate style="
+    display: flex; 
+    flex-direction: column; 
+    gap: 16px;
+  ">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% for field in form %}
+      <div style="display: flex; flex-direction: column;">
+        <label for="{{ field.id_for_label }}" style="
+          font-weight: 600; 
+          margin-bottom: 5px; 
+          color: #333;
+        ">
+          {{ field.label }}
+        </label>
+        {{ field }}
+        {% if field.errors %}
+          <small style="color: red; font-style: italic;">
+            {{ field.errors.0 }}
+          </small>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <!-- Submit Button -->
+    <button type="submit" style="
+      padding: 14px;
+      border-radius: 15px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: #fff;
+      transition: background-color 0.3s ease;
+      {% if form.instance.pk %}
+        background-color: #28a745; /* Green for Update */
+      {% else %}
+        background-color: #007bff; /* Blue for Create */
+      {% endif %}
+      margin-top: 10px;
+    ">
+      {% if form.instance.pk %}
+        Save Changes
+      {% else %}
+        Create Offering
+      {% endif %}
+    </button>
+  </form>
+
+  <!-- Cancel Link -->
+  <div style="margin-top: 15px; text-align: center;">
+    <a href="{% url 'offering_category_list' %}" style="
+      color: #dc3545;
+      font-weight: bold;
+      text-decoration: none;
+      font-size: 16px;
+      transition: color 0.2s ease;
+    " 
+    onmouseover="this.style.color='#c82333'"
+    onmouseout="this.style.color='#dc3545'">
+      Cancel
+    </a>
+  </div>
+</div>
+
+<!-- Scoped CSS to .offering-form-container ONLY -->
+<style>
+.offering-form-container input,
+.offering-form-container select,
+.offering-form-container textarea {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  width: 100%;
+}
+
+/* Remove numeric spinner for a cleaner look */
+.offering-form-container input[type=number]::-webkit-inner-spin-button,
+.offering-form-container input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>
+{% endblock %}

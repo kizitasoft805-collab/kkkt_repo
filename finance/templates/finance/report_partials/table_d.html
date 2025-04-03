@@ -1,0 +1,45 @@
+<!-- finance/report_partials/table_d.html -->
+<h4>Table D — Fellowship Contributions for {{ current_month }}/{{ current_year }}</h4>
+<table style="border-collapse: collapse; width: 100%; margin-bottom: 1em;">
+  <thead>
+    <tr style="background-color: #16ec28;">
+      <th style="padding: 8px; border: 1px solid #ccc;">D</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">Fellowship Contribution</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">Amount(TZS)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in fellowship_data %}
+      <tr>
+        <!-- D column -->
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ forloop.counter }}
+        </td>
+
+        <!-- The name of the special contribution (Fellowship) -->
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ item.special_contribution.name }}
+        </td>
+
+        <!-- The monthly sum for that fellowship contribution -->
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ item.total_amount|floatformat:2 }}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if fellowship_total > 0 %}
+  <p><strong>Total (Table D): {{ fellowship_total|floatformat:2 }} TZS</strong></p>
+
+  <!-- NEW: Show the sum of Table A + Table B + Table C + Table D -->
+  <p>
+    <strong>
+      Sum of Table A + Table B + Table C + Table D: 
+      {{ sum_table_a_b_c_d|floatformat:2 }} TZS
+    </strong>
+  </p>
+{% else %}
+  <p><em>No Fellowship Contributions this month.</em></p>
+{% endif %}

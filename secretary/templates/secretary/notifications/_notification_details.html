@@ -1,0 +1,231 @@
+<!-- Fullscreen Notification Details Modal -->
+<div id="notification-details-modal" class="fullscreen-modal">
+    <!-- Header with Close Button -->
+    <div class="modal-header">
+        <h3 id="notification-details-title"></h3>
+        <button class="close-button" onclick="closeNotificationDetails()">❌</button>
+    </div>
+
+    <!-- Search Input for Filtering -->
+    <div class="notification-details-search">
+        <input type="text" id="search-fullscreen-member" class="details-search-input" placeholder="🔍 Search member by name..." onkeyup="filterFullScreenMembers()">
+    </div>
+
+    <!-- Full Notifications List -->
+    <div id="notification-details-content" class="modal-content"></div>
+</div>
+
+<!-- ✅ CSS for Fullscreen Modal with No Shaking -->
+<style>
+    /* Prevent Horizontal Shaking on the Whole Page */
+    body {
+        overflow-x: hidden; /* Prevents side-scrolling */
+    }
+
+    /* Fullscreen Modal */
+    .fullscreen-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;  /* Locks width to viewport */
+        height: 100vh; /* Locks height to viewport */
+        background: white;
+        z-index: 1000;
+        display: none;
+        flex-direction: column;
+        opacity: 0;
+        transform: translateY(100%);
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        overflow-y: auto; /* Allows vertical scrolling */
+        overflow-x: hidden; /* Prevents shaking */
+    }
+
+    .fullscreen-modal.show {
+        display: flex;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Fixed Header */
+    .modal-header {
+        position: sticky;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: #007bff;
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1001;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header h3 {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    /* Close Button */
+    .close-button {
+        background: red;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .close-button:hover {
+        background: darkred;
+    }
+
+    /* 🔍 iPhone-Like Search Field */
+    .notification-details-search {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+        position: sticky;
+        top: 55px;
+        background: white;
+        z-index: 1000;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .details-search-input {
+        width: 90%;
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 25px;
+        outline: none;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        background: #f8f8f8;
+        text-align: center;
+    }
+
+    /* Hover & Focus Effects */
+    .details-search-input:focus {
+        border-color: #007bff;
+        background: white;
+        box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.2);
+    }
+
+    /* Remove Extra Space Below Search */
+    .modal-content {
+        margin-top: 10px;
+        flex-grow: 1;
+        padding: 15px;
+        overflow-y: auto;
+        width: 100%;
+    }
+
+    /* Message Card */
+    .message-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: white;
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        max-width: 95%;
+        margin: 10px auto;
+        position: relative;
+    }
+
+    /* Profile Picture */
+    .profile-pic {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 10px;
+    }
+
+    .profile-pic img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Message Content */
+    .message-content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .name {
+        font-weight: bold;
+        color: #007bff;
+        font-size: 16px;
+    }
+
+    .message {
+        font-size: 14px;
+        color: #333;
+        margin: 5px 0;
+    }
+
+    .timestamp {
+        font-size: 12px;
+        color: #888;
+        text-align: right;
+    }
+
+    /* Delete Button */
+    .delete-member-btn {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: red;
+        margin-left: 10px;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .delete-member-btn:hover {
+        color: darkred;
+        transform: scale(1.2);
+    }
+</style>
+
+<!-- ✅ JavaScript for Fullscreen Modal & Search -->
+<script>
+    function openFullScreenView(title, groupId) {
+        document.getElementById("notification-details-modal").classList.add("show");
+        document.getElementById("notification-details-title").innerText = title;
+        document.getElementById("notification-details-content").innerHTML = document.getElementById(`hidden-group-${groupId}`).innerHTML;
+
+        // Reset search field when opening
+        document.getElementById("search-fullscreen-member").value = "";
+        filterFullScreenMembers();
+    }
+
+    function closeNotificationDetails() {
+        document.getElementById("notification-details-modal").classList.remove("show");
+    }
+
+    function filterFullScreenMembers() {
+        let searchValue = document.getElementById("search-fullscreen-member").value.toLowerCase();
+        let messages = document.querySelectorAll("#notification-details-content .message-card");
+
+        messages.forEach(card => {
+            let name = card.querySelector(".name").textContent.toLowerCase();
+            if (name.includes(searchValue)) {
+                card.style.display = "flex";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+</script>

@@ -1,0 +1,69 @@
+{% extends 'accountant_base.html' %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto; padding: 20px;">
+
+    <!-- 🏆 Title with Contribution Name -->
+    <h2 style="text-align: center; font-size: 28px; font-weight: bold; margin-bottom: 10px;">
+        {{ is_update|yesno:"✏️ Update Donation Item Fund,➕ Add Donation Item Fund" }}
+    </h2>
+
+    <!-- 🎯 Contribution Type Display -->
+    <h3 style="text-align: center; color: #007bff; font-size: 20px; margin-bottom: 20px;">
+        📛 Contribution Type: <strong>{{ contribution.name }}</strong>
+    </h3>
+
+    <!-- 📝 Form Starts Here -->
+    <form method="post" novalidate style="display: flex; flex-direction: column; gap: 15px;">
+        {% csrf_token %}
+
+        <!-- Loop through form fields -->
+        {% for field in form %}
+            <div style="display: flex; flex-direction: column;">
+                <label for="{{ field.id_for_label }}" style="font-weight: bold; margin-bottom: 5px;">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small style="color: gray;">{{ field.help_text }}</small>
+                {% endif %}
+                {% if field.errors %}
+                    <div style="color: red;">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <!-- 🚀 Submit & Cancel Buttons -->
+        <div style="display: flex; justify-content: space-between; gap: 10px; margin-top: 20px;">
+            <button type="submit" style="
+                flex: 1;
+                padding: 12px;
+                background: linear-gradient(130deg, #007bff, #0056b3);
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                ✅ Save
+            </button>
+
+            <a href="{% url 'accountant_donation_item_fund_list' contribution.id %}" style="
+                flex: 1;
+                padding: 12px;
+                background: #6c757d;
+                color: white;
+                text-align: center;
+                font-weight: bold;
+                border-radius: 8px;
+                text-decoration: none;
+                transition: transform 0.2s ease;
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                ❌ Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

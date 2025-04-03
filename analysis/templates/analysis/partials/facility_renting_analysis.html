@@ -1,0 +1,93 @@
+{% if facility_data %}
+<h3>
+  Facility Renting Analysis (Current Year)
+  <button id="downloadFacilityChart" style="background: none; border: none; cursor: pointer;">
+    📥 Download Graph
+  </button>
+</h3>
+
+<!-- A container for the chart with a controlled height -->
+<div class="facility-chart-container">
+  <canvas id="facilityRentingBar"></canvas>
+</div>
+
+<p id="facilityRentingDescription" style="margin-top: 20px;"></p>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  /* Fixed-height container for the chart */
+  .facility-chart-container {
+    max-width: 700px;    /* Good for larger screens */
+    margin: 0 auto;      /* Center horizontally */
+    height: 400px;       /* Fixed height for normal viewports */
+  }
+
+  /* Increase chart height slightly on smaller screens */
+  @media screen and (max-width: 600px) {
+    .facility-chart-container {
+      max-width: 100%;
+      height: 450px;     /* Adjust if needed */
+    }
+  }
+</style>
+
+<script>
+  // Parse JSON data from Django
+  const fData = JSON.parse('{{ facility_data|safe }}');
+
+  // We'll draw a bar chart for current-year renting amounts
+  const labels = fData.labels || [];
+  const amounts = fData.data || [];
+  let facilityChart;  // We'll store our Chart.js instance here
+
+  if (labels.length > 0) {
+    const ctx = document.getElementById('facilityRentingBar').getContext('2d');
+    
+    facilityChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Renting Amount (TZS)',
+          data: amounts,
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,  // Fill the container's height
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  // Display single descriptive text
+  document.getElementById('facilityRentingDescription').textContent = 
+    fData.description || "No facility renting data for the current year.";
+
+  // Download button logic
+  document.getElementById("downloadFacilityChart").addEventListener("click", function() {
+    if (facilityChart) {
+      const link = document.createElement('a');
+      link.href = document.getElementById('facilityRentingBar').toDataURL('image/png');
+      link.download = 'Facility_Renting_Analysis.png';
+      link.click();
+    }
+  });
+</script>
+{% else %}
+<p>No facility renting analysis data provided.</p>
+{% endif %}

@@ -1,0 +1,257 @@
+<div class="dashboard-buttons">
+    <!-- 🏠 General Analysis Button -->
+    <a href="{% url 'general_analysis' %}" class="dashboard-button home-button">
+        <div class="button-content">
+            <span class="emoji">🏠</span>
+            <div class="text-container">
+                <span class="button-text">General Analysis</span>
+                <span class="button-desc">Access the main admin panel</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 💰 Finance Button -->
+    <a href="{% url 'finance_home' %}" class="dashboard-button finance-button">
+        <div class="button-content">
+            <span class="emoji">💰</span>
+            <div class="text-container">
+                <span class="button-text">Finance</span>
+                <span class="button-desc">Manage church financial records</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- ✝️ Sacraments Button -->
+    <a href="{% url 'sacraments_home' %}" class="dashboard-button sacraments-button">
+        <div class="button-content">
+            <span class="emoji">✝️</span>
+            <div class="text-container">
+                <span class="button-text">Sacraments</span>
+                <span class="button-desc">Oversee church sacrament activities</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🏠 Properties Button -->
+    <a href="{% url 'properties_home' %}" class="dashboard-button properties-button">
+        <div class="button-content">
+            <span class="emoji">🏠</span>
+            <div class="text-container">
+                <span class="button-text">Properties</span>
+                <span class="button-desc">Handle church property management</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- ℹ️ Details Button -->
+    <a href="{% url 'superuser_detail' %}" class="dashboard-button details-button">
+        <div class="button-content">
+            <span class="emoji">ℹ️</span>
+            <div class="text-container">
+                <span class="button-text">Details</span>
+                <span class="button-desc">View admin account information</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 👥 Leaders Button -->
+    <a href="{% url 'leaders_home' %}" class="dashboard-button leaders-button">
+        <div class="button-content">
+            <span class="emoji">👥</span>
+            <div class="text-container">
+                <span class="button-text">Leaders</span>
+                <span class="button-desc">Manage church leadership team</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🙍‍♂️ Members Button -->
+    <a href="{% url 'members_home' %}" class="dashboard-button members-button">
+        <div class="button-content">
+            <span class="emoji">🙍‍♂️</span>
+            <div class="text-container">
+                <span class="button-text">Members</span>
+                <span class="button-desc">Access church member directory</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 📰 News Button -->
+    <a href="{% url 'news_home' %}" class="dashboard-button news-button">
+        <div class="button-content">
+            <span class="emoji">📰</span>
+            <div class="text-container">
+                <span class="button-text">News</span>
+                <span class="button-desc">Update church news & events</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🔔 Notifications Button -->
+    <a href="{% url 'notifications_home' %}" class="dashboard-button notifications-button">
+        <div class="button-content">
+            <span class="emoji">🔔</span>
+            <div class="text-container">
+                <span class="button-text">Notifications</span>
+                <span class="button-desc">Send alerts and messages</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- ⚙️ Settings Button -->
+    <a href="{% url 'settings_home' %}" class="dashboard-button settings-button">
+        <div class="button-content">
+            <span class="emoji">⚙️</span>
+            <div class="text-container">
+                <span class="button-text">Settings</span>
+                <span class="button-desc">Adjust system preferences</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- ❓ Help Button -->
+    <a href="{% url 'admin_chatbot' %}" class="dashboard-button help-button">
+        <div class="button-content">
+            <span class="emoji">❓</span>
+            <div class="text-container">
+                <span class="button-text">Help</span>
+                <span class="button-desc">Get support and assistance</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🌐 Public Page Button -->
+    <a href="{% url 'public_news_list' %}" class="dashboard-button public-posts-button">
+        <div class="button-content">
+            <span class="emoji">🌐</span>
+            <div class="text-container">
+                <span class="button-text">Public Page</span>
+                <span class="button-desc">Preview the public webpage</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+</div>
+
+<style>
+    /* 📱 Dashboard Buttons Container */
+    .dashboard-buttons {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px; /* iPhone-like spacing */
+        overflow-x: hidden;
+    }
+
+    /* 📦 Button Styling */
+    .dashboard-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%; /* Full width of container */
+        height: 85px; /* Adjusted for description */
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600; /* iPhone-like weight */
+        padding: 0 20px;
+        color: white;
+        background-size: 200% 100%;
+        border-radius: 20px; /* Rounded iPhone corners */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+        transition: opacity 0.2s ease, background-position 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .button-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .emoji {
+        font-size: 28px;
+        margin-right: 12px;
+    }
+
+    .text-container {
+        flex-grow: 1;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .button-text {
+        font-size: 18px;
+    }
+
+    .button-desc {
+        font-size: 14px; /* Smaller for description */
+        font-weight: 400; /* Lighter weight */
+        color: rgba(255, 255, 255, 0.85); /* Slightly transparent white */
+        margin-top: 2px; /* Space between title and description */
+    }
+
+    .more-info {
+        font-size: 24px;
+        transition: transform 0.2s ease;
+    }
+
+    /* 🎨 Unique Button Colors (softened for iPhone aesthetic) */
+    .home-button { background: linear-gradient(130deg, #42a5f5, #1976d2); }
+    .finance-button { background: linear-gradient(130deg, #ffeb3b, #fbc02d); }
+    .sacraments-button { background: linear-gradient(130deg, #ff9800, #f57c00); }
+    .properties-button { background: linear-gradient(130deg, #66bb6a, #4caf50); }
+    .details-button { background: linear-gradient(130deg, #9575cd, #7e57c2); }
+    .leaders-button { background: linear-gradient(130deg, #ff7043, #f4511e); }
+    .members-button { background: linear-gradient(130deg, #26c6da, #00acc1); }
+    .news-button { background: linear-gradient(130deg, #ffca28, #ffb300); }
+    .notifications-button { background: linear-gradient(130deg, #ec407a, #d81b60); }
+    .settings-button { background: linear-gradient(130deg, #546e7a, #37474f); }
+    .help-button { background: linear-gradient(130deg, #f06292, #c2185b); }
+    .public-posts-button { background: linear-gradient(130deg, #ab47bc, #8e24aa); }
+
+    /* 🏹 Hover Effects */
+    .dashboard-button:hover {
+        opacity: 0.9; /* Subtle fade for iPhone-like feedback */
+        background-position: right center; /* Gradient shift */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+    }
+    .dashboard-button:hover .more-info {
+        transform: translateX(5px); /* Gentle arrow movement */
+    }
+
+    /* 📱 Responsive Design */
+    @media screen and (max-width: 768px) {
+        .dashboard-button {
+            font-size: 16px;
+            height: 75px; /* Compact for mobile with description */
+            padding: 0 15px;
+        }
+        .emoji {
+            font-size: 24px;
+        }
+        .button-text {
+            font-size: 16px;
+        }
+        .button-desc {
+            font-size: 12px;
+        }
+        .more-info {
+            font-size: 20px;
+        }
+    }
+</style>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="icon" href="{% static 'images/church.png' %}" type="image/png">
+    <meta name="theme-color" content="#007bff">
+
+    <title>{% block title %}KKKT Mkwawa{% endblock title %}</title>
+
+    <!-- Global Styles -->
+    {% include 'partials/styles.html' %}
+    {% block styles %}{% endblock styles %}
+
+    <style>
+        body {
+            margin: 0;
+            padding-top: 5px; 
+            padding-bottom: 50px; 
+        }
+        .main-content {
+            display: block;
+            margin: 0 auto;
+            min-height: auto;
+        }
+
+        /*
+         * Hide base.html elements and all Google Translate
+         * frames/elements in print mode.
+         */
+        @media print {
+            /* Hide the google translate bar container */
+            #google_translate_element,
+            /* Hide topbar, bottombar, install button, or any base elements */
+            .topbar,
+            .bottombar,
+            #installButton,
+            .sidebar,
+
+            /* Hide Google Translate iframes & classes */
+            .goog-te-banner-frame,
+            .goog-te-menu-frame,
+            .skiptranslate,
+            .goog-te-menu2,
+            #goog-gt-tt {
+
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+                /* The above lines ensure it fully collapses and doesn't leave a blank area */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- GOOGLE TRANSLATE BAR AT VERY TOP -->
+    <div id="google_translate_element" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+        background: #f8f9fa;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+        padding: 5px 0;
+    "></div>
+
+    <!-- Bottom-Fixed Topbar -->
+    {% block topbar %}
+        {% include 'partials/topbar.html' %}
+    {% endblock topbar %}
+
+    <div class="container main-content">
+        {% block sidebar %}
+            {% include 'partials/sidebar.html' %}
+        {% endblock sidebar %}
+
+        {% block content %}{% endblock content %}
+    </div>
+
+    {% block bottombar %}
+        {% include 'partials/bottombar.html' %}
+    {% endblock bottombar %}
+
+    <button id="installButton" style="
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #007bff;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        cursor: pointer;
+        font-size: 14px;
+        z-index: 9999;
+        transition: background 0.3s;
+    ">📲 Add to Home Screen</button>
+
+    <!-- Global Scripts -->
+    {% include 'partials/scripts.html' %}
+
+    {% block scripts %}
+        <script>
+            /* Service Worker Registration */
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('{% static "service-worker.js" %}')
+                        .then(function(registration) {
+                            console.log('✅ Service Worker registered:', registration.scope);
+                        })
+                        .catch(function(err) {
+                            console.log('❌ Service Worker registration failed:', err);
+                        });
+                });
+            }
+
+            // Add to Home Screen Logic
+            let deferredPrompt;
+            const installButton = document.getElementById('installButton');
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installButton.style.display = 'block'; 
+            });
+
+            installButton.addEventListener('click', () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('✅ App installed successfully.');
+                        } else {
+                            console.log('❌ App installation dismissed.');
+                        }
+                        installButton.style.display = 'none';
+                        deferredPrompt = null;
+                    });
+                }
+            });
+
+            window.addEventListener('appinstalled', () => {
+                console.log('📲 App is already installed!');
+                installButton.style.display = 'none';
+            });
+        </script>
+
+        <!-- GOOGLE TRANSLATE SCRIPT -->
+        <script>
+            function googleTranslateElementInit() {
+                new google.translate.TranslateElement({
+                    pageLanguage: 'en',
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                }, 'google_translate_element');
+            }
+        </script>
+        <script 
+            src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+            type="text/javascript">
+        </script>
+    {% endblock scripts %}
+</body>
+</html>

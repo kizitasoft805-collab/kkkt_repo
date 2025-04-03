@@ -1,0 +1,197 @@
+<div id="news-detail-modal-{{ news.id }}" class="news-detail-modal">
+    <!-- Media Section (Scrollable Horizontally) -->
+    <div class="news-media-container">
+        {% for media in news.media.all %}
+            {% if media.media_type == "image" %}
+                <img src="{{ media.file.url }}" class="news-media-item">
+            {% elif media.media_type == "video" %}
+                <video class="news-media-item" controls>
+                    <source src="{{ media.file.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            {% endif %}
+        {% empty %}
+            <p class="no-media">No media available.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Content Section -->
+    <div class="news-detail-content">
+        <!-- Close Button -->
+        <button class="close-news-detail" data-news-id="{{ news.id }}">✖</button>
+
+        <!-- News Title & Content -->
+        <h2 class="news-title">{{ news.title }}</h2>
+        <p class="news-content">{{ news.content }}</p>
+
+        <!-- Document Links -->
+        {% with news.media.all|dictsort:"media_type" as documents %}
+            {% if documents|length > 0 %}
+                <h3>📄 For more information, Read here:</h3>
+                <div class="document-links">
+                    {% for doc in documents %}
+                        {% if doc.media_type == "document" %}
+                            <a href="{{ doc.file.url }}" class="document-button" target="_blank">📖 Read Document</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Bible Reference -->
+        {% if news.bible_reference %}
+            <h3>📖 Bible Reference</h3>
+            <p class="bible-reference">{{ news.bible_reference }}</p>
+        {% endif %}
+
+        <!-- Likes & Comments Count -->
+        <div class="news-stats">
+            ❤️ <span id="news-like-count-{{ news.id }}">{{ news.like_count }}</span> Likes |
+            💬 <span id="news-comment-count-{{ news.id }}">{{ news.comment_count }}</span> Comments
+        </div>
+
+        <!-- Display Comments -->
+        <h3>💬 Comments</h3>
+        <div class="comments-list">
+            {% for comment in news.comments.all %}
+                <div class="comment-item">
+                    <strong>{{ comment.name }}</strong>: {{ comment.comment_text }}
+                    <br>
+                    <small>📅 {{ comment.created_at|date:"M d, Y H:i" }}</small>
+                </div>
+            {% empty %}
+                <p class="no-comments">No comments yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Styling -->
+<style>
+    /* Fullscreen Modal */
+    .news-detail-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 1);
+        overflow-x: hidden;
+        overflow-y: auto;
+        z-index: 9999;
+    }
+
+    /* Media Container (Full Width, Scrollable) */
+    .news-media-container {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        white-space: nowrap;
+        width: 100vw;
+        height: 60vh;
+        background: black;
+    }
+
+    .news-media-item {
+        width: 100vw;
+        height: 60vh;
+        object-fit: cover;
+        scroll-snap-align: center;
+    }
+
+    .no-media {
+        text-align: center;
+        color: #fff;
+        font-size: 18px;
+        padding: 20px;
+    }
+
+    /* News Content (Covers Remaining Space) */
+    .news-detail-content {
+        width: 100%;
+        padding: 20px;
+        color: white;
+        text-align: left;
+    }
+
+    /* News Title */
+    .news-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #ffffff;
+        margin-top: 10px;
+    }
+
+    /* Document Buttons */
+    .document-links {
+        margin-top: 10px;
+    }
+
+    .document-button {
+        display: block;
+        background: #007bff;
+        color: white;
+        padding: 8px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 5px;
+    }
+
+    /* Close Button */
+    .close-news-detail {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: white;
+    }
+
+    /* Comments */
+    .comments-list {
+        max-height: 200px;
+        overflow-y: auto;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .comment-item {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        color: white;
+    }
+
+    .no-comments {
+        text-align: center;
+        color: white;
+        font-size: 16px;
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Open News Detail Modal
+        document.querySelectorAll(".open-news-detail").forEach(button => {
+            button.addEventListener("click", function () {
+                const newsId = this.getAttribute("data-news-id");
+                document.getElementById(`news-detail-modal-${newsId}`).style.display = "block";
+            });
+        });
+
+        // Close News Detail Modal
+        document.querySelectorAll(".close-news-detail").forEach(button => {
+            button.addEventListener("click", function () {
+                const newsId = this.getAttribute("data-news-id");
+                document.getElementById(`news-detail-modal-${newsId}`).style.display = "none";
+            });
+        });
+    });
+</script>

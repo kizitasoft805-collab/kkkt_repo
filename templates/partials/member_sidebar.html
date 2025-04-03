@@ -1,0 +1,195 @@
+{% load static %}
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar" style="
+    position: fixed;
+    /* Offset from the top so the close icon is visible (e.g., 60px) */
+    top: 60px; 
+    left: -200px; /* Hidden initially */
+    width: 200px;
+    /* Fit the remaining viewport height */
+    max-height: calc(100vh - 60px);
+    overflow: auto; /* Allow vertical scrolling if needed */
+    z-index: 2000;  /* Ensure it's above other elements */
+    display: none;  /* Hidden initially */
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--sidebar-background);
+    animation: none; /* Will be applied via JS below */
+    transition: left 0.3s ease, display 0.3s ease;
+">
+
+    <!-- Close Icon (❌) -->
+    <div id="closeSidebar" style="
+        position: absolute;
+        top: 8px;  /* Smaller offset inside the sidebar */
+        right: 8px;
+        font-size: 18px; /* Reduced from 22px */
+        cursor: pointer;
+        color: #fff; /* White text/icon color */
+        background-color: blue; /* Red background */
+        width: 32px;  /* Smaller dimension */
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.3);
+        z-index: 2001; /* Above the rest of the sidebar */
+        overflow: hidden;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    " 
+    onmouseover="this.style.backgroundColor='blue'" 
+    onmouseout="this.style.backgroundColor='blue'">
+        ❌
+    </div>
+
+    <!-- User Profile Picture -->
+    <a href="{% url 'member_upload_profile_picture' %}" style="text-decoration: none;">
+        {% if user.profile_picture %}
+            <img
+                src="{{ user.profile_picture.url }}"
+                alt="User Profile Picture"
+                style="
+                    width: 40px;  /* Decreased from 50px */
+                    height: 40px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: 2px solid var(--sidebar-icon-border);
+                    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+                    margin-top: 40px; /* Space below close button */
+                    margin-bottom: 15px; /* Reduced from 20px */
+                "
+            />
+        {% else %}
+            <img
+                src="{% static 'images/user.png' %}"
+                alt="Default User Icon"
+                style="
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: 2px solid var(--sidebar-icon-border);
+                    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+                    margin-top: 40px;
+                    margin-bottom: 15px;
+                "
+            />
+        {% endif %}
+    </a>
+
+    <!-- Reusable .sidebar-button style -->
+    <style>
+        .sidebar-button {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            /* Decreased spacing & size for smaller screens */
+            gap: 6px;            /* from 8px */
+            width: 80%;
+            padding: 6px 10px;   /* from 8px 12px */
+            margin-bottom: 8px;  /* from 10px */
+            font-size: 12px;     /* from 14px */
+            text-decoration: none;
+            color: white;
+            border-radius: 12px; /* from 16px */
+            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .sidebar-button:hover {
+            transform: scale(1.03);
+        }
+    </style>
+
+    <!-- Home Button (🏠) -->
+    <a href="{% url 'member_dashboard' %}" class="sidebar-button" style="background-color: #007bff;"
+       onmouseover="this.style.backgroundColor='#0056b3'"
+       onmouseout="this.style.backgroundColor='#007bff'">
+        <span style="font-size: 16px;">🏠</span>
+        <span>Home</span>
+    </a>
+
+    <!-- Details Button (ℹ️) -->
+    <a href="{% url 'logged_member_details' %}" class="sidebar-button" style="background-color: #28a745;"
+       onmouseover="this.style.backgroundColor='#1c7430'"
+       onmouseout="this.style.backgroundColor='#28a745'">
+        <span style="font-size: 16px;">ℹ️</span>
+        <span>Details</span>
+    </a>
+
+    <!-- News Button (📰) -->
+    <a href="{% url 'member_news_list' %}" class="sidebar-button" style="background-color: #17a2b8;"
+       onmouseover="this.style.backgroundColor='#117a8b'"
+       onmouseout="this.style.backgroundColor='#17a2b8'">
+        <span style="font-size: 16px;">📰</span>
+        <span>Posts</span>
+    </a>
+
+    <!-- Notifications Button (🔔) -->
+    <a href="{% url 'member_notifications' %}" class="sidebar-button" style="background-color: #6f42c1;"
+       onmouseover="this.style.backgroundColor='#59369e'"
+       onmouseout="this.style.backgroundColor='#6f42c1'">
+        <span style="font-size: 16px;">🔔</span>
+        <span>Notifications</span>
+    </a>
+
+    <!-- Finance Button (💰) -->
+    <a href="{% url 'member_tithes' %}" class="sidebar-button" style="background-color: #20c997;"
+       onmouseover="this.style.backgroundColor='#198754'"
+       onmouseout="this.style.backgroundColor='#20c997'">
+        <span style="font-size: 16px;">💸</span>
+        <span>Tithe history</span>
+    </a>
+
+    <!-- Settings (Language) Button (🌐 / ⚙️) -->
+    <a href="{% url 'member_pledge_list' %}" class="sidebar-button" style="background-color: #dc3545;"
+       onmouseover="this.style.backgroundColor='#a71d2a'"
+       onmouseout="this.style.backgroundColor='#dc3545'">
+        <span style="font-size: 16px;">💸</span>
+        <span>Pledges history</span>
+    </a>
+</div>
+
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle'); // Must exist somewhere (e.g. topbar)
+    const closeSidebar = document.getElementById('closeSidebar');
+    let sidebarVisible = false;
+
+    const toggleSidebar = () => {
+        sidebarVisible = !sidebarVisible;
+        if (sidebarVisible) {
+            // Show sidebar
+            sidebar.style.display = 'flex';
+            sidebar.style.animation = 'slideIn 0.5s ease forwards';
+            setTimeout(() => {
+                sidebar.style.left = '0';
+            }, 10);
+        } else {
+            // Hide sidebar
+            sidebar.style.left = '-200px';
+            sidebar.style.animation = 'slideOut 0.5s ease forwards';
+            setTimeout(() => {
+                sidebar.style.display = 'none';
+            }, 300);
+        }
+    };
+
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    closeSidebar.addEventListener('click', toggleSidebar);
+
+    // Keyframe animations
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes slideIn {
+            from { left: -200px; opacity: 0; }
+            to { left: 0; opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { left: 0; opacity: 1; }
+            to { left: -200px; opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+</script>

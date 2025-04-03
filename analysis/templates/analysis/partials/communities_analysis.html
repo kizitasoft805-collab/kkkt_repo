@@ -1,0 +1,170 @@
+{% if communities_data %}
+    <h3>
+        Communities Membership Analysis
+        <button id="downloadCommunitiesChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <div class="communities-chart-container">
+        <canvas id="communitiesBarChart"></canvas>
+    </div>
+
+    <!-- Graph Description & Detailed Stats -->
+    <p id="communitiesAnalysis"></p>
+    <!--
+      Wrap the table in a scrollable container
+      so on narrow screens, user can scroll horizontally
+      without the overall viewport shifting.
+    -->
+    <div class="table-responsive" id="communitiesDetails"></div>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .communities-chart-container {
+            max-width: 700px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        @media screen and (max-width: 600px) {
+            .communities-chart-container {
+                max-width: 100%;
+                height: 450px;
+            }
+        }
+
+        /* Scrollable container for the table */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;          /* Horizontal scroll if contents are wider than container */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            margin-top: 20px;
+        }
+
+        .community-stats-table {
+            border-collapse: collapse;
+            min-width: 1000px; /* Force enough width to ensure columns won't wrap, can be adjusted */
+            margin: 0 auto;
+        }
+        .community-stats-table th, .community-stats-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+            white-space: nowrap; /* Prevent text from wrapping, ensures horizontal scroll usage */
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const communitiesData = JSON.parse('{{ communities_data|safe }}');
+
+        let communitiesChart;
+
+        // If we have labels/data, create the bar chart
+        if (communitiesData.labels.length > 0) {
+            const ctx = document.getElementById('communitiesBarChart').getContext('2d');
+
+            communitiesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: communitiesData.labels,
+                    datasets: [{
+                        label: 'Total Members',
+                        data: communitiesData.data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Display the main analysis text
+            document.getElementById("communitiesAnalysis").innerHTML = `<strong>${communitiesData.analysis}</strong>`;
+
+            // Build a table for all the extra stats
+            let detailsHTML = `
+                <h4>Per-Community Detailed Stats</h4>
+                <table class="community-stats-table">
+                    <thead>
+                        <tr>
+                            <th>Community</th>
+                            <th>Total</th>
+                            <th>Baptized</th>
+                            <th>Unbaptized</th>
+                            <th>Communion</th>
+                            <th>Uncommunion</th>
+                            <th>Confirmed</th>
+                            <th>Unconfirmed</th>
+                            <th>Married Males</th>
+                            <th>Unmarried Males</th>
+                            <th>Married Females</th>
+                            <th>Unmarried Females</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // communitiesData.details is an array of dicts with stats
+            communitiesData.details.forEach(item => {
+                detailsHTML += `
+                    <tr>
+                        <td>${item.community_name}</td>
+                        <td>${item.total_count}</td>
+                        <td>${item.baptized_count}</td>
+                        <td>${item.unbaptized_count}</td>
+                        <td>${item.communion_count}</td>
+                        <td>${item.uncommunion_count}</td>
+                        <td>${item.confirmed_count}</td>
+                        <td>${item.unconfirmed_count}</td>
+                        <td>${item.married_males}</td>
+                        <td>${item.unmarried_males}</td>
+                        <td>${item.married_females}</td>
+                        <td>${item.unmarried_females}</td>
+                    </tr>
+                `;
+            });
+
+            detailsHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            // Insert table HTML inside .table-responsive container
+            document.getElementById("communitiesDetails").innerHTML = detailsHTML;
+
+        } else {
+            document.getElementById("communitiesAnalysis").innerHTML = `<p>No community data available.</p>`;
+        }
+
+        // Download button logic
+        document.getElementById("downloadCommunitiesChart").addEventListener("click", function() {
+            if (communitiesChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('communitiesBarChart').toDataURL('image/png');
+                link.download = 'Communities_Members_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No community analysis data provided.</p>
+{% endif %}

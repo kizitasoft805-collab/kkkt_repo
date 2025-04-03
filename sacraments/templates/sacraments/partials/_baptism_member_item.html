@@ -1,0 +1,70 @@
+{% load static %}
+
+<li class="member-item" 
+    style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #ddd;">
+    
+    <!-- Checkbox -->
+    <input type="checkbox" name="selected_members" value="{{ member.id }}" 
+           style="margin-right: 10px; width: 20px; height: 20px; cursor: pointer;">
+
+    <!-- Member Passport -->
+    {% if member.passport %}
+        <img src="{{ member.passport.url }}" alt="Member Passport" 
+             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+    {% else %}
+        <img src="{% static 'images/user.png' %}" alt="Default Avatar" 
+             style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+    {% endif %}
+
+    <!-- Member Info -->
+    <div style="flex-grow: 1;">
+        <div class="member-name" style="font-size: 16px; font-weight: bold;">
+            {{ member.full_name }}
+        </div>
+        <div style="font-size: 14px; color: gray;">
+            🏘️ {% if member.cell %}{{ member.cell.name }} ({{ member.cell.outstation.name }}){% else %}Not Assigned{% endif %}
+        </div>
+    </div>
+
+    <!-- Upload Certificate -->
+    <div id="uploadContainer_{{ member.id }}">
+        <label for="certificate_{{ member.id }}" class="upload-label"
+               style="font-size: 16px; color: #007bff; cursor: pointer; margin-left: 10px;">
+            📂 Upload
+        </label>
+        <input type="file" id="certificate_{{ member.id }}" name="certificate_{{ member.id }}" 
+               class="certificate-input" data-member-id="{{ member.id }}" 
+               style="display: none;">
+    </div>
+
+    <!-- Uploaded Certificate Display -->
+    <div id="uploaded_{{ member.id }}" style="display: none; margin-left: 10px;">
+        <span style="color: green; font-size: 18px;">✔️</span>
+        <button type="button" class="remove-certificate" data-member-id="{{ member.id }}"
+                style="border: none; background: none; color: red; font-size: 14px; cursor: pointer;">
+            🗑 Remove
+        </button>
+    </div>
+</li>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".certificate-input").forEach(input => {
+            input.addEventListener("change", function(event) {
+                let memberId = this.dataset.memberId;
+                document.getElementById("uploadContainer_" + memberId).style.display = "none";
+                document.getElementById("uploaded_" + memberId).style.display = "flex";
+            });
+        });
+
+        document.querySelectorAll(".remove-certificate").forEach(button => {
+            button.addEventListener("click", function() {
+                let memberId = this.dataset.memberId;
+                let input = document.getElementById("certificate_" + memberId);
+                input.value = "";
+                document.getElementById("uploadContainer_" + memberId).style.display = "block";
+                document.getElementById("uploaded_" + memberId).style.display = "none";
+            });
+        });
+    });
+</script>

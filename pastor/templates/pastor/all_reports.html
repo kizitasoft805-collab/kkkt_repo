@@ -1,0 +1,107 @@
+{% extends 'pastor_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .reports-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  /* Page title */
+  .page-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Button for new report */
+  .new-report-button {
+    display: inline-block;
+    background-color: #007AFF;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .new-report-button:hover {
+    background-color: #005BB5;
+  }
+
+  /* Single line separating each report block */
+  .report-block {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .report-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .report-metadata {
+    margin: 0.25rem 0;
+    font-size: 0.95rem;
+  }
+
+  /* Icon links */
+  .icon-links {
+    margin-top: 0.5rem;
+  }
+  .icon-links a {
+    text-decoration: none;
+    font-size: 1.25rem;
+    color: #007AFF;
+    margin-right: 1rem; /* small space between icons */
+  }
+</style>
+
+<div class="reports-container">
+  <!-- "New Monthly Report" Button -->
+  <div style="text-align: right;">
+    <a class="new-report-button" href="{% url 'pastor_report_create' %}">
+      🆕 New Monthly Report
+    </a>
+  </div>
+
+  <h1 class="page-title">All Reports of Pastor</h1>
+
+  {% for report in reports %}
+    <div class="report-block">
+      <p class="report-title">
+        The report of month {{ report.month }}, year {{ report.year.year }}
+      </p>
+
+      <p class="report-metadata">
+        <strong>Date Created:</strong> {{ report.date_created }}
+      </p>
+      <p class="report-metadata">
+        <strong>Date Updated:</strong> {{ report.date_updated }}
+      </p>
+
+      <!-- Icon links for View, Edit, and Delete -->
+      <div class="icon-links">
+        <!-- View link (eye emoji) -->
+        <a href="{% url 'pastor_report_detail' report.pk %}" title="View Report">
+          👁️
+        </a>
+        <!-- Update link (pencil emoji) -->
+        <a href="{% url 'pastor_report_edit' report.pk %}" title="Update Report">
+          ✏️
+        </a>
+        <!-- Delete link (trash emoji) -->
+        <a href="{% url 'pastor_report_delete' report.pk %}" title="Delete Report">
+          🗑️
+        </a>
+      </div>
+    </div>
+  {% empty %}
+    <p style="text-align: center;">No pastor reports found.</p>
+  {% endfor %}
+</div>
+{% endblock %}

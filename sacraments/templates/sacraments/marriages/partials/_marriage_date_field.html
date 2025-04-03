@@ -1,0 +1,31 @@
+<!-- Marriage Date Field (iPhone-like) -->
+<div style="margin-bottom: 15px; text-align: center;">
+    <label for="marriageDate" style="font-size: 16px; font-weight: bold; display: block; margin-bottom: 8px;">
+        📅 Date of Marriage:
+    </label>
+    <input type="date" class="marriageDate" name="marriage_date" required
+           style="width: 90%; max-width: 500px; padding: 14px; border: 1px solid #ddd;
+                  border-radius: 25px; font-size: 16px; text-align: center; 
+                  background: #f8f9fa; outline: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+                  transition: all 0.3s ease-in-out;">
+</div>
+
+<script>
+    function setMarriageDateFields() {
+        let today = new Date();
+        let year = today.getFullYear();
+        let month = String(today.getMonth() + 1).padStart(2, '0');
+        let day = String(today.getDate()).padStart(2, '0');
+        let formattedDate = `${year}-${month}-${day}`; // YYYY-MM-DD format
+
+        // Apply the date to all marriage date fields
+        document.querySelectorAll(".marriageDate").forEach(input => {
+            if (!input.value) { // Only set if it's empty (newly added block)
+                input.value = formattedDate;
+            }
+        });
+    }
+
+    // Set date on page load
+    document.addEventListener("DOMContentLoaded", setMarriageDateFields);
+</script>

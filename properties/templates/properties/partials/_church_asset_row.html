@@ -1,0 +1,32 @@
+<tr class="church-asset-row"
+    data-name="{{ asset.name|lower }}"
+    data-type="{{ asset.asset_type }}"
+    data-status="{{ asset.status }}"
+    data-quantity="{{ asset.quantity }}"
+    data-value="{{ asset.value }}"
+    style="border-bottom: 1px solid #ddd;">
+    
+    <td style="font-weight: bold;">{{ counter }}</td>
+    <td style="white-space: nowrap;">{{ asset.name }}</td>
+    <td style="white-space: nowrap;">{{ asset.asset_type }}</td>
+    <td>
+        <span class="status-badge {{ asset.status|lower }}">{{ asset.status }}</span>
+    </td>
+    <td style="white-space: nowrap;">{{ asset.quantity_name }}</td>
+    <td style="white-space: nowrap;">{{ asset.quantity }}</td>
+    <td style="white-space: nowrap;">💵 TZS {{ asset.value }}</td>
+    <td style="white-space: nowrap;">📆 {{ asset.acquisition_date|date:"M d, Y" }} <span class="time-info">({{ asset.time_since_acquired }})</span></td>
+    <td style="white-space: nowrap;">⏰ {{ asset.created_at|date:"M d, Y" }} <span class="time-info">({{ asset.time_since_created }})</span></td>
+
+    <td class="action-buttons" style="display: flex; gap: 5px; align-items: center;">
+        <a href="{% url 'church_asset_detail' asset.id %}" class="action-btn view-btn"
+           style="background: #007bff; color: white; padding: 8px 12px; border-radius: 12px;">👁️</a>
+        <a href="{% url 'update_church_asset' asset.id %}" class="action-btn edit-btn"
+           style="background: #ffc107; color: black; padding: 8px 12px; border-radius: 12px;">✏️</a>
+        <a href="{% url 'upload_additional_church_asset_media' asset.id %}" class="action-btn media-btn"
+           style="background: #17a2b8; color: white; padding: 8px 12px; border-radius: 12px;">➕</a>
+        <a href="{% url 'delete_church_asset' asset.id %}" class="action-btn delete-btn"
+           style="background: #dc3545; color: white; padding: 8px 12px; border-radius: 12px;"
+           onclick="return confirm('Are you sure you want to delete this asset?');">🗑️</a>
+    </td>
+</tr>

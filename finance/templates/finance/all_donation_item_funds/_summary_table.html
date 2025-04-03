@@ -1,0 +1,85 @@
+<!-- 📊 Summary Table -->
+<div style="margin: 20px 0;">
+    <h3 style="font-size: 22px; font-weight: bold; color: #007bff; margin-bottom: 10px;">
+        📋 Contributions Summary
+    </h3>
+
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: center;">
+            <thead style="background-color: #343a40; color: white;">
+                <tr>
+                    <th style="padding: 12px;">🎯 Contribution Name</th>
+                    <th style="padding: 12px;">📅 Date Created</th>
+                    <th style="padding: 12px;">💰 Total Amount (TZS)</th>
+                </tr>
+            </thead>
+            <tbody id="summary-table-body">
+                {% for contribution, donation_items in contribution_data.items %}
+                    <tr 
+                        data-contribution="{{ contribution.name }}" 
+                        data-date-created="{{ contribution.date_created|date:'Y-m-d' }}" 
+                        data-amounts="{% for item in donation_items %}{{ item.amount }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                        style="border-bottom: 1px solid #ccc;"
+                    >
+                        <td style="padding: 10px;">{{ contribution.name }}</td>
+                        <td style="padding: 10px;">{{ contribution.date_created|date:"Y-m-d" }}</td>
+                        <td class="total-amount" style="padding: 10px; font-weight: bold;">0 TZS</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JavaScript for Filtering & Totals -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const filters = {
+            year: document.getElementById('year-filter'),
+            contribution: document.getElementById('contribution-filter'),
+            period: document.getElementById('period-filter'),
+        };
+
+        const rows = document.querySelectorAll('#summary-table-body tr');
+
+        function calculateTotals() {
+            rows.forEach(row => {
+                const amounts = row.dataset.amounts.split(',').map(Number);
+                const total = amounts.reduce((acc, val) => acc + val, 0);
+                row.querySelector('.total-amount').textContent = `${total.toLocaleString()} TZS`;
+            });
+        }
+
+        function filterSummary() {
+            rows.forEach(row => {
+                const contribution = row.dataset.contribution.toLowerCase();
+                const dateCreated = row.dataset.dateCreated;
+                const amounts = row.dataset.amounts.split(',').map(Number);
+
+                const yearMatch = filters.year.value ? dateCreated.startsWith(filters.year.value) : true;
+                const contributionMatch = filters.contribution.value
+                    ? contribution.includes(filters.contribution.value.toLowerCase())
+                    : true;
+                const periodMatch = filters.period.value
+                    ? contribution.includes(filters.period.value.toLowerCase())
+                    : true;
+
+                const shouldDisplay = yearMatch && contributionMatch && periodMatch;
+
+                row.style.display = shouldDisplay ? '' : 'none';
+
+                // Update totals dynamically based on filters
+                const total = shouldDisplay ? amounts.reduce((acc, val) => acc + val, 0) : 0;
+                row.querySelector('.total-amount').textContent = `${total.toLocaleString()} TZS`;
+            });
+        }
+
+        // Apply filters when values change
+        ['year', 'contribution', 'period'].forEach(key => {
+            filters[key].addEventListener('input', filterSummary);
+        });
+
+        // Initial calculation
+        calculateTotals();
+    });
+</script>

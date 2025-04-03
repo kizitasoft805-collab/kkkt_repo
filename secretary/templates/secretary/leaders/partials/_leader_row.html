@@ -1,0 +1,91 @@
+{% load static %}
+
+<tr class="leader-row"
+    data-name="{{ leader.church_member.full_name|lower }}"
+    data-gender="{{ leader.church_member.gender }}"
+    data-occupation="{{ leader.occupation }}"
+    data-community="{{ leader.church_member.community.id }}"
+    data-zone="{{ leader.church_member.community.zone.id }}"
+    style="border-bottom: 1px solid #ddd;">
+
+    <td>{{ counter }}</td>
+    <td>{{ leader.leader_id }}</td>
+
+    <td>
+        {% if leader.church_member.status == "Active" %}
+            <span style="color: green; font-size: 1.2rem;">✅</span>
+        {% else %}
+            <span style="color: red; font-size: 1.2rem;">❌</span>
+        {% endif %}
+    </td>
+
+    <td>
+        <a href="{% url 'secretary_update_leader_profile' leader.pk %}">
+            <img src="{% if leader.church_member.passport %}
+                        {{ leader.church_member.passport.url }}
+                     {% else %}
+                        {% static 'images/user.png' %}
+                     {% endif %}" 
+                 alt="Passport"
+                 style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+        </a>
+    </td>
+
+    <td style="font-weight: bold; font-size: 1rem; white-space: nowrap;">{{ leader.church_member.full_name }}</td>
+    <td style="font-size: 1rem; white-space: nowrap;">{{ leader.church_member.gender }}</td>
+    <td style="font-size: 1rem; white-space: nowrap;">{{ leader.occupation }}</td>
+    <td style="font-size: 1rem; white-space: nowrap;">
+        {{ leader.church_member.community.name }} ({{ leader.church_member.community.zone.name }})
+    </td>
+    <td style="font-size: 1rem; white-space: nowrap;">{{ leader.time_in_service }}</td>
+
+    <td>
+        <a href="{% url 'secretary_leader_detail' leader.pk %}" 
+           style="text-decoration: none; padding: 6px 10px; background: #007bff; color: white; border-radius: 5px;">
+            👁️
+        </a>
+        <a href="{% url 'secretary_update_leader' leader.pk %}" 
+           style="text-decoration: none; padding: 6px 10px; background: #ffc107; color: black; border-radius: 5px;">
+            ✏️
+        </a>
+        <a href="{% url 'secretary_delete_leader' leader.pk %}" 
+           style="text-decoration: none; padding: 6px 10px; background: #dc3545; color: white; border-radius: 5px;">
+            🗑️
+        </a>
+    </td>
+</tr>
+
+<!-- ✅ Inline Styling for Row -->
+<style>
+    /* 📌 Table Row Actions */
+    .leader-row td {
+        vertical-align: middle;
+    }
+
+    /* 📌 Action Buttons */
+    .leader-row a {
+        display: inline-block;
+        text-align: center;
+        margin-right: 5px;
+        font-size: 14px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .leader-row a:hover {
+        transform: scale(1.1);
+    }
+
+    /* ✅ Mobile Optimization */
+    @media (max-width: 768px) {
+        .leader-row td {
+            font-size: 14px;
+            padding: 6px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .leader-row td {
+            font-size: 13px;
+        }
+    }
+</style>

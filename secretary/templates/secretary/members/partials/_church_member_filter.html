@@ -1,0 +1,126 @@
+<!-- Filter Section -->
+<div class="filter-form">
+    <!-- Name Filter -->
+    <input type="text" id="searchName" placeholder="🔍 Search by Name">
+
+    <!-- Gender Filter -->
+    <select id="genderFilter">
+        <option value="all">⚥ Filter by Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+    </select>
+
+    <!-- Community Filter -->
+    <select id="communityFilter">
+        <option value="all">🏡 Filter by Community</option>
+        {% for community in communities %}
+            <option value="{{ community.name }}">{{ community.name }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- Zone Filter -->
+    <select id="zoneFilter">
+        <option value="all">📍 Filter by Zone</option>
+        {% for zone in zones %}
+            <option value="{{ zone.name }}">{{ zone.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- JavaScript for Real-Time Filtering -->
+<script>
+    function filterChurchMembers() {
+        let nameFilter = document.getElementById("searchName").value.toLowerCase();
+        let genderFilter = document.getElementById("genderFilter").value;
+        let communityFilter = document.getElementById("communityFilter").value;
+        let zoneFilter = document.getElementById("zoneFilter").value;
+
+        let members = document.querySelectorAll(".church-member-row");
+
+        let totalMales = 0;
+        let totalFemales = 0;
+        let totalMembers = 0;
+
+        members.forEach(member => {
+            let name = member.getAttribute("data-name").toLowerCase();
+            let gender = member.getAttribute("data-gender");
+            let community = member.getAttribute("data-community");
+            let zone = member.getAttribute("data-zone");
+
+            let showByName = name.includes(nameFilter);
+            let showByGender = (genderFilter === "all" || gender === genderFilter);
+            let showByCommunity = (communityFilter === "all" || community === communityFilter);
+            let showByZone = (zoneFilter === "all" || zone === zoneFilter);
+
+            if (showByName && showByGender && showByCommunity && showByZone) {
+                member.style.display = "table-row";
+                totalMembers++;
+
+                if (gender === "Male") {
+                    totalMales++;
+                } else if (gender === "Female") {
+                    totalFemales++;
+                }
+            } else {
+                member.style.display = "none";
+            }
+        });
+
+        // Update the summary section
+        document.getElementById("totalMales").textContent = totalMales;
+        document.getElementById("totalFemales").textContent = totalFemales;
+        document.getElementById("totalMembers").textContent = totalMembers;
+    }
+
+    // Attach event listeners for real-time filtering
+    document.getElementById("searchName").addEventListener("input", filterChurchMembers);
+    document.getElementById("genderFilter").addEventListener("change", filterChurchMembers);
+    document.getElementById("communityFilter").addEventListener("change", filterChurchMembers);
+    document.getElementById("zoneFilter").addEventListener("change", filterChurchMembers);
+</script>
+
+<!-- CSS for Styling -->
+<style>
+    /* 🌟 Centered Filter Section */
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 10px;
+    }
+
+    /* 🔍 Input Fields */
+    .filter-form input,
+    .filter-form select {
+        width: 100%;
+        max-width: 400px;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 25px;
+        font-size: 16px;
+        outline: none;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-in-out;
+    }
+
+    /* 🎨 Input Focus Effect */
+    .filter-form input:focus,
+    .filter-form select:focus {
+        border-color: #007bff;
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    /* 📱 Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .filter-form input,
+        .filter-form select {
+            font-size: 14px;
+            padding: 10px;
+        }
+    }
+</style>

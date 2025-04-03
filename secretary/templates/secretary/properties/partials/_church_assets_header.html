@@ -1,0 +1,67 @@
+<div class="header-row"
+     style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1000px; margin: 0 auto 15px; padding: 0 10px;">
+
+    <!-- 📋 Title -->
+    <h2 class="header-title"
+        style="font-size: 22px; font-weight: bold; color: #007bff; flex-grow: 1; text-align: left;">
+        📋 Church Assets
+    </h2>
+
+    <!-- ➕ Add Button -->
+    <a href="{% url 'secretary_create_church_assets' %}" class="create-btn"
+       style="background: linear-gradient(135deg, #28a745, #1f8d41); color: white; text-decoration: none;
+              padding: 10px 15px; border-radius: 12px; font-size: 14px; font-weight: bold; white-space: nowrap;">
+        ➕ Add
+    </a>
+</div>
+
+<!-- ✅ Responsive Fix -->
+<style>
+    /* 📌 Ensure Proper Spacing Between Title & Button */
+    .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto 15px;
+        padding: 0 10px;
+    }
+
+    /* 📋 Adjust Header Title */
+    .header-title {
+        flex-grow: 1;
+        font-size: 22px;
+        font-weight: bold;
+        color: #007bff;
+        text-align: left;
+    }
+
+    /* ➕ Ensure Button Does Not Overlap */
+    .create-btn {
+        white-space: nowrap; /* ✅ Prevents text wrapping */
+        padding: 10px 15px;
+        font-size: 14px;
+        border-radius: 12px;
+    }
+
+    /* 📌 Adjustments for Small Screens */
+    @media (max-width: 768px) {
+        .header-row {
+            flex-direction: column; /* ✅ Stack title & button */
+            align-items: center;
+            gap: 10px; /* ✅ Add spacing */
+            text-align: center;
+        }
+
+        .header-title {
+            font-size: 20px; /* ✅ Reduce size */
+        }
+
+        .create-btn {
+            width: 100%;
+            max-width: 200px; /* ✅ Ensure button is not too wide */
+            text-align: center;
+        }
+    }
+</style>

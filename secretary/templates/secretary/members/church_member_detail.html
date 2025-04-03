@@ -1,0 +1,250 @@
+{% extends 'secretary_base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Profile Section -->
+<div class="profile-header">
+    <!-- Profile Picture (Click to Upload/Update) -->
+    <div class="profile-picture">
+        <a href="{% url 'secretary_upload_passport' church_member.pk %}" title="Click to upload or update passport">
+            <img src="{% if church_member.passport %}{{ church_member.passport.url }}{% else %}{% static 'images/user.png' %}{% endif %}" 
+                 alt="Profile Picture">
+        </a>
+    </div>
+    <!-- Member Name -->
+    <h2 class="member-name">{{ church_member.full_name }}</h2>
+    <!-- Member Status -->
+    <p class="member-status {% if church_member.status == 'Active' %}status-active{% else %}status-inactive{% endif %}">
+        {% if church_member.status == "Active" %}
+            ✅ Active Member
+        {% else %}
+            ❌ Inactive Member
+        {% endif %}
+    </p>
+</div>
+
+<!-- Navigation Buttons -->
+<div class="nav-buttons">
+    <a href="{% url 'secretary_church_member_list' %}" class="nav-btn back-btn">⬅️ Back</a>
+    <a href="{% url 'secretary_update_church_member' church_member.pk %}" class="nav-btn edit-btn">✏️ Edit</a>
+    <a href="{% url 'secretary_delete_church_member' church_member.pk %}" class="nav-btn delete-btn"
+       onclick="return confirm('Are you sure you want to delete this member?');">🗑️ Delete</a>
+</div>
+
+<!-- Details Section -->
+<div class="details-container">
+    <table class="details-table">
+        <tbody>
+            {% for field, value in details.items %}
+            <tr>
+                <td class="field-name">{{ field }}</td>
+                <td class="field-value">{{ value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Uploaded Documents Section -->
+{% if documents %}
+<h3 class="documents-header">📂 Uploaded Documents</h3>
+<div class="documents-container">
+    {% for doc_name, doc_url in documents.items %}
+        {% if doc_url %}
+        <a href="{{ doc_url }}" target="_blank" class="document-button">{{ doc_name }}</a>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- 🌙 Dark Mode Friendly CSS -->
+<style>
+    /* 🌍 Light Mode Colors */
+    :root {
+        --text-color: #333333;
+        --highlight-color: #007bff;
+        --status-active: #28a745;
+        --status-inactive: #dc3545;
+        --button-bg: #007bff;
+        --button-hover-bg: #0056b3;
+        --document-button-bg: #28a745;
+        --document-button-hover: #1e7e34;
+    }
+
+    /* 🌙 Dark Mode Colors */
+    [data-theme="dark"] {
+        --text-color: #e0e0e0;
+        --highlight-color: #4fa3ff;
+        --status-active: #34d058;
+        --status-inactive: #ff6b6b;
+        --button-bg: #4fa3ff;
+        --button-hover-bg: #2a6ebc;
+        --document-button-bg: #34d058;
+        --document-button-hover: #24923f;
+    }
+
+    /* 📸 Profile Section */
+    .profile-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .profile-picture img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .profile-picture img:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .member-name {
+        font-size: 22px;
+        font-weight: bold;
+        margin-top: 10px;
+        color: var(--highlight-color);
+    }
+
+    .member-status {
+        font-size: 14px;
+        font-weight: bold;
+        padding: 4px 10px;
+        border-radius: 15px;
+        margin-top: 5px;
+    }
+
+    .status-active {
+        color: var(--status-active);
+    }
+
+    .status-inactive {
+        color: var(--status-inactive);
+    }
+
+    /* 🔄 Navigation Buttons */
+    .nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .nav-btn {
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 15px;
+        font-size: 13px;
+        font-weight: bold;
+        background: var(--button-bg);
+        color: white;
+        transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .nav-btn:hover {
+        transform: scale(1.05);
+        background: var(--button-hover-bg);
+    }
+
+    .back-btn { background: #6c757d; }
+    .edit-btn { background: #28a745; }
+    .delete-btn { background: #dc3545; }
+
+    /* 📋 Details Section */
+    .details-container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .details-table {
+        width: 90%;
+        max-width: 600px;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    .details-table tbody tr {
+        border-bottom: 1px solid #ddd;
+    }
+
+    .field-name {
+        padding: 10px;
+        font-weight: bold;
+        color: var(--highlight-color);
+        text-align: left;
+        width: 50%;
+    }
+
+    .field-value {
+        padding: 10px;
+        text-align: left;
+        width: 50%;
+        word-break: break-word;
+        color: var(--text-color);
+    }
+
+    /* 📂 Uploaded Documents Section */
+    .documents-header {
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        color: var(--document-button-bg);
+        margin-top: 30px;
+    }
+
+    .documents-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .document-button {
+        text-decoration: none;
+        background: var(--document-button-bg);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .document-button:hover {
+        background: var(--document-button-hover);
+    }
+
+    /* 📱 Responsive Design */
+    @media (max-width: 768px) {
+        .profile-picture img {
+            width: 90px;
+            height: 90px;
+        }
+
+        .member-name {
+            font-size: 18px;
+        }
+
+        .nav-buttons {
+            gap: 5px;
+        }
+
+        .nav-btn {
+            font-size: 11px;
+            padding: 5px 8px;
+        }
+
+        .details-table {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

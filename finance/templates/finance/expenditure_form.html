@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+">
+    <h2 style="color: #007bff; margin-bottom: 20px;">
+        {{ title }}
+    </h2>
+
+    <!-- IMPORTANT: enctype="multipart/form-data" for file uploads -->
+    <form method="POST" 
+          enctype="multipart/form-data"
+          novalidate 
+          style="display: flex; flex-direction: column; gap: 14px;">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <!-- 1) Expenditure Purpose -->
+        <div style="text-align: left;">
+            {{ form.expenditure_purpose.errors }}
+            <label>{{ form.expenditure_purpose.label_tag }}</label>
+            {{ form.expenditure_purpose }}
+        </div>
+
+        <!-- 2) Year -->
+        <div style="text-align: left;">
+            {{ form.year.errors }}
+            <label>{{ form.year.label_tag }}</label>
+            {{ form.year }}
+        </div>
+
+        <!-- 3) Month -->
+        <div style="text-align: left;">
+            {{ form.month.errors }}
+            <label>{{ form.month.label_tag }}</label>
+            {{ form.month }}
+        </div>
+
+        <!-- 4) Date Taken -->
+        <div style="text-align: left;">
+            {{ form.date_taken.errors }}
+            <label>{{ form.date_taken.label_tag }}</label>
+            {{ form.date_taken }}
+        </div>
+
+        <!-- 5) Expenditure Amount -->
+        <div style="text-align: left;">
+            {{ form.expenditure_amount.errors }}
+            <label>{{ form.expenditure_amount.label_tag }}</label>
+            {{ form.expenditure_amount }}
+        </div>
+
+        <!-- 6) Receipt Upload -->
+        <div style="text-align: left;">
+            {{ form.receipt.errors }}
+            <label>{{ form.receipt.label_tag }}</label>
+            {{ form.receipt }}
+        </div>
+
+        <!-- 7) Notes (Last) -->
+        <div style="text-align: left;">
+            {{ form.notes.errors }}
+            <label>{{ form.notes.label_tag }}</label>
+            {{ form.notes }}
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" style="
+            padding: 14px 20px;
+            border-radius: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        ">
+            {{ btn_label }}
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Meta Tag to Prevent Viewport Issues -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<div class="location-container">
+    <h2>Set Church Location</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label for="id_latitude">📍 Latitude</label>
+        {{ form.latitude }}
+
+        <label for="id_longitude">📍 Longitude</label>
+        {{ form.longitude }}
+
+        <button type="button" id="openMap">🗺️ Open Map</button>
+        <button type="submit">💾 Save Location</button>
+    </form>
+</div>
+
+<!-- Include the Map Overlay -->
+{% include 'settings/map_overlay.html' %}
+
+<style>
+    /* Prevent Horizontal Scrolling */
+    html, body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+    }
+
+    /* Form Styling */
+    form {
+        width: 100%;
+        max-width: 350px; /* Ensures it fits within mobile viewports */
+        margin: auto;
+        padding: 10px;
+    }
+
+    /* Labels */
+    label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+        display: block;
+        margin: 10px 0 5px;
+    }
+
+    /* Input Fields */
+    input {
+        width: 100%;
+        max-width: 100%; /* Ensures input fields do not exceed viewport */
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        text-align: center;
+        transition: border-color 0.3s ease;
+        box-sizing: border-box; /* Ensures padding does not increase field size */
+    }
+
+    /* Input Focus */
+    input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    /* Buttons */
+    button {
+        width: 100%;
+        max-width: 100%; /* Prevents button overflow */
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 5px;
+        border: none;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    /* Open Map Button */
+    #openMap {
+        background: #007bff;
+        color: white;
+    }
+
+    #openMap:hover {
+        background: #0056b3;
+    }
+
+    /* Save Button */
+    button[type="submit"] {
+        background: #28a745;
+        color: white;
+    }
+
+    button[type="submit"]:hover {
+        background: #218838;
+    }
+
+    /* Ensure it fits on all devices */
+    @media (max-width: 400px) {
+        form {
+            max-width: 90%; /* Makes sure form never exceeds 90% of viewport */
+        }
+    }
+</style>
+
+<script>
+    document.getElementById("openMap").addEventListener("click", function () {
+        document.getElementById("mapOverlay").style.display = "block";
+    });
+</script>
+
+{% endblock %}

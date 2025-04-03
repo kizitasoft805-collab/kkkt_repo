@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Update Church Location</title>
+
+    <!-- Leaflet CSS (Required for OpenStreetMap) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Remove Any Margins, Paddings, and Frames */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* Fullscreen Map */
+        #map {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Floating Buttons (Centered at the Top) */
+        .top-buttons {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .top-buttons a, .top-buttons button {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            border-radius: 50%;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .top-buttons a:hover, .top-buttons button:hover {
+            transform: scale(1.1);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Floating Save Button */
+        .save-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            background: #28a745;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, background 0.3s ease;
+            z-index: 1000;
+        }
+
+        .save-btn:hover {
+            transform: scale(1.1);
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Top Buttons (Centered) -->
+    <div class="top-buttons">
+        <!-- + Add New Church Location -->
+        <a href="{% url 'secretary_set_church_location' %}" title="Add Location">
+            <i class="fas fa-plus"></i>
+        </a>
+
+        <!-- 🏠 Go to Home -->
+        <a href="{% url 'secretary_settings_home' %}" title="Home">
+            <i class="fas fa-home"></i>
+        </a>
+
+        <!-- ❌ Close / Back Button -->
+        <button onclick="window.history.back()" title="Go Back">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Save Button -->
+    <button id="saveLocation" class="save-btn">
+        <i class="fas fa-save"></i>
+    </button>
+
+    <!-- Fullscreen Map Container -->
+    <div id="map"></div>
+
+    <!-- Leaflet JavaScript (Required for OpenStreetMap) -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            {% if church_location %}
+                var latitude = {{ church_location.latitude }};
+                var longitude = {{ church_location.longitude }};
+            {% else %}
+                var latitude = 0;
+                var longitude = 0;
+            {% endif %}
+
+            // Initialize the map
+            var map = L.map("map").setView([latitude, longitude], 15); // Zoom level 15
+
+            // Add OpenStreetMap tiles
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "&copy; OpenStreetMap contributors"
+            }).addTo(map);
+
+            // Place a marker at the current church location
+            var marker = L.marker([latitude, longitude], { draggable: true }).addTo(map)
+                .bindPopup("📍 Current Church Location").openPopup();
+
+            // Event listener for clicking on the map to move the marker
+            map.on("click", function(e) {
+                marker.setLatLng(e.latlng);
+                latitude = e.latlng.lat;
+                longitude = e.latlng.lng;
+            });
+
+            // Handle Save Button Click
+            document.getElementById("saveLocation").addEventListener("click", function() {
+                fetch("{% url 'update_church_location' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `latitude=${latitude}&longitude=${longitude}`
+                }).then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url; // Redirect to location_list
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Church Location Map</title>
+
+    <!-- Leaflet CSS (Required for OpenStreetMap) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Remove Any Margins, Paddings, and Frames */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Prevent scrolling */
+        }
+
+        /* Fullscreen Map */
+        #map {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Floating Circular Buttons */
+        .map-nav {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 1000; /* Ensures buttons are above the map */
+        }
+
+        .map-nav a,
+        .map-nav button {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        /* Button Colors */
+        .btn-add {
+            background: #28a745; /* Green */
+        }
+        .btn-home {
+            background: #007bff; /* Blue */
+        }
+        .btn-close {
+            background: #dc3545; /* Red */
+        }
+
+        /* Hover Effects */
+        .map-nav a:hover,
+        .map-nav button:hover {
+            transform: scale(1.1);
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Navigation Buttons -->
+    <div class="map-nav">
+        <a href="{% url 'set_church_location' %}" class="btn-add" title="Set Church Location">
+            <i class="fas fa-plus"></i>
+        </a>
+        <a href="{% url 'settings_home' %}" class="btn-home" title="Settings Home">
+            <i class="fas fa-home"></i>
+        </a>
+        <button onclick="window.history.back()" class="btn-close" title="Go Back">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Fullscreen Map Container -->
+    <div id="map"></div>
+
+    <!-- Leaflet JavaScript (Required for OpenStreetMap) -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            {% if active_location %}
+                var latitude = {{ active_location.latitude }};
+                var longitude = {{ active_location.longitude }};
+            {% else %}
+                var latitude = 0;
+                var longitude = 0;
+            {% endif %}
+
+            // Initialize the map
+            var map = L.map("map").setView([latitude, longitude], 15); // Zoom level 15
+
+            // Add OpenStreetMap tiles
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "&copy; OpenStreetMap contributors"
+            }).addTo(map);
+
+            {% if active_location %}
+                // Add marker for the active church location
+                // Popup includes both UPDATE (edit) icon and DELETE (trash) icon
+                var marker = L.marker([latitude, longitude]).addTo(map)
+                    .bindPopup(
+                        "<b>📍 Active Church Location</b><br>" +
+                        "<a href='{% url 'update_church_location' %}' style='margin-right:10px;'>" +
+                            "<i class='fas fa-edit'></i>" +
+                        "</a>" +
+                        "<a href='{% url 'delete_church_location' %}'>" +
+                            "<i class='fas fa-trash'></i>" +
+                        "</a>"
+                    )
+                    .openPopup();
+
+                // Redirect to update location page when the marker is clicked
+                marker.on("click", function () {
+                    window.location.href = "{% url 'update_church_location' %}";
+                });
+            {% else %}
+                alert("⚠️ No active church location found.");
+            {% endif %}
+        });
+    </script>
+
+</body>
+</html>

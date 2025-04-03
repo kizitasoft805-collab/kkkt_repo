@@ -1,0 +1,8 @@
+<tr style="border-bottom: 1px solid #ccc;" data-amount="{{ item.amount }}">
+    <td style="padding: 10px;">{{ item.period }}</td>
+    <td style="padding: 10px;">{{ item.mass_name }}</td>
+    <td style="padding: 10px;" data-amount="{{ item.amount }}">{{ item.amount|floatformat:2 }} TZS</td>
+    <td style="padding: 10px;">{{ item.notes|default:"N/A" }}</td>
+    <td style="padding: 10px;">{{ item.date_created|date:"Y-m-d H:i" }}</td>
+    <td style="padding: 10px;">{{ item.date_updated|date:"Y-m-d H:i" }}</td>
+</tr>

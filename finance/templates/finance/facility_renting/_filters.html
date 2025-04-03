@@ -1,0 +1,167 @@
+<!-- 🎯 Filter Section -->
+<h4 style="font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #007bff;">🔍 Filter Options</h4>
+
+<!-- Common styles for filter containers -->
+<style>
+    .filter-container {
+        margin-bottom: 15px;
+        width: 100%;
+    }
+    .filter-label {
+        display: block;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    .filter-input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        box-sizing: border-box;
+        -webkit-appearance: none;
+        appearance: none;
+        font-size: 14px;
+    }
+    .filter-input:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+        background: #ffffff;
+    }
+    select.filter-input {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 32px;
+    }
+</style>
+
+<!-- 📅 Year Filter -->
+<div class="filter-container">
+    <label class="filter-label" for="year-filter">📅 Filter by Year:</label>
+    <select id="year-filter" class="filter-input">
+        <option value="">All Years</option>
+        {% for year in years %}
+            <option value="{{ year.year }}" {% if year.is_current %}selected{% endif %}>{{ year.year }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- 🏠 Property Filter -->
+<div class="filter-container">
+    <label class="filter-label" for="property-filter">🏠 Filter by Property:</label>
+    <select id="property-filter" class="filter-input">
+        <option value="">All Properties</option>
+        {% for asset in properties %}
+            <option value="{{ asset.name }}">{{ asset.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- 👤 Rentor Name Filter -->
+<div class="filter-container">
+    <label class="filter-label" for="rentor-filter">👤 Filter by Rentor Name:</label>
+    <input type="text" id="rentor-filter" class="filter-input" placeholder="Enter Rentor's Name">
+</div>
+
+<!-- 📆 Date Range Filter -->
+<div class="filter-container">
+    <label class="filter-label">📆 Filter by Date Rented:</label>
+    <div style="display: flex; gap: 10px;">
+        <div style="flex: 1;">
+            <label class="filter-label" style="font-size: 13px; margin-bottom: 3px;">From Date:</label>
+            <input type="date" id="from-date" class="filter-input">
+        </div>
+        <div style="flex: 1;">
+            <label class="filter-label" style="font-size: 13px; margin-bottom: 3px;">To Date:</label>
+            <input type="date" id="to-date" class="filter-input">
+        </div>
+    </div>
+</div>
+
+<!-- 💰 Total Amount Display -->
+<h4 style="font-weight: bold; margin-top: 20px; color: #28a745; font-size: 16px;">
+    💰 Total Amount: <span id="total-amount">0 TZS</span>
+</h4>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const yearFilter = document.getElementById('year-filter');
+        const propertyFilter = document.getElementById('property-filter');
+        const rentorFilter = document.getElementById('rentor-filter');
+        const fromDate = document.getElementById('from-date');
+        const toDate = document.getElementById('to-date');
+        const totalAmountDisplay = document.getElementById('total-amount');
+        const rows = document.querySelectorAll('#renting-table-body tr');
+
+        function filterRentings() {
+            const selectedYear = yearFilter.value;
+            const selectedProperty = propertyFilter.value.toLowerCase();
+            const rentorName = rentorFilter.value.toLowerCase();
+            const from = fromDate.value ? new Date(fromDate.value) : null;
+            const to = toDate.value ? new Date(toDate.value) : null;
+
+            let totalAmount = 0;
+            let visibleRows = 0;
+
+            rows.forEach(row => {
+                const rowYear = row.dataset.year;
+                const rowProperty = row.dataset.property.toLowerCase();
+                const rowRentor = row.dataset.rentor.toLowerCase();
+                const rowDate = new Date(row.dataset.date);
+                const amount = parseFloat(row.dataset.amount);
+
+                let showRow = true;
+
+                if (selectedYear && rowYear !== selectedYear) showRow = false;
+                if (selectedProperty && !rowProperty.includes(selectedProperty)) showRow = false;
+                if (rentorName && !rowRentor.includes(rentorName)) showRow = false;
+                if (from && rowDate < from) showRow = false;
+                if (to && rowDate > to) showRow = false;
+
+                row.style.display = showRow ? '' : 'none';
+
+                if (showRow) {
+                    totalAmount += amount;
+                    visibleRows++;
+                }
+            });
+
+            totalAmountDisplay.textContent = `${totalAmount.toLocaleString()} TZS`;
+
+            const noResultsMessage = document.getElementById('no-results-message');
+            const table = document.querySelector('#renting-table-container table');
+
+            if (visibleRows === 0) {
+                if (!noResultsMessage) {
+                    const message = document.createElement('p');
+                    message.id = 'no-results-message';
+                    message.textContent = 'No results found for the current filters.';
+                    message.style.textAlign = 'center';
+                    message.style.padding = '15px';
+                    message.style.fontWeight = 'bold';
+                    message.style.color = '#dc3545';
+                    document.getElementById('renting-table-container').appendChild(message);
+                }
+                table.style.display = 'none';
+            } else {
+                if (noResultsMessage) noResultsMessage.remove();
+                table.style.display = 'table';
+            }
+        }
+
+        // Event Listeners for Filters
+        yearFilter.addEventListener('change', filterRentings);
+        propertyFilter.addEventListener('change', filterRentings);
+        rentorFilter.addEventListener('input', filterRentings);
+        fromDate.addEventListener('change', filterRentings);
+        toDate.addEventListener('change', filterRentings);
+
+        // Initial Filter Trigger
+        filterRentings();
+    });
+</script>

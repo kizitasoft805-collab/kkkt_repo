@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="detail-container">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div class="header-row">
+        <!-- Back Button -->
+        <button onclick="window.history.back()" class="back-btn">
+            <span class="emoji">⬅️</span>
+        </button>
+
+        <!-- Page Title -->
+        <h2 class="single-line-text">
+            📌 Cell Details - {{ cell.name }}
+        </h2>
+
+        <!-- Menu Button Partial -->
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    <div class="cell-card">
+        <p class="cell-info">🔢 <strong>ID:</strong> {{ cell.cell_id }}</p>
+        <p class="cell-info">🏷️ <strong>Name:</strong> {{ cell.name }}</p>
+        <p class="cell-info">📍 <strong>Outstation:</strong> {{ cell.outstation.name }}</p>
+        <p class="cell-info">📝 <strong>Description:</strong> {{ cell.description }}</p>
+        <p class="cell-info">📍 <strong>Location:</strong> {{ cell.location }}</p>
+        <p class="cell-info">📅 <strong>Date Created:</strong> {{ cell.date_created|date:"F d, Y" }}</p>
+        <p class="cell-info">⏳ <strong>Time Since Created:</strong> {{ cell.time_since_created }}</p>
+        <p class="cell-info">📆 <strong>Date Updated:</strong> {{ cell.date_updated|date:"F d, Y" }}</p>
+        <p class="cell-info">⏳ <strong>Time Since Updated:</strong> {{ cell.time_since_updated }}</p>
+
+        <!-- ⚙️ Actions -->
+        <div class="button-container">
+            <a href="{% url 'update_cell' cell.pk %}" class="edit-button">✏️ Edit</a>
+            <a href="{% url 'delete_cell' cell.pk %}" class="delete-button">🗑️ Delete</a>
+        </div>
+
+        <!-- 🔙 Back to Cell List -->
+        <a href="{% url 'cell_list' %}" class="back-button">🔙 Back to Cells</a>
+    </div>
+</div>
+
+<!-- 🚀 CSS Styling -->
+<style>
+    .detail-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    /* Header Row Styling */
+    .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 15px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        gap: 10px; /* Space between elements */
+    }
+
+    /* Heading with Wrapping */
+    .single-line-text {
+        font-size: clamp(18px, 4vw, 22px); /* Scale with viewport, max matches original */
+        font-weight: bold;
+        text-align: center;
+        margin: 0; /* Remove default margin */
+        color: var(--text-color);
+        word-wrap: break-word; /* Allow long words to break and wrap */
+        overflow-wrap: break-word; /* Modern standard for word breaking */
+        max-width: 100%; /* Ensure it stays within container */
+        flex-grow: 1; /* Take available space */
+        white-space: normal; /* Allow wrapping */
+    }
+
+    /* Back Button Styling */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(12px, 2.5vw, 14px);
+        font-weight: bold;
+        color: #007bff;
+        padding: 8px 12px;
+        border-radius: 20px;
+        background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0; /* Prevent shrinking too much */
+    }
+
+    .back-btn .emoji {
+        font-size: clamp(16px, 3vw, 20px);
+    }
+
+    .back-btn:hover {
+        background: #bbdefb;
+        transform: scale(1.05);
+    }
+
+    /* Cell Card */
+    .cell-card {
+        width: 100%;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Cell Information with Wrapping */
+    .cell-info {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: var(--text-color);
+        word-wrap: break-word; /* Allow long words to break and wrap */
+        overflow-wrap: break-word; /* Modern standard for word breaking */
+        max-width: 100%; /* Prevent overflow */
+    }
+
+    /* Button Container */
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    /* Edit & Delete Buttons */
+    .edit-button, .delete-button {
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        text-align: center;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .edit-button {
+        background: #ffc107;
+        color: white;
+    }
+
+    .delete-button {
+        background: #f44336;
+        color: white;
+    }
+
+    .edit-button:hover, .delete-button:hover {
+        transform: scale(1.05);
+    }
+
+    /* Back Button */
+    .back-button {
+        display: block;
+        font-size: 16px;
+        font-weight: bold;
+        background: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        text-align: center;
+        margin-top: 20px;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .back-button:hover {
+        transform: scale(1.05);
+    }
+
+    /* 🌞 Light Mode (Default) */
+    :root {
+        --text-color: black;
+    }
+
+    /* 🌙 Dark Mode */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --text-color: white;
+        }
+
+        .cell-card {
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    /* 🔄 Responsive Design */
+    @media (max-width: 768px) {
+        .detail-container {
+            width: 95%;
+            padding: 15px;
+        }
+
+        .single-line-text {
+            font-size: clamp(16px, 3.5vw, 18px); /* Slightly smaller on small screens */
+        }
+
+        .cell-card {
+            padding: 15px;
+        }
+
+        .cell-info {
+            font-size: 14px;
+        }
+
+        .button-container {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .edit-button, .delete-button {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}

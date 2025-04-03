@@ -1,0 +1,98 @@
+<!-- 🔍 Filter Section -->
+<div style="margin: 20px 0; padding: 10px 0;">
+
+    <!-- Filters Row -->
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: space-between;">
+
+        <!-- 📅 Filter by Year -->
+        <div style="flex: 1; min-width: 150px;">
+            <label for="year-filter" style="font-weight: bold;">📅 Year:</label>
+            <select id="year-filter" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                <option value="">All Years</option>
+                {% for year in years %}
+                    <option value="{{ year.year }}">{{ year.year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- 🎯 Filter by Contribution -->
+        <div style="flex: 1; min-width: 150px;">
+            <label for="contribution-filter" style="font-weight: bold;">🎯 Contribution:</label>
+            <select id="contribution-filter" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                <option value="">All Contributions</option>
+                {% for contribution in contributions %}
+                    <option value="{{ contribution.name }}">{{ contribution.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- 📆 Filter by Period -->
+        <div style="flex: 1; min-width: 150px;">
+            <label for="period-filter" style="font-weight: bold;">📆 Period:</label>
+            <input type="text" id="period-filter" placeholder="Enter Period" 
+                   style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+        </div>
+    </div>
+</div>
+
+<!-- 🧮 Total Amount -->
+<h4 style="font-weight: bold; margin-top: 10px;">💰 Total Amount: <span id="total-amount">0 TZS</span></h4>
+
+<!-- JavaScript for Filtering Logic -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const filters = {
+            year: document.getElementById('year-filter'),
+            contribution: document.getElementById('contribution-filter'),
+            period: document.getElementById('period-filter'),
+            totalAmount: document.getElementById('total-amount')
+        };
+
+        const tables = document.querySelectorAll('table'); 
+
+        function filterDonations() {
+            let totalAmount = 0;
+
+            tables.forEach(table => {
+                const rows = table.querySelectorAll('tbody tr');
+                const contributionName = table.previousElementSibling.textContent.trim();
+
+                let visibleRows = 0;
+
+                rows.forEach(row => {
+                    const year = row.dataset.year;
+                    const period = row.dataset.period.toLowerCase();
+                    const contribution = contributionName.toLowerCase();
+                    const amount = parseFloat(row.dataset.amount);
+
+                    const filtersApplied = {
+                        year: filters.year.value && year !== filters.year.value,
+                        contribution: filters.contribution.value && contribution !== filters.contribution.value.toLowerCase(),
+                        period: filters.period.value && !period.includes(filters.period.value.toLowerCase())
+                    };
+
+                    const shouldHide = Object.values(filtersApplied).some(Boolean);
+
+                    row.style.display = shouldHide ? 'none' : '';
+                    if (!shouldHide) {
+                        totalAmount += amount;
+                        visibleRows++;
+                    }
+                });
+
+                // Hide table if no visible rows
+                table.style.display = visibleRows ? '' : 'none';
+            });
+
+            filters.totalAmount.textContent = `${totalAmount.toLocaleString()} TZS`;
+        }
+
+        // Event Listeners for Filters
+        ['year', 'contribution', 'period'].forEach(key => {
+            filters[key].addEventListener('input', filterDonations);
+        });
+
+        // Initial Calculation
+        filterDonations();
+    });
+</script>

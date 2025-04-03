@@ -1,0 +1,269 @@
+{% if only_styles %}
+<style>
+  /* Container that stacks filter rows vertically */
+  .pledge-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 600px; /* Adjust to your desired max width */
+    margin: 1rem auto;
+  }
+
+  /* Each row is a horizontal flex container */
+  .filter-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: center; /* center horizontally */
+  }
+
+  /* The filter group wraps a label and an input/select */
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* So each group in the row shares space */
+  }
+
+  /* Filter labels */
+  .filter-group label {
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  /* iPhone-like input styling */
+  .filter-group input[type="text"],
+  .filter-group input[type="date"],
+  .filter-group select {
+    background-color: #f5f5f5;   /* Light grey background */
+    border: none;
+    border-radius: 20px;        /* Rounded corners for an iPhone-like feel */
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  /* Focus state with iOS-like outline */
+  .filter-group input:focus,
+  .filter-group select:focus {
+    outline: 2px solid #007aff; /* iOS blue highlight */
+    background-color: #ffffff;
+    box-shadow: 0 0 4px rgba(0, 122, 255, 0.3);
+  }
+
+  /* Totals Container below the filters */
+  .pledge-totals-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem auto;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  .pledge-totals-container .total-box {
+    border-radius: 20px;
+    padding: 8px 16px;
+  }
+</style>
+{% else %}
+
+<!-- Filter Container -->
+<div class="pledge-filters">
+  <!-- 1) Row for Member Filter -->
+  <div class="filter-row">
+    <div class="filter-group">
+      <label for="filterMember">Member (Name / Phone / Address)</label>
+      <input 
+        type="text" 
+        id="filterMember" 
+        placeholder="Type any part..." 
+        onkeyup="applyFilters()" 
+      />
+    </div>
+  </div>
+
+  <!-- 2) Row for Envelope Filter -->
+  <div class="filter-row">
+    <div class="filter-group">
+      <label for="filterEnvelope">Envelope #</label>
+      <input 
+        type="text" 
+        id="filterEnvelope"
+        placeholder="e.g. 123"
+        onkeyup="applyFilters()"
+      />
+    </div>
+  </div>
+
+  <!-- 3) Row with Year & Month Filters -->
+  <div class="filter-row">
+    <!-- Filter by Year (Dropdown) -->
+    <div class="filter-group">
+      <label for="filterYear">Year</label>
+      <select id="filterYear" onchange="applyFilters()">
+        <option value="">All Years</option>
+        {% for y in all_years %}
+          <option value="{{ y.year }}">{{ y.year }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Filter by Month (Dropdown) -->
+    <div class="filter-group">
+      <label for="filterMonth">Month</label>
+      <select id="filterMonth" onchange="applyFilters()">
+        <option value="">All Months</option>
+        {% for m in months_list %}
+          <option value="{{ m }}">{{ m }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <!-- 4) Row with From Date & To Date -->
+  <div class="filter-row">
+    <!-- From Date -->
+    <div class="filter-group">
+      <label for="filterFromDate">From Date</label>
+      <input 
+        type="date" 
+        id="filterFromDate" 
+        onchange="applyFilters()"
+      />
+    </div>
+
+    <!-- To Date -->
+    <div class="filter-group">
+      <label for="filterToDate">To Date</label>
+      <input 
+        type="date" 
+        id="filterToDate" 
+        onchange="applyFilters()"
+      />
+    </div>
+  </div>
+</div>
+
+<!-- Totals displayed BELOW the filters -->
+<div class="pledge-totals-container">
+  <div class="total-box">
+    Total Pledge: <span id="totalPledge">0</span>
+  </div>
+  <div class="total-box">
+    Total Construction: <span id="totalConstruction">0</span>
+  </div>
+  <div class="total-box">
+    Overall Total: <span id="totalOverall">0</span>
+  </div>
+</div>
+
+<script>
+  // We'll load the "current_year_val" from context:
+  var defaultYear = "{{ current_year_val|default:'' }}";  // e.g. "2025" or ""
+
+  /**
+   * applyFilters() - Called automatically as user types/chooses:
+   * 1) Retrieve filter values
+   * 2) Loop over each .pledge-table row
+   * 3) Show/hide rows based on matching logic
+   * 4) Sum the displayed rows' amounts for the totals
+   */
+  function applyFilters() {
+    const memberFilter   = document.getElementById('filterMember').value.toLowerCase();
+    const envelopeFilter = document.getElementById('filterEnvelope').value.toLowerCase();
+    const yearFilter     = document.getElementById('filterYear').value; 
+    const monthFilter    = document.getElementById('filterMonth').value.toLowerCase();
+
+    const fromDateStr = document.getElementById('filterFromDate').value;
+    const toDateStr   = document.getElementById('filterToDate').value;
+
+    // Convert to Date objects if user selected any date
+    let fromDate = fromDateStr ? new Date(fromDateStr) : null;
+    let toDate   = toDateStr ? new Date(toDateStr) : null;
+
+    // Adjust times to cover the entire day(s)
+    if (fromDate) fromDate.setHours(0,0,0,0);
+    if (toDate)   toDate.setHours(23,59,59,999);
+
+    // Get the table body and rows
+    const tableBody = document.querySelector('.pledge-table tbody');
+    if (!tableBody) return;
+    const rows = tableBody.querySelectorAll('tr');
+
+    // Track totals
+    let totalPledge = 0;
+    let totalConstruction = 0;
+
+    rows.forEach(row => {
+      // Retrieve text-based data for filtering
+      const rowMember   = (row.getAttribute('data-member')   || '').toLowerCase();
+      const rowEnvelope = (row.getAttribute('data-envelope') || '').toLowerCase();
+      const rowYear     = (row.getAttribute('data-year')     || '');
+      const rowMonth    = (row.getAttribute('data-month')    || '').toLowerCase();
+      const rowDateStr  = (row.getAttribute('data-date')     || '');
+
+      // Retrieve numeric data for totals
+      const pledgeAmt = parseFloat(row.getAttribute('data-pledge-amount')) || 0;
+      const constructionAmt = parseFloat(row.getAttribute('data-pledge-construction')) || 0;
+
+      let show = true;
+
+      // 1) Member filter
+      if (memberFilter && !rowMember.includes(memberFilter)) {
+        show = false;
+      }
+
+      // 2) Envelope filter
+      if (envelopeFilter && !rowEnvelope.includes(envelopeFilter)) {
+        show = false;
+      }
+
+      // 3) Year filter
+      if (yearFilter && rowYear !== yearFilter) {
+        show = false;
+      }
+
+      // 4) Month filter
+      if (monthFilter && rowMonth !== monthFilter) {
+        show = false;
+      }
+
+      // 5) Date Range filter
+      if (rowDateStr) {
+        const rowDate = new Date(rowDateStr);
+        if (fromDate && rowDate < fromDate) {
+          show = false;
+        }
+        if (toDate && rowDate > toDate) {
+          show = false;
+        }
+      }
+
+      // Show/hide row
+      row.style.display = show ? '' : 'none';
+
+      // If still visible, add to totals
+      if (show) {
+        totalPledge += pledgeAmt;
+        totalConstruction += constructionAmt;
+      }
+    });
+
+    // Final overall total
+    const overallTotal = totalPledge + totalConstruction;
+
+    // Update the displayed totals
+    document.getElementById('totalPledge').textContent = totalPledge.toFixed(2);
+    document.getElementById('totalConstruction').textContent = totalConstruction.toFixed(2);
+    document.getElementById('totalOverall').textContent = overallTotal.toFixed(2);
+  }
+
+  // On page load, set the default year to current year, then run filters
+  window.addEventListener('DOMContentLoaded', function() {
+    if (defaultYear) {
+      document.getElementById('filterYear').value = defaultYear;
+    }
+    applyFilters();
+  });
+</script>
+{% endif %}

@@ -1,0 +1,41 @@
+<!-- finance/report_partials/table_c.html -->
+
+<h4>Table C — Jimbo Contributions for {{ current_month }}/{{ current_year }}</h4>
+<table style="border-collapse: collapse; width: 100%; margin-bottom: 1em;">
+  <thead>
+    <tr style="background-color: #11ed41;">
+      <th style="padding: 8px; border: 1px solid #ccc;">C</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">Jimbo Contribution</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">Amount(TZS)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in jimbo_data %}
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ forloop.counter }}
+        </td>
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ item.special_contribution.name }}
+        </td>
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ item.total_amount|floatformat:2 }}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if jimbo_total > 0 %}
+  <p><strong>Total (Table C): {{ jimbo_total|floatformat:2 }} TZS</strong></p>
+  
+  <!-- Show sum of Table A + Table B + Table C -->
+  <p>
+    <strong>
+      Sum of Table A + Table B + Table C:
+      {{ sum_table_a_b_c|floatformat:2 }} TZS
+    </strong>
+  </p>
+{% else %}
+  <p><em>No Jimbo Contributions this month.</em></p>
+{% endif %}

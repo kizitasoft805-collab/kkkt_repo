@@ -1,0 +1,17 @@
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 style="font-size: 26px; font-weight: bold; color: #007bff;">
+        🗂️ Donation Item Funds for "{{ contribution.name }}"
+    </h2>
+    <a href="{% url 'donation_item_fund_create' contribution.id %}" style="
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: transform 0.2s ease;
+    " onmouseover="this.style.transform='scale(1.05)'" 
+       onmouseout="this.style.transform='scale(1)'">
+        ➕ Add New Donation Item
+    </a>
+</div>

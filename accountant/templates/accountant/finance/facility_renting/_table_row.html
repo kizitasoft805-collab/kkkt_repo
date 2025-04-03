@@ -1,0 +1,54 @@
+<tr 
+    data-year="{{ renting.year.year }}" 
+    data-property="{{ renting.property_rented.name }}" 
+    data-rentor="{{ renting.rentor_name }}" 
+    data-date="{{ renting.date_rented }}" 
+    data-amount="{{ renting.amount }}" 
+    style="border-bottom: 1px solid #ccc;"
+>
+    <td style="padding: 10px;">{{ renting.receipt_id }}</td>
+    <td style="padding: 10px;">{{ renting.property_rented.name }}</td>
+    <td style="padding: 10px;">{{ renting.rentor_name }}</td>
+    <td style="padding: 10px;">{{ renting.amount|floatformat:2 }}</td>
+    
+    <!-- 📅 Rental Period Display -->
+    <td style="padding: 10px;">
+        {{ renting.date_rented|date:"Y-m-d" }} |
+        {{ renting.end_date|date:"Y-m-d" }} 
+        <small style="color: gray;">({{ renting.rental_duration }})</small> <!-- ✅ Duration Display -->
+    </td>
+
+    <td style="padding: 10px;">{{ renting.purpose|default:"N/A" }}</td>
+    <td style="padding: 10px;">{{ renting.date_created|date:"Y-m-d H:i" }}</td>
+    <td style="padding: 10px;">{{ renting.date_updated|date:"Y-m-d H:i" }}</td>
+
+    <td style="padding: 10px;">
+        <a href="{% url 'accountant_facility_renting_update' renting.pk %}" style="
+            background-color: #ffc107;
+            color: black;
+            padding: 8px 12px;
+            border-radius: 50px;
+            text-decoration: none;
+            margin: 2px;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.1)'" 
+           onmouseout="this.style.transform='scale(1)'">
+            ✏️ Edit
+        </a>
+
+        <a href="{% url 'accountant_facility_renting_delete' renting.pk %}" style="
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 50px;
+            text-decoration: none;
+            margin: 2px;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        " onmouseover="this.style.transform='scale(1.1)'" 
+           onmouseout="this.style.transform='scale(1)'">
+            🗑️ Delete
+        </a>
+    </td>
+</tr>

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- 🌍 Page Header Section -->
+    {% include 'accountant/finance/all_donation_item_funds/_header.html' %}
+
+    <!-- 🔍 Filters Section -->
+    {% include 'accountant/finance/all_donation_item_funds/_filters.html' %}
+
+    <!-- 📊 Summary Table Section -->
+    {% include 'accountant/finance/all_donation_item_funds/_summary_table.html' %}
+
+    <!-- 🗂️ Loop Through Contributions -->
+    {% for contribution, donation_items in contribution_data.items %}
+        <div style="margin-bottom: 30px;">
+
+            <!-- 🎯 Contribution Header -->
+            {% include 'accountant/finance/all_donation_item_funds/_contribution_header.html' with contribution=contribution %}
+
+            <!-- 📊 Donation Table or No Data Message -->
+            {% if donation_items %}
+                {% include 'accountant/finance/all_donation_item_funds/_table.html' with donation_items=donation_items %}
+            {% else %}
+                {% include 'accountant/finance/all_donation_item_funds/_no_data.html' %}
+            {% endif %}
+
+        </div>
+    {% endfor %}
+
+{% endblock %}

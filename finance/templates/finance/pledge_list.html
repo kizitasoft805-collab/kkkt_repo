@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load humanize %} 
+<!-- 'humanize' is for timesince, etc. -->
+
+{% block title %}
+Pledge List
+{% endblock title %}
+
+{% block styles %}
+{% include 'finance/partials/_pledge_header.html' with only_styles=True %}
+{% include 'finance/partials/_pledge_button.html' with only_styles=True %}
+{% include 'finance/partials/_pledge_filters.html' with only_styles=True %}
+{% include 'finance/partials/_pledge_table.html' with only_styles=True %}
+{% endblock styles %}
+
+{% block content %}
+  <!-- Header -->
+  {% include 'finance/partials/_pledge_header.html' %}
+
+  <!-- Create a New Pledge Button -->
+  {% include 'finance/partials/_pledge_button.html' %}
+
+  <!-- Filters (NEW) -->
+  {% include 'finance/partials/_pledge_filters.html' %}
+
+  <!-- Table -->
+  {% include 'finance/partials/_pledge_table.html' %}
+{% endblock content %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗑️ Delete Tithe</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .warning {
+            color: red;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .btn-danger,
+        .btn-cancel {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+
+<h2>🗑️ Confirm Delete</h2>
+<p class="warning">Are you sure you want to delete this tithe?</p>
+
+<p><strong>Member:</strong> {{ tithe.member.full_name }}</p>
+<p><strong>Amount:</strong> {{ tithe.amount }} TZS</p>
+<p><strong>Date Given:</strong> {{ tithe.date_given }}</p>
+<p><strong>Receipt Number:</strong> {{ tithe.receipt_number }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn-danger">Yes, Delete</button>
+    <a href="{% url 'tithe_list' %}" class="btn-cancel">Cancel</a>
+</form>
+
+</body>
+</html>
+
+{% endblock %}

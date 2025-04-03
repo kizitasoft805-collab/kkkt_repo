@@ -1,0 +1,94 @@
+<div class="header-row"
+     style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1000px; margin: 0 auto 15px; padding: 0 10px;">
+
+    <!-- Back Button -->
+    <button onclick="window.history.back()" style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(12px, 2.5vw, 14px);
+        font-weight: bold;
+        color: #007bff;
+        padding: 8px 12px;
+        border-radius: 20px;
+        background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+    " onmouseover="this.style.background='linear-gradient(130deg, #bbdefb, #bbdefb)'; this.style.transform='scale(1.05)'" 
+      onmouseout="this.style.background='linear-gradient(130deg, #e3f2fd, #bbdefb)'; this.style.transform='scale(1)'">
+        <span style="font-size: clamp(16px, 3vw, 20px);">⬅️</span>
+    </button>
+
+    <!-- 📋 Title -->
+    <h2 class="header-title"
+        style="font-size: clamp(18px, 4vw, 22px); font-weight: bold; color: #007bff; flex-grow: 1; text-align: center; margin: 0;">
+        📋 Church Assets
+    </h2>
+
+    <!-- ➕ Add Button -->
+    <a href="{% url 'create_church_assets' %}" class="create-btn"
+       style="background: linear-gradient(135deg, #28a745, #1f8d41); color: white; text-decoration: none;
+              padding: 10px 15px; border-radius: 12px; font-size: 14px; font-weight: bold; white-space: nowrap; flex-shrink: 0;">
+        ➕ Add
+    </a>
+
+    <!-- Menu Button Partial -->
+    {% include 'accounts/partials/menu_button_partial.html' %}
+</div>
+
+<!-- ✅ Responsive Fix -->
+<style>
+    /* 📌 Ensure Proper Spacing Between Elements */
+    .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto 15px;
+        padding: 0 10px;
+        gap: 10px; /* Added to ensure spacing between elements */
+    }
+
+    /* 📋 Adjust Header Title */
+    .header-title {
+        flex-grow: 1;
+        font-size: 22px;
+        font-weight: bold;
+        color: #007bff;
+        text-align: center; /* Changed to center to match pattern */
+    }
+
+    /* ➕ Ensure Button Does Not Overlap */
+    .create-btn {
+        white-space: nowrap; /* ✅ Prevents text wrapping */
+        padding: 10px 15px;
+        font-size: 14px;
+        border-radius: 12px;
+        flex-shrink: 0; /* Added to prevent shrinking */
+    }
+
+    /* 📌 Adjustments for Small Screens */
+    @media (max-width: 768px) {
+        .header-row {
+            flex-direction: column; /* ✅ Stack elements */
+            align-items: center;
+            gap: 10px; /* ✅ Add spacing */
+            text-align: center;
+        }
+
+        .header-title {
+            font-size: 20px; /* ✅ Reduce size */
+        }
+
+        .create-btn {
+            width: 100%;
+            max-width: 200px; /* ✅ Ensure button is not too wide */
+            text-align: center;
+        }
+    }
+</style>

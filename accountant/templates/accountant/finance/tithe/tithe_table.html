@@ -1,0 +1,27 @@
+<div id="tithe-table-container" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+    {% if tithes %}
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 800px;">
+            <thead>
+                <tr style="background-color: #007bff; color: white;">
+                    <th style="padding: 14px; text-align: left; width: 5%;">S/N</th>
+                    <th style="padding: 14px; text-align: left; width: 15%;">Member</th>
+                    <th style="padding: 14px; text-align: left; width: 12%;">Amount (TZS)</th>
+                    <th style="padding: 14px; text-align: left; width: 15%;">Payment Method</th>
+                    <th style="padding: 14px; text-align: left; width: 15%;">Date Given</th>
+                    <th style="padding: 14px; text-align: left; width: 18%;">Purpose</th>
+                    <th style="padding: 14px; text-align: left; width: 15%;">Receipt Number</th>
+                    <th style="padding: 14px; text-align: left; width: 15%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tithe-table-body">
+                {% for tithe in tithes %}
+                    {% include 'accountant/finance/tithe/tithe_table_row.html' with tithe=tithe counter=forloop.counter %}
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p id="no-results-message" style="text-align: center; padding: 20px; font-weight: bold;">
+            No results present in the current filtering.
+        </p>
+    {% endif %}
+</div>

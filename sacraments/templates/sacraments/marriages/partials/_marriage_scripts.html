@@ -1,0 +1,99 @@
+<script>
+    document.getElementById("addMarriage").addEventListener("click", function () {
+        let container = document.getElementById("marriageContainer");
+        let marriageBlocks = document.querySelectorAll(".marriage-block");
+
+        if (marriageBlocks.length >= 5) {
+            alert("⚠️ Maximum of 5 marriages can be added at once.");
+            return;
+        }
+
+        // Track selected males and females in previous blocks
+        let selectedMales = new Set();
+        let selectedFemales = new Set();
+
+        document.querySelectorAll(".male-checkbox:checked").forEach(checkbox => {
+            selectedMales.add(checkbox.value);
+        });
+
+        document.querySelectorAll(".female-checkbox:checked").forEach(checkbox => {
+            selectedFemales.add(checkbox.value);
+        });
+
+        // Clone the first marriage block
+        let newBlock = marriageBlocks[0].cloneNode(true);
+
+        // Reset inputs in the new block
+        newBlock.querySelectorAll("input").forEach(input => {
+            if (input.type === "checkbox") {
+                input.checked = false;
+                let memberId = input.value;
+
+                // Hide already selected males/females from previous blocks
+                if (selectedMales.has(memberId) || selectedFemales.has(memberId)) {
+                    input.closest("li").style.display = "none";
+                } else {
+                    input.closest("li").style.display = "flex"; // Show only unselected members
+                }
+            } else {
+                input.value = "";
+            }
+        });
+
+        // Reset search filters in the new block
+        newBlock.querySelector("#searchMale").value = "";
+        newBlock.querySelector("#searchFemale").value = "";
+
+        // Update heading for new marriage block
+        let newTitle = newBlock.querySelector(".marriage-title");
+        newTitle.textContent = `💍 Create Marriage ${marriageBlocks.length + 1}`;
+
+        // Append to container
+        container.appendChild(newBlock);
+
+        // Show remove button when more than one block exists
+        document.getElementById("removeMarriage").style.display = "inline-block";
+
+        // Reset the date field to the current date
+        setMarriageDateFields();
+    });
+
+    document.getElementById("removeMarriage").addEventListener("click", function () {
+        let container = document.getElementById("marriageContainer");
+        let marriageBlocks = document.querySelectorAll(".marriage-block");
+
+        if (marriageBlocks.length > 1) {
+            container.removeChild(marriageBlocks[marriageBlocks.length - 1]); // Remove last added block
+        }
+
+        // Rename remaining blocks dynamically
+        let updatedBlocks = document.querySelectorAll(".marriage-block");
+        updatedBlocks.forEach((block, index) => {
+            let title = block.querySelector(".marriage-title");
+            title.textContent = `💍 Create Marriage ${index + 1}`;
+        });
+
+        // Hide remove button if only one block remains
+        if (updatedBlocks.length === 1) {
+            document.getElementById("removeMarriage").style.display = "none";
+        }
+    });
+
+    function setMarriageDateFields() {
+        let today = new Date();
+        let year = today.getFullYear();
+        let month = String(today.getMonth() + 1).padStart(2, '0'); // Ensure two digits
+        let day = String(today.getDate()).padStart(2, '0'); // Ensure two digits
+        let formattedDate = `${year}-${month}-${day}`; // YYYY-MM-DD format
+
+        // Apply the date to all marriage date fields
+        document.querySelectorAll(".marriageDate").forEach(input => {
+            if (!input.value) { // Only set if it's empty (newly added block)
+                input.value = formattedDate;
+            }
+        });
+    }
+
+    // Set date on page load
+    document.addEventListener("DOMContentLoaded", setMarriageDateFields);
+</script>

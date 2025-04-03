@@ -1,0 +1,302 @@
+<div id="comment-modal-{{ news.id }}" class="comment-modal">
+    <div class="comment-modal-content">
+
+        <!-- 🚀 Comments Header Row (Includes Title & Close Button) -->
+        <div class="comments-header">
+            <h4>💬 Comments</h4>
+            <button class="close-comment-modal" data-news-id="{{ news.id }}">✖</button>
+        </div>
+
+        <!-- Likes and Comments Count -->
+        <div class="counts-row">
+            <div>
+                ❤️ <span id="like-count-modal-{{ news.id }}">{{ news.like_count }}</span> Likes
+            </div>
+            <div>
+                💬 <span id="comment-count-modal-{{ news.id }}">{{ news.comment_count }}</span> Comments
+            </div>
+        </div>
+
+        <!-- 🚀 Dynamic Comments List (Fills Available Space) -->
+        <div class="comments-list" id="comments-list-{{ news.id }}">
+            {% for comment in news.comments.all %}
+                <div class="comment-item">
+                    <strong class="comment-name">{{ comment.name }}</strong>: 
+                    <span class="comment-text">{{ comment.comment_text }}</span>
+                    <br>
+                    <small class="comment-date">📅 {{ comment.created_at|date:"M d, Y H:i" }}</small>
+                </div>
+            {% empty %}
+                <p class="no-comments">No comments yet. Be the first to comment!</p>
+            {% endfor %}
+        </div>
+
+        <!-- Fixed Bottom Input Form -->
+        <div class="comment-input-container">
+            <form class="comment-form" data-news-id="{{ news.id }}" id="comment-form-{{ news.id }}">
+                {% csrf_token %}
+                
+                <!-- Name Input -->
+                <input type="text" name="name" placeholder="Your name (optional)" class="input-field">
+
+                <!-- Comment Input -->
+                <textarea name="comment_text" required placeholder="Write your comment..." class="input-field"></textarea>
+
+                <!-- Post Button -->
+                <button type="submit" class="submit-button">
+                    📩
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 🚀 Updated Styles -->
+<style>
+    /* Fullscreen Comment Modal */
+    .comment-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: black !important;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .comment-modal-content {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        background: black !important;
+        overflow-y: auto;
+        padding-bottom: 60px;
+    }
+
+    /* 🚀 Header Row (Comments Title & Close Button) */
+    .comments-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: black !important;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border-bottom: 1px solid #444;
+    }
+
+    /* ❌ Close Button */
+    .close-comment-modal {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: white;
+        transition: color 0.3s;
+    }
+
+    .close-comment-modal:hover {
+        color: #ff0000;
+    }
+
+    /* 📊 Likes & Comments Count Row */
+    .counts-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        color: white;
+        font-size: 18px;
+    }
+
+    /* 📌 Scrollable Comment List (Now Fully Free in Layout) */
+    .comments-list {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 10px;
+        background: black !important;
+    }
+
+    /* 📝 Comment Box */
+    .comment-item {
+        background: black !important;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        color: white;
+        border: 1px solid #555;
+    }
+
+    /* ✍ Comment Name */
+    .comment-name {
+        font-weight: bold;
+        color: white;
+    }
+
+    /* 📌 Comment Text */
+    .comment-text {
+        color: white;
+    }
+
+    /* 🗓️ Comment Date */
+    .comment-date {
+        color: gray;
+        font-size: 12px;
+    }
+
+    /* 🎨 Styled Input Fields */
+    .input-field {
+        width: 95%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 999px;
+        border: 1px solid #555;
+        outline: none;
+        transition: all 0.3s ease;
+        background: #222;
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        text-align: center;
+    }
+
+    .input-field:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    /* 🚀 Small Submit Button */
+    .submit-button {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        font-weight: bold;
+        border-radius: 50%;
+        border: none;
+        background: #007bff;
+        color: white;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .submit-button:hover {
+        background: #0056b3;
+    }
+
+    /* 📌 Fixed Bottom Input Form */
+    .comment-input-container {
+        width: 100%;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        border-top: 1px solid #444;
+        background: black !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+    }
+
+    /* ✨ Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+<!-- 🚀 JavaScript for Smooth Form Submission & Input Handling -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Open Comment Modal
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("open-comment-modal")) {
+                const newsId = event.target.getAttribute("data-news-id");
+                const modal = document.getElementById(`comment-modal-${newsId}`);
+                if (modal) {
+                    modal.style.display = "flex";
+                }
+            }
+        });
+
+        // Close Comment Modal
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("close-comment-modal")) {
+                const newsId = event.target.getAttribute("data-news-id");
+                const modal = document.getElementById(`comment-modal-${newsId}`);
+                if (modal) {
+                    modal.style.display = "none";
+                }
+            }
+        });
+
+        // 🚀 Fix Double Submissions with Event Delegation
+        document.addEventListener("submit", function (event) {
+            if (event.target.classList.contains("comment-form")) {
+                event.preventDefault();
+                event.stopPropagation(); // Prevents duplicate triggers
+
+                const form = event.target;
+                const newsId = form.getAttribute("data-news-id");
+                const formData = new FormData(form);
+                const commentList = document.getElementById(`comments-list-${newsId}`);
+                const commentCountElement = document.getElementById(`comment-count-${newsId}`);
+                const commentCountModal = document.getElementById(`comment-count-modal-${newsId}`);
+                const submitButton = form.querySelector(".submit-button");
+
+                // Prevent multiple clicks
+                if (submitButton.disabled) return;
+                submitButton.disabled = true;
+
+                fetch(`/news/comment/${newsId}/`, {
+                    method: "POST",
+                    headers: { "X-CSRFToken": getCSRFToken() },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Append new comment
+                        const commentItem = document.createElement("div");
+                        commentItem.classList.add("comment-item");
+                        commentItem.innerHTML = `<strong>${data.name}</strong>: ${data.text}<br>
+                                                 <small>📅 ${data.created_at}</small>`;
+                        if (commentList) {
+                            commentList.appendChild(commentItem);
+                        }
+
+                        // Update comment count
+                        if (commentCountElement) {
+                            commentCountElement.textContent = data.total_comments;
+                        }
+                        if (commentCountModal) {
+                            commentCountModal.textContent = data.total_comments;
+                        }
+
+                        // Clear the form
+                        form.reset();
+                    }
+                })
+                .catch(error => console.error("Error:", error))
+                .finally(() => {
+                    submitButton.disabled = false;
+                });
+            }
+        });
+
+        // Get CSRF Token
+        function getCSRFToken() {
+            const cookie = document.cookie.split("; ").find(row => row.startsWith("csrftoken="));
+            return cookie ? cookie.split("=")[1] : "";
+        }
+    });
+</script>

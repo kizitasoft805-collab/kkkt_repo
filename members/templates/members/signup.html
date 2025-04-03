@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Church Member Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% load static %}
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
+
+    body {
+      background: linear-gradient(to right, #e6e6fa, #40e0d0); /* Soft lavender to gentle teal */
+      color: #333;
+      font-family: Arial, sans-serif;
+    }
+
+    body.dark-mode {
+      background: #1c1c1c;
+      color: #ddd;
+    }
+
+    .content {
+      margin-top: 60px;
+      margin-bottom: 60px;
+      padding: 0 20px;
+    }
+
+    .page-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .back-arrow {
+      cursor: pointer;
+      font-size: 1.2em;
+    }
+
+    .iphone-field {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-size: 1em;
+      outline: none;
+    }
+    .iphone-field:focus {
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    body.dark-mode .iphone-field {
+      background-color: #333;
+      color: #ddd;
+    }
+    body.dark-mode .iphone-field:focus {
+      box-shadow: 0 2px 6px rgba(255,255,255,0.2);
+    }
+
+    .form-heading {
+      margin: 0;
+      font-size: 1.4em;
+    }
+
+    .submit-btn {
+      display: inline-block;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      text-align: center; /* Center text and emoji */
+    }
+    .submit-btn:hover {
+      background: #f2f2f2;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    body.dark-mode .submit-btn {
+      background: #333;
+      color: #ddd;
+    }
+    body.dark-mode .submit-btn:hover {
+      background: #444;
+    }
+
+    /* Specific button style for Sign Up */
+    .signup-btn {
+      background: #4CAF50; /* Green for signup */
+      color: white;
+    }
+    .signup-btn:hover {
+      background: #45a049;
+    }
+
+    #savingOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      z-index: 9999;
+      color: #fff;
+      text-align: center;
+      font-size: 1.2em;
+      font-family: Arial, sans-serif;
+      padding-top: 40vh;
+    }
+
+    .dots span {
+      animation: blink 1s infinite;
+    }
+    .dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes blink {
+      0% {opacity: 0}
+      50% {opacity: 1}
+      100% {opacity: 0}
+    }
+
+    .helptext {
+      font-size: 0.8em;
+      color: #666;
+      display: block;
+      margin-top: -10px;
+      margin-bottom: 15px;
+    }
+    body.dark-mode .helptext {
+      color: #999;
+    }
+
+    .errorlist {
+      color: #ff4444;
+      list-style: none;
+      padding-left: 0;
+      margin: 5px 0;
+    }
+
+    .messages {
+      margin-bottom: 20px;
+    }
+    .messages .success {
+      color: #00cc00;
+    }
+    .messages .error {
+      color: #ff4444;
+    }
+
+    /* Links styling */
+    .login-links {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 0.9em;
+    }
+    .login-links p {
+      margin: 5px 0;
+    }
+    .login-links a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .login-links a:hover {
+      text-decoration: underline;
+    }
+    body.dark-mode .login-links a {
+      color: #66b0ff;
+    }
+
+    /* Preview image styling */
+    .preview-image {
+      display: none; /* Hidden by default */
+      max-width: 200px;
+      max-height: 200px;
+      margin-top: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    body.dark-mode .preview-image {
+      box-shadow: 0 2px 4px rgba(255,255,255,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="savingOverlay">
+    Saving, please wait <span class="dots"><span>.</span><span>.</span><span>.</span></span>
+  </div>
+
+  <div class="content">
+    <!-- Title with back arrow -->
+    <div class="page-title">
+      <span class="back-arrow" onclick="window.history.back()">🔙</span>
+      <h1 class="form-heading">Welcome, Beloved Member! Join Our Church Family Today</h1>
+    </div>
+
+    <!-- Display messages -->
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <p class="{% if message.tags == 'success' %}success{% else %}error{% endif %}">
+            {{ message }}
+          </p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form id="signupForm" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <!-- Full Name -->
+      <div class="form-field">
+        {{ form.full_name.label_tag }}
+        {{ form.full_name }}
+        {{ form.full_name.errors }}
+      </div>
+
+      <!-- Date of Birth -->
+      <div class="form-field">
+        {{ form.date_of_birth.label_tag }}
+        {{ form.date_of_birth }}
+        {{ form.date_of_birth.errors }}
+      </div>
+
+      <!-- Gender -->
+      <div class="form-field">
+        {{ form.gender.label_tag }}
+        {{ form.gender }}
+        {{ form.gender.errors }}
+      </div>
+
+      <!-- Phone Number -->
+      <div class="form-field">
+        {{ form.phone_number.label_tag }}
+        {{ form.phone_number }}
+        {{ form.phone_number.errors }}
+      </div>
+
+      <!-- Email -->
+      <div class="form-field">
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        {{ form.email.errors }}
+      </div>
+
+      <!-- Address -->
+      <div class="form-field">
+        {{ form.address.label_tag }}
+        {{ form.address }}
+        {{ form.address.errors }}
+      </div>
+
+      <!-- Cell -->
+      <div class="form-field">
+        {{ form.cell.label_tag }}
+        {{ form.cell }}
+        {{ form.cell.errors }}
+      </div>
+
+      <!-- Is Baptized -->
+      <div class="form-field">
+        {{ form.is_baptised.label_tag }}
+        {{ form.is_baptised }}
+        {{ form.is_baptised.errors }}
+      </div>
+
+      <!-- Date of Baptism -->
+      <div class="form-field">
+        {{ form.date_of_baptism.label_tag }}
+        {{ form.date_of_baptism }}
+        {{ form.date_of_baptism.errors }}
+      </div>
+
+      <!-- Baptism Certificate -->
+      <div class="form-field">
+        {{ form.baptism_certificate.label_tag }}
+        {{ form.baptism_certificate }}
+        {{ form.baptism_certificate.errors }}
+        <img id="baptism-preview" class="preview-image" alt="Baptism Certificate Preview">
+      </div>
+
+      <!-- Is Confirmed -->
+      <div class="form-field">
+        {{ form.is_confirmed.label_tag }}
+        {{ form.is_confirmed }}
+        {{ form.is_confirmed.errors }}
+      </div>
+
+      <!-- Date Confirmed -->
+      <div class="form-field">
+        {{ form.date_confirmed.label_tag }}
+        {{ form.date_confirmed }}
+        {{ form.date_confirmed.errors }}
+      </div>
+
+      <!-- Confirmation Certificate -->
+      <div class="form-field">
+        {{ form.confirmation_certificate.label_tag }}
+        {{ form.confirmation_certificate }}
+        {{ form.confirmation_certificate.errors }}
+        <img id="confirmation-preview" class="preview-image" alt="Confirmation Certificate Preview">
+      </div>
+
+      <!-- Marital Status -->
+      <div class="form-field">
+        {{ form.marital_status.label_tag }}
+        {{ form.marital_status }}
+        {{ form.marital_status.errors }}
+      </div>
+
+      <!-- Date of Marriage -->
+      <div class="form-field">
+        {{ form.date_of_marriage.label_tag }}
+        {{ form.date_of_marriage }}
+        {{ form.date_of_marriage.errors }}
+      </div>
+
+      <!-- Emergency Contact Name -->
+      <div class="form-field">
+        {{ form.emergency_contact_name.label_tag }}
+        {{ form.emergency_contact_name }}
+        {{ form.emergency_contact_name.errors }}
+      </div>
+
+      <!-- Emergency Contact Phone -->
+      <div class="form-field">
+        {{ form.emergency_contact_phone.label_tag }}
+        {{ form.emergency_contact_phone }}
+        {{ form.emergency_contact_phone.errors }}
+      </div>
+
+      <!-- Passport -->
+      <div class="form-field">
+        {{ form.passport.label_tag }}
+        {{ form.passport }}
+        {{ form.passport.errors }}
+        <img id="passport-preview" class="preview-image" alt="Passport Preview">
+      </div>
+
+      <!-- Sign Up Button -->
+      <button type="submit" class="submit-btn signup-btn">
+        <span style="margin-right: 5px;">✍️</span> Sign Up
+      </button>
+
+      <!-- Links -->
+      <div class="login-links">
+        <p>Already registered? You can <a href="{% url 'login' %}">login here</a></p>
+        <p>Forgot your password? <a href="{% url 'forgot_password' %}">Reset it here</a></p>
+        <p>Need an account? <a href="{% url 'request_account' %}">Request one here</a></p>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('signupForm');
+      const overlay = document.getElementById('savingOverlay');
+      
+      // Show overlay on form submission
+      if (form) {
+        form.addEventListener('submit', function() {
+          overlay.style.display = 'block';
+        });
+      }
+
+      // Image preview logic
+      function previewImage(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+
+        input.addEventListener('change', function() {
+          const file = this.files[0];
+          if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              preview.src = e.target.result;
+              preview.style.display = 'block'; // Show the preview
+            };
+            reader.readAsDataURL(file);
+          } else {
+            preview.src = '';
+            preview.style.display = 'none'; // Hide if not an image
+          }
+        });
+      }
+
+      // Apply preview to each file input
+      previewImage('id_baptism_certificate', 'baptism-preview');
+      previewImage('id_confirmation_certificate', 'confirmation-preview');
+      previewImage('id_passport', 'passport-preview');
+    });
+  </script>
+</body>
+</html>

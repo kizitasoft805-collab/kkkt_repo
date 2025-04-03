@@ -1,0 +1,134 @@
+<div class="sms-balance">
+    <h4>📉 SMS Balance & Sent Messages</h4>
+    <p class="sms-count">💳 Remaining: <strong>{{ balance }}</strong> SMS</p>
+    <p class="sms-count">📨 Sent: <strong id="filteredCount">{{ total_sent_sms }}</strong> SMS</p>
+</div>
+
+<!-- Filters Section -->
+<div class="sms-filters">
+    <h5>🔍 Filter Messages</h5>
+
+    <!-- Search by Name or Number -->
+    <div class="filter-row">
+        <input type="text" id="searchInput" class="filter-input" placeholder="🔍 Search by Name or Phone..." onkeyup="filterMessages()">
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="date-filter">
+        <input type="date" id="fromDate" class="filter-input" onchange="filterByDate()">
+        <span class="date-label">to</span>
+        <input type="date" id="toDate" class="filter-input" onchange="filterByDate()">
+    </div>
+</div>
+
+<style>
+    /* SMS Balance Styling */
+    .sms-balance {
+        background: linear-gradient(135deg, #36d1dc, #5b86e5);
+        color: white;
+        text-align: center;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .sms-count {
+        font-size: 20px;
+        font-weight: bold;
+        margin: 5px 0;
+    }
+
+    /* Filters Section */
+    .sms-filters {
+        text-align: center;
+        margin-top: 20px;
+        padding: 10px;
+    }
+
+    .filter-row {
+        margin-bottom: 15px;
+    }
+
+    /* iPhone-like Input Styling */
+    .filter-input {
+        width: 90%;
+        max-width: 350px;
+        padding: 12px 15px;
+        font-size: 16px;
+        border-radius: 25px;
+        border: 1px solid #ccc;
+        background: #f9f9f9;
+        outline: none;
+        transition: 0.3s ease-in-out;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-input:focus {
+        border: 1px solid #007bff;
+        background: white;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+
+    /* Date Filter Styling */
+    .date-filter {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .date-label {
+        font-size: 16px;
+        font-weight: bold;
+        color: #555;
+    }
+</style>
+
+<!-- JavaScript for Automatic Filtering with Live Count Update -->
+<script>
+    function updateFilteredCount() {
+        let visibleRows = document.querySelectorAll(".table tbody tr:not([style*='display: none'])").length;
+        document.getElementById("filteredCount").innerText = visibleRows > 0 ? visibleRows : 0;
+    }
+
+    function filterMessages() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll(".table tbody tr");
+
+        rows.forEach(row => {
+            let name = row.cells[2].innerText.toLowerCase();  // Name Column
+            let phone = row.cells[3].innerText.toLowerCase(); // Phone Number Column
+            
+            if (name.includes(input) || phone.includes(input)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        updateFilteredCount();
+    }
+
+    function filterByDate() {
+        let fromDate = document.getElementById("fromDate").value;
+        let toDate = document.getElementById("toDate").value;
+        let rows = document.querySelectorAll(".table tbody tr");
+
+        rows.forEach(row => {
+            let sentDate = row.cells[1].innerText; // Date Sent Column
+            let rowDate = new Date(sentDate);
+
+            if ((fromDate === "" || rowDate >= new Date(fromDate)) &&
+                (toDate === "" || rowDate <= new Date(toDate))) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        updateFilteredCount();
+    }
+</script>

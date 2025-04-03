@@ -1,0 +1,101 @@
+<!-- 📜 Scrollable Table Container -->
+<div class="table-container" style="width: 100%; overflow-x: auto;">
+    <table class="styled-table"
+           style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 1rem; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <thead style="background: linear-gradient(135deg, #007bff, #0056b3); color: white;">
+            <tr>
+                <th>#️⃣</th>
+                <th>🏠 Name</th>
+                <th>📂 Type</th>
+                <th>🔧 Status</th>
+                <th>📦 Qty Type</th>
+                <th>🔢 Qty</th>
+                <th>💰 Value</th>
+                <th>📅 Acquired</th>
+                <th>⏳ Created</th>
+                <th>⚙️ Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in church_assets %}
+                {% include 'accountant/properties/partials/_church_asset_row.html' with asset=asset counter=forloop.counter %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if not church_assets %}
+    <p class="no-results" style="color: red; font-size: 1.2rem; text-align: center; margin-top: 20px;">
+        🚨 No church assets found.
+    </p>
+{% endif %}
+
+<!-- ✅ Inline Styling for an iPhone-like Table -->
+<style>
+    /* 📌 Table Styling */
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 16px;
+        text-align: left;
+        min-width: 800px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 📌 Table Header */
+    .styled-table thead tr {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .styled-table th, .styled-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #ddd;
+        white-space: nowrap;
+    }
+
+    /* 🏷 Status Badges */
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-weight: bold;
+        text-transform: capitalize;
+    }
+
+    .status-active {
+        background: #28a745;
+        color: white;
+    }
+
+    .status-inactive {
+        background: #dc3545;
+        color: white;
+    }
+
+    /* ✅ Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .styled-table {
+            font-size: 14px;
+            min-width: 100%;
+        }
+
+        .styled-table th, .styled-table td {
+            padding: 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .styled-table {
+            font-size: 13px;
+        }
+
+        .styled-table th, .styled-table td {
+            padding: 8px;
+        }
+    }
+</style>

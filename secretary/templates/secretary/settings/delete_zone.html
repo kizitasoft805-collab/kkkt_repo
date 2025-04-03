@@ -1,0 +1,99 @@
+{% extends 'secretary_base.html' %}
+
+{% block content %}
+<div class="delete-container">
+    <!-- 🛑 Warning Message -->
+    <h2 class="delete-title">⚠️ Confirm Deletion</h2>
+    <p class="delete-message">
+        Are you sure you want to delete the Zone <strong>{{ zone.name }} with id {{ zone.zone_id }}</strong>?
+    </p>
+
+    <!-- ❌ Delete Form -->
+    <form method="POST" action="{% url 'secretary_delete_zone' zone.id %}" class="delete-form">
+        {% csrf_token %}
+
+        <!-- ✅ Confirm Delete -->
+        <button type="submit" class="delete-button">
+            🗑️ Yes, Delete Zone
+        </button>
+
+        <!-- 🔙 Cancel Button -->
+        <a href="{% url 'secretary_zone_list' %}" class="cancel-button">
+            🔙 Cancel
+        </a>
+    </form>
+</div>
+
+<!-- 🚀 CSS Fixes -->
+<style>
+    /* General Container */
+    .delete-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 20px;
+        margin-top: 50px; /* Fix spacing issue under the topbar */
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        text-align: center;
+    }
+
+    /* Heading */
+    .delete-title {
+        font-size: 26px;
+        font-weight: bold;
+        color: #dc3545;
+        margin-bottom: 10px;
+    }
+
+    /* Message */
+    .delete-message {
+        font-size: 18px;
+        color: #555;
+    }
+
+    /* Delete Form */
+    .delete-form {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Delete Button */
+    .delete-button {
+        font-size: 16px;
+        font-weight: bold;
+        background: linear-gradient(130deg, #dc3545, #c82333);
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .delete-button:hover {
+        transform: scale(1.05);
+    }
+
+    /* Cancel Button */
+    .cancel-button {
+        font-size: 16px;
+        font-weight: bold;
+        background: linear-gradient(130deg, #007bff, #0056d2);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 25px;
+        text-decoration: none;
+        text-align: center;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .cancel-button:hover {
+        transform: scale(1.05);
+    }
+</style>
+
+{% endblock %}

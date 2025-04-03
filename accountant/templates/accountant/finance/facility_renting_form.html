@@ -1,0 +1,77 @@
+{% extends 'accountant_base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 0 auto; padding: 20px;">
+
+    <!-- 🔑 Title -->
+    <h2 style="text-align: center; font-size: 28px; font-weight: bold; margin-bottom: 20px;">
+        {{ title }}
+    </h2>
+
+    <!-- 📝 Form Starts Here -->
+    <form method="post" novalidate style="display: flex; flex-direction: column; gap: 15px;">
+        {% csrf_token %}
+        
+        <!-- Loop through form fields -->
+        {% for field in form %}
+            <div style="display: flex; flex-direction: column;">
+                <!-- Label -->
+                <label for="{{ field.id_for_label }}" style="font-weight: bold; margin-bottom: 5px;">
+                    {{ field.label }}
+                </label>
+
+                <!-- Field with iPhone-like rounded styles -->
+                {{ field }}
+
+                <!-- Help Text -->
+                {% if field.help_text %}
+                    <small style="color: gray; font-style: italic;">
+                        {{ field.help_text }}
+                    </small>
+                {% endif %}
+
+                <!-- Error Messages -->
+                {% if field.errors %}
+                    <div style="color: red; font-size: 14px; margin-top: 5px;">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <!-- 🚀 Submit & Cancel Buttons -->
+        <div style="display: flex; justify-content: space-between; gap: 10px; margin-top: 20px;">
+            <button type="submit" style="
+                flex: 1;
+                padding: 12px;
+                background: linear-gradient(130deg, #007bff, #0056b3);
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                border: none;
+                border-radius: 15px;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                {{ submit_text }}
+            </button>
+
+            <a href="{% url 'accountant_facility_renting_list' %}" style="
+                flex: 1;
+                padding: 12px;
+                background: #6c757d;
+                color: white;
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
+                border-radius: 15px;
+                text-decoration: none;
+                transition: transform 0.2s ease;
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

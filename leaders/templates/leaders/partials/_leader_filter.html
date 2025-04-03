@@ -1,0 +1,151 @@
+<!-- Filter Section -->
+<div class="filter-form">
+    <!-- Name Filter -->
+    <input type="text" id="searchName" name="search_name" value="{{ search_name }}"
+           placeholder="🔍 Search by Name or ID">
+
+    <!-- Gender Filter -->
+    <select id="genderFilter" name="search_gender">
+        <option value="" {% if not search_gender %}selected{% endif %}>⚥ Filter by Gender</option>
+        <option value="Male" {% if search_gender == "Male" %}selected{% endif %}>Male</option>
+        <option value="Female" {% if search_gender == "Female" %}selected{% endif %}>Female</option>
+    </select>
+
+    <!-- Occupation Filter -->
+    <select id="occupationFilter" name="search_occupation">
+        <option value="" {% if not search_occupation %}selected{% endif %}>💼 Filter by Occupation</option>
+        {% for occupation in all_occupations %}
+            <option value="{{ occupation }}" {% if search_occupation == occupation %}selected{% endif %}>
+                {{ occupation }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <!-- Cell Filter -->
+    <select id="cellFilter" name="search_cell">
+        <option value="" {% if not search_cell %}selected{% endif %}>🏘️ Filter by Cell</option>
+        {% for cell in all_cells %}
+            <option value="{{ cell.id }}" {% if search_cell == cell.id|stringformat:"s" %}selected{% endif %}>
+                {{ cell.name }} ({{ cell.outstation.name }})
+            </option>
+        {% endfor %}
+    </select>
+
+    <!-- Outstation Filter -->
+    <select id="outstationFilter" name="search_outstation">
+        <option value="" {% if not search_outstation %}selected{% endif %}>📍 Filter by Outstation</option>
+        {% for outstation in all_outstations %}
+            <option value="{{ outstation.id }}" {% if search_outstation == outstation.id|stringformat:"s" %}selected{% endif %}>
+                {{ outstation.name }}
+            </option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- JavaScript for Real-Time Filtering -->
+<script>
+    function filterLeaders() {
+        let nameFilter = document.getElementById("searchName").value.toLowerCase();
+        let genderFilter = document.getElementById("genderFilter").value;
+        let occupationFilter = document.getElementById("occupationFilter").value;
+        let cellFilter = document.getElementById("cellFilter").value;
+        let outstationFilter = document.getElementById("outstationFilter").value;
+
+        let leaders = document.querySelectorAll(".leader-row");
+
+        let totalLeaders = 0;
+        let totalMales = 0;
+        let totalFemales = 0;
+
+        leaders.forEach(leader => {
+            let name = leader.getAttribute("data-name").toLowerCase();
+            let gender = leader.getAttribute("data-gender");
+            let occupation = leader.getAttribute("data-occupation");
+            let cell = leader.getAttribute("data-cell");
+            let outstation = leader.getAttribute("data-outstation");
+
+            let showByName = name.includes(nameFilter);
+            let showByGender = (genderFilter === "" || gender === genderFilter);
+            let showByOccupation = (occupationFilter === "" || occupation === occupationFilter);
+            let showByCell = (cellFilter === "" || cell === cellFilter);
+            let showByOutstation = (outstationFilter === "" || outstation === outstationFilter);
+
+            if (showByName && showByGender && showByOccupation && showByCell && showByOutstation) {
+                leader.style.display = "table-row";
+                totalLeaders++;
+                if (gender === "Male") totalMales++;
+                else if (gender === "Female") totalFemales++;
+            } else {
+                leader.style.display = "none";
+            }
+        });
+
+        document.getElementById("totalLeaders").textContent = totalLeaders;
+        document.getElementById("totalMales").textContent = totalMales;
+        document.getElementById("totalFemales").textContent = totalFemales;
+    }
+
+    document.getElementById("searchName").addEventListener("input", filterLeaders);
+    document.getElementById("genderFilter").addEventListener("change", filterLeaders);
+    document.getElementById("occupationFilter").addEventListener("change", filterLeaders);
+    document.getElementById("cellFilter").addEventListener("change", filterLeaders);
+    document.getElementById("outstationFilter").addEventListener("change", filterLeaders);
+
+    // Trigger initial filter to apply any pre-selected filters from URL
+    filterLeaders();
+</script>
+
+<!-- CSS for Styling -->
+<style>
+    /* 🌟 Full-Width Filter Section */
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px; /* Match _church_member_filter.html */
+        width: 100%; /* Full width within parent container */
+        margin-bottom: 10px; /* Match _church_member_filter.html */
+        padding: 0; /* No padding here, handled by parent in leader_list.html */
+        box-sizing: border-box;
+    }
+
+    /* 🔍 iPhone-Like Input Fields */
+    .filter-form input,
+    .filter-form select {
+        padding: 10px; /* Match _church_member_filter.html */
+        border-radius: 20px; /* Match _church_member_filter.html */
+        border: 1px solid #ccc; /* Match _church_member_filter.html */
+        width: 100%; /* Full width within parent */
+        max-width: 100vw; /* Prevent exceeding viewport */
+        box-sizing: border-box; /* Include padding and border in width */
+        text-align: center; /* Match _church_member_filter.html */
+        font-size: 16px; /* Match _church_member_filter.html */
+        outline: none; /* Clean focus state */
+        transition: border-color 0.3s ease; /* Smooth transition like iPhone */
+    }
+
+    /* 🎨 Input Focus Effect */
+    .filter-form input:focus,
+    .filter-form select:focus {
+        border-color: #007bff; /* Match _church_member_filter.html */
+    }
+
+    /* 📱 Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .filter-form input,
+        .filter-form select {
+            font-size: 14px; /* Match _church_member_filter.html */
+            padding: 8px; /* Match _church_member_filter.html */
+            border-radius: 18px; /* Match _church_member_filter.html */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .filter-form input,
+        .filter-form select {
+            font-size: 13px; /* Match _church_member_filter.html */
+            padding: 6px; /* Match _church_member_filter.html */
+            border-radius: 16px; /* Match _church_member_filter.html */
+        }
+    }
+</style>

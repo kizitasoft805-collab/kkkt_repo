@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <title>Login</title>
+
+    <!-- Meta viewport for mobile responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#FFB6C1" />
+
+    <!-- Google Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+
+        /* RESET & BASE STYLES */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Inter";
+            background: linear-gradient(130deg, rgba(255, 182, 193, 0.7) 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            animation: backgroundFade 1.2s ease forwards;
+        }
+        @keyframes backgroundFade {
+            0% {
+                background: #fff;
+            }
+            100% {
+                background: linear-gradient(130deg, rgba(255, 182, 193, 0.7) 0%, rgba(255, 255, 255, 0.7) 100%);
+            }
+        }
+
+        /* LOGIN CONTAINER */
+        .login-container {
+            width: 90%;
+            max-width: 400px;
+            background-color: #ffffffcc;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            padding: 20px 25px;
+            box-sizing: border-box;
+            opacity: 0; /* for animation start */
+            transform: translateY(50px) scale(0.95);
+            animation: containerSlideIn 0.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+        }
+        @keyframes containerSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* CHURCH IMAGE */
+        .church-image {
+            width: 100px;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(-20px) scale(0.8);
+            animation: bounceIn 1s ease forwards 0.4s; /* Delay to start after container */
+        }
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-10px) scale(1.1);
+            }
+            80% {
+                transform: translateY(5px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* FORM FIELDS */
+        .form-field {
+            margin-bottom: 15px;
+            text-align: left;
+            position: relative;
+            animation: fadeUp 0.6s ease forwards;
+        }
+        /* Slight sequential fade for each field */
+        .form-field:nth-child(1) { animation-delay: 0.4s; }
+        .form-field:nth-child(2) { animation-delay: 0.5s; }
+        .form-field:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-field label {
+            font-weight: 500;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* INPUT WRAPPER */
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        /* INPUT FIELD */
+        .form-control {
+            width: 100%;
+            padding: 12px 45px; /* Space for left & right icons */
+            border-radius: 999px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+        }
+
+        /* INPUT ICONS */
+        .left-icon, .eye-icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 22px;
+        }
+        .left-icon {
+            left: 15px;
+        }
+        .eye-icon {
+            right: 15px;
+            cursor: pointer;
+        }
+
+        /* REMEMBER ME CHECKBOX + MESSAGE */
+        .remember-field {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        .checkbox-container input {
+            margin-right: 8px;
+        }
+        .remember-text {
+            display: none;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: left;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .remember-text.fade-in {
+            display: block;
+            opacity: 1;
+            animation: slideFromLeft 0.6s ease forwards;
+        }
+        @keyframes slideFromLeft {
+            0% {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* BUTTON BASE */
+        .button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 999px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-decoration: none;
+            user-select: none;
+            animation: fadeUp 0.6s ease forwards;
+        }
+        /* Slightly delayed for the buttons */
+        .login-button { animation-delay: 0.7s; }
+        .posts-button { animation-delay: 0.8s; }
+        .signup-button { animation-delay: 0.9s; } /* Added for Sign Up button */
+
+        /* HOVER & ACTIVE STATES FOR BUTTONS */
+        .button:hover {
+            transform: scale(1.02);
+        }
+        .button:active {
+            transform: scale(0.98);
+        }
+
+        /* SPECIFIC BUTTON COLORS */
+        .login-button {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .login-button:hover {
+            background-color: #0069d9;
+        }
+        .login-button:active {
+            background-color: #005dc1;
+        }
+        .posts-button {
+            background-color: #28a745; /* Green color */
+            color: #fff;
+        }
+        .posts-button:hover {
+            background-color: #218838;
+        }
+        .signup-button {
+            background-color: #ff6f61; /* Coral color for Sign Up */
+            color: #fff;
+        }
+        .signup-button:hover {
+            background-color: #ff5a4d;
+        }
+        .signup-button:active {
+            background-color: #e64b3e;
+        }
+
+        /* SPINNER */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 0.7s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ERROR MESSAGE (IF NEEDED) */
+        .error-message {
+            color: #d9534f;
+            font-weight: 500;
+            margin-bottom: 10px;
+            animation: shake 0.4s ease;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-4px); }
+            40% { transform: translateX(4px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* LINKS FOR REQUEST ACCOUNT & FORGOT PASSWORD */
+        .login-links {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.9s;
+        }
+        .login-links a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .login-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* MEDIA QUERIES */
+        @media (max-width: 600px) {
+            .login-container {
+                width: 95%;
+                padding: 20px;
+                border-radius: 15px;
+            }
+            .church-image {
+                width: 80px;
+            }
+            .form-field label {
+                font-size: 15px;
+            }
+            .form-control {
+                font-size: 14px;
+                padding: 10px 40px;
+            }
+            .button {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Login</h2>
+
+        <!-- Church image -->
+        <img class="church-image" src="{% static 'images/church.png' %}" alt="Church Image" />
+
+        <!-- Display error messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <p class="error-message">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Login form -->
+        <form method="POST" id="loginForm">
+            {% csrf_token %}
+
+            <!-- USERNAME FIELD -->
+            <div class="form-field">
+                <label for="id_username">Username or Email</label>
+                <div class="input-wrapper">
+                    <span class="material-icons left-icon">person</span>
+                    {{ form.username }}
+                </div>
+            </div>
+
+            <!-- PASSWORD FIELD -->
+            <div class="form-field">
+                <label for="id_password">Password</label>
+                <div class="input-wrapper">
+                    <span class="material-icons left-icon">lock</span>
+                    {{ form.password }}
+                    <span class="material-icons eye-icon" id="togglePassword">visibility</span>
+                </div>
+            </div>
+
+            <!-- REMEMBER ME CHECKBOX -->
+            <div class="form-field remember-field">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="rememberMe" />
+                    Remember me
+                </label>
+            </div>
+
+            <!-- Animated text (shown when Remember Me is checked) -->
+            <p id="rememberMessage" class="remember-text">
+                Worry out, I will remember your credentials
+            </p>
+
+            <!-- Login Button -->
+            <button type="submit" class="button login-button" id="loginBtn">
+                <span class="material-icons">login</span>
+                Login
+            </button>
+
+            <!-- Posts & Updates Button -->
+            <button type="button" class="button posts-button" onclick="window.location.href='{% url 'public_news_list' %}'">
+                <span style="margin-right: 5px;">📢</span> Posts & Updates
+            </button>
+
+            <!-- Sign Up Button -->
+            <button type="button" class="button signup-button" onclick="window.location.href='{% url 'church_member_signup' %}'">
+                <span style="margin-right: 5px;">✍️</span> Sign Up
+            </button>
+        </form>
+
+        <!-- Links for Request Account & Forgot Password -->
+        <div class="login-links">
+            <p>Don't have an account? <a href="{% url 'request_account' %}">Request account here</a></p>
+            <p>Forgot password? <a href="{% url 'forgot_password' %}">Request a new one here</a></p>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordField = document.getElementById('id_password');
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const rememberMeCheckbox = document.getElementById('rememberMe');
+        const rememberMessage = document.getElementById('rememberMessage');
+        const usernameField = document.getElementById('id_username');
+
+        // 1. TOGGLE PASSWORD VISIBILITY
+        if (togglePassword && passwordField) {
+            togglePassword.addEventListener('click', () => {
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                togglePassword.textContent = (type === 'password') ? 'visibility' : 'visibility_off';
+            });
+        }
+
+        // 2. REMEMBER ME CHECKBOX + LOCAL STORAGE
+        document.addEventListener('DOMContentLoaded', () => {
+            // On page load, check if credentials are stored
+            const storedUsername = localStorage.getItem('storedUsername');
+            const storedPassword = localStorage.getItem('storedPassword');
+            if (storedUsername && storedPassword) {
+                usernameField.value = storedUsername;
+                passwordField.value = storedPassword;
+                rememberMeCheckbox.checked = true;
+                // Show the remember message immediately
+                showRememberMessage(true);
+            }
+        });
+
+        // Show/Hide the remember message with an animation
+        rememberMeCheckbox.addEventListener('change', function() {
+            showRememberMessage(this.checked);
+        });
+
+        function showRememberMessage(isChecked) {
+            if (isChecked) {
+                rememberMessage.classList.add('fade-in');
+            } else {
+                rememberMessage.classList.remove('fade-in');
+                // Optionally hide it fully after animation
+                setTimeout(() => {
+                    rememberMessage.style.display = 'none';
+                }, 300);
+            }
+        }
+
+        // 3. LOGIN BUTTON SPINNER + CREDENTIALS SAVE/REMOVE
+        if (loginForm && loginBtn) {
+            loginForm.addEventListener('submit', () => {
+                // Show spinner on Login button
+                loginBtn.innerHTML = '<span class="spinner"></span>Processing...';
+                loginBtn.disabled = true;
+
+                // If "Remember Me" is checked, store credentials
+                if (rememberMeCheckbox.checked) {
+                    localStorage.setItem('storedUsername', usernameField.value);
+                    localStorage.setItem('storedPassword', passwordField.value);
+                } else {
+                    // If unchecked, remove existing credentials
+                    localStorage.removeItem('storedUsername');
+                    localStorage.removeItem('storedPassword');
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Navigation Buttons -->
+<div style="text-align: center; margin: 20px;">
+    <!-- Home Button -->
+    <a href="{% url 'sacraments_home' %}" 
+       style="display: inline-block; padding: 10px 20px; font-size: 16px; text-decoration: none;
+              background: #007bff; color: white; border-radius: 25px; margin-right: 10px;">
+        🏠
+    </a>
+
+    <!-- View Confirmed Members -->
+    <a href="{% url 'confirmed_members' %}" 
+       style="display: inline-block; padding: 10px 20px; font-size: 16px; text-decoration: none;
+              background: #28a745; color: white; border-radius: 25px;">
+        👥
+    </a>
+</div>
+
+<!-- Page Title -->
+{% include 'sacraments/partials/_confirmation_title.html' %}
+
+<!-- Confirmation Date Selection -->
+{% include 'sacraments/partials/_confirmation_date_selector.html' %}
+
+<!-- Members List -->
+{% include 'sacraments/partials/_confirmation_member_list.html' %}
+
+{% endblock %}

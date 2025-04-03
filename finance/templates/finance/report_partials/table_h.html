@@ -1,0 +1,37 @@
+<!-- finance/report_partials/table_h.html -->
+<h4>Table H — Expenditures for {{ current_month }}/{{ current_year }}</h4>
+<table style="border-collapse: collapse; width: 100%; margin-bottom: 1em;">
+  <thead>
+    <tr style="background-color: #0bfafa;">
+      <th style="padding: 8px; border: 1px solid #ccc;">H</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">Category of Expenditure</th>
+      <th style="padding: 8px; border: 1px solid #ccc;">Amount(TZS)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in category_expenditures_data %}
+      <tr>
+        <!-- H column: forloop.counter -->
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ forloop.counter }}
+        </td>
+
+        <!-- Category column -->
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ item.category.name }}
+        </td>
+
+        <!-- Amount column -->
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          {{ item.total_spent|floatformat:2 }}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if table_h_total > 0 %}
+  <p><strong>Total (Table H): {{ table_h_total|floatformat:2 }} TZS</strong></p>
+{% else %}
+  <p><em>No expenditures found for this month/year.</em></p>
+{% endif %}

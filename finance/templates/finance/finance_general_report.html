@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Print and Download Buttons Row -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+  <h3>📊 General Finance Report</h3>
+
+  <div class="print-hide">
+    <button onclick="printReport()" class="btn-action" style="background-color: #007bff;">
+      🖨️ Print Report
+    </button>
+
+    <button onclick="downloadPDF()" class="btn-action" style="background-color: #28a745;">
+      📄 Download PDF
+    </button>
+
+    <button onclick="exportToExcel()" class="btn-action" style="background-color: #ffcc00; color: black;">
+      📊 Export to Excel
+    </button>
+  </div>
+</div>
+
+<!-- PRINTABLE REPORT CONTAINER -->
+<div id="printArea">
+
+  <!-- PAGE 1: Header & Table A -->
+  <div class="print-page">
+    {% include 'finance/report_partials/header.html' %}
+    {% include 'finance/report_partials/table_a.html' %}
+  </div>
+
+  <!-- PAGE 2: Table B -->
+  <div class="print-page">
+    {% include 'finance/report_partials/table_b.html' %}
+  </div>
+
+  <!-- PAGE 3: Table C -->
+  <div class="print-page">
+    {% include 'finance/report_partials/table_c.html' %}
+    {% include 'finance/report_partials/table_d.html' %}
+    {% include 'finance/report_partials/table_e.html' %}
+  </div>
+
+  <!-- PAGE 5: Table H -->
+  <div class="print-page">
+    {% include 'finance/report_partials/table_h.html' %}
+  </div>
+
+  <!-- PAGE 6: Table I & Table J -->
+  <div class="print-page">
+    {% include 'finance/report_partials/table_i.html' %}
+    {% include 'finance/report_partials/table_j.html' %}
+  </div>
+
+</div> <!-- End of printArea -->
+
+<!-- STYLES & SCRIPTS -->
+<style>
+  /* Button Styling */
+  .btn-action {
+    border: none;
+    padding: 10px 15px;
+    margin-left: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  .btn-action:hover {
+    opacity: 0.8;
+  }
+
+  /* PRINT MODE - Hide everything except report content */
+  @media print {
+    body * {
+      visibility: hidden !important; /* Hide everything by default */
+    }
+    #printArea, #printArea * {
+      visibility: visible !important; /* Only show report content */
+    }
+    #printArea {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      background: white;
+    }
+    .print-hide {
+      display: none !important; /* Hide buttons */
+    }
+
+    /* Ensure each section starts on a new page */
+    .print-page {
+      page-break-before: always;
+      page-break-after: always;
+      width: 100%;
+      padding: 20px;
+    }
+
+    /* First page should not have a page break before */
+    .print-page:first-of-type {
+      page-break-before: avoid;
+    }
+  }
+</style>
+
+<script>
+  // Function to Print ONLY the Report Content
+  function printReport() {
+    window.print();
+  }
+
+  // Function to Download the Report as PDF
+  function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("General Finance Report", 14, 20);
+
+    const content = document.getElementById("printArea").innerText;
+    doc.setFontSize(10);
+    doc.text(content, 10, 30, { maxWidth: 180 });
+
+    doc.save("Finance_Report.pdf");
+  }
+
+  // Function to Export Data to Excel
+  function exportToExcel() {
+    let table = document.getElementById("printArea").innerHTML;
+    let file = new Blob([table], { type: "application/vnd.ms-excel" });
+    let url = URL.createObjectURL(file);
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = "Finance_Report.xls";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+</script>
+
+{% endblock %}

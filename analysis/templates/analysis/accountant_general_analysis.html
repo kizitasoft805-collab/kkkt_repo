@@ -1,0 +1,99 @@
+{% extends 'accountant_base.html' %}
+
+{% block content %}
+
+<!-- 🔙 Back to Dashboard, 🖨 Print & 📥 Download PDF Buttons -->
+<div class="action-buttons">
+    <a href="{% url 'accountant_dashboard' %}" class="btn btn-dashboard">
+        🔙 Back to Dashboard
+    </a>
+    <button onclick="window.print()" class="btn btn-print">🖨 Print Page</button>
+    <button id="downloadPDF" class="btn btn-download">📥 Download PDF</button>
+</div>
+
+<h2>General analysis of the church</h2>
+
+<!-- 1. Zones Analysis Partial (Line Chart) -->
+{% include 'analysis/partials/zones_analysis.html' with zones_data=zones_data %}
+
+<!-- 2. Communities Analysis Partial (Bar Chart) -->
+{% include 'analysis/partials/communities_analysis.html' with communities_data=communities_data %}
+
+<!-- 3. Movements Analysis Partial (Combined Chart) -->
+{% include 'analysis/partials/movements_analysis.html' with movements_data=movements_data %}
+
+
+<!-- 6. Offerings Analysis (Line chart + Summaries) -->
+{% include 'analysis/partials/offerings_analysis.html' with offerings_data=offerings_data %}
+
+<!-- 7. Tithes Monthly Analysis (Combined Line+Bar, Current Year) -->
+{% include 'analysis/partials/tithes_monthly_analysis.html' with tithes_data=tithes_data %}
+
+<!-- 8. Facility Renting Analysis (Bar chart for current year by property) -->
+{% include 'analysis/partials/facility_renting_analysis.html' with facility_data=facility_data %}
+
+<!-- 9. Special Contribution Funds Analysis (Radar chart for current year) -->
+{% include 'analysis/partials/special_contribution_fund_analysis.html' with donation_fund_data=donation_fund_data %}
+
+<!-- 🎨 Styling for iPhone-Like Buttons & Print Fix -->
+<style>
+    /* 📌 iPhone-Like Button Styling */
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 18px;
+        font-size: 16px;
+        font-weight: bold;
+        text-decoration: none;
+        border: none;
+        border-radius: 25px; /* 🎯 Rounded shape */
+        cursor: pointer;
+        transition: 0.3s ease-in-out;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        width: 180px;
+        text-align: center;
+    }
+
+    .btn-dashboard {
+        background: linear-gradient(130deg, #3498db, #2980b9);
+        color: white;
+    }
+
+    .btn-print {
+        background: linear-gradient(130deg, #27ae60, #219150);
+        color: white;
+    }
+
+    .btn-download {
+        background: linear-gradient(130deg, #e74c3c, #c0392b);
+        color: white;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    /* 🖨 Hide Topbar when Printing */
+    @media print {
+        .topbar, .action-buttons {
+            display: none !important;
+        }
+    }
+</style>
+
+<!-- 📜 PDF Download Logic -->
+<script>
+    document.getElementById("downloadPDF").addEventListener("click", function () {
+        window.print();  // Converts page to PDF when "Save as PDF" is selected
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,100 @@
+{% load static %}
+
+<tr class="leader-row"
+    data-name="{{ leader.church_member.full_name|lower }}"
+    data-gender="{{ leader.church_member.gender }}"
+    data-occupation="{{ leader.occupation }}"
+    data-cell="{{ leader.church_member.cell.id|default:'' }}"
+    data-outstation="{{ leader.church_member.cell.outstation.id|default:'' }}"
+    style="border-bottom: 1px solid #ddd;">
+
+    <td>{{ counter }}</td>
+    <td>{{ leader.leader_id }}</td>
+    <td>
+        {% if leader.church_member.status == "Active" %}
+            <span style="color: green; font-size: 1.2rem;">✅</span>
+        {% else %}
+            <span style="color: red; font-size: 1.2rem;">❌</span>
+        {% endif %}
+    </td>
+    <td>
+        <a href="{% url 'update_leader_profile' leader.pk %}">
+            <img
+                id="leader-passport-{{ leader.pk }}"
+                alt="Passport"
+                style="display: none; width: 50px; height: 50px; border-radius: 50%; object-fit: cover;"
+                data-passport-url="{% if leader.church_member.passport %}
+                                     {{ leader.church_member.passport.url }}
+                                   {% else %}
+                                     {% static 'images/user.png' %}
+                                   {% endif %}"
+            >
+        </a>
+    </td>
+    <td style="font-weight: bold; font-size: 1rem; white-space: nowrap;">{{ leader.church_member.full_name }}</td>
+    <td style="font-size: 1rem; white-space: nowrap;">{{ leader.church_member.gender }}</td>
+    <td style="font-size: 1rem; white-space: nowrap;">{{ leader.occupation }}</td>
+    <td style="font-size: 1rem; white-space: nowrap;">
+        {% if leader.church_member.cell %}
+            {{ leader.church_member.cell.name }} ({{ leader.church_member.cell.outstation.name }})
+        {% else %}
+            Not Assigned
+        {% endif %}
+    </td>
+    <td style="font-size: 1rem; white-space: nowrap;">{{ leader.time_in_service|default:'N/A' }}</td>
+    <td>
+        <a href="{% url 'leader_detail' leader.pk %}" 
+           style="text-decoration: none; padding: 6px 10px; background: #007bff; color: white; border-radius: 5px;">
+            👁️
+        </a>
+        <a href="{% url 'update_leader' leader.pk %}" 
+           style="text-decoration: none; padding: 6px 10px; background: #ffc107; color: black; border-radius: 5px;">
+            ✏️
+        </a>
+        <a href="{% url 'delete_leader' leader.pk %}" 
+           style="text-decoration: none; padding: 6px 10px; background: #dc3545; color: white; border-radius: 5px;">
+            🗑️
+        </a>
+    </td>
+</tr>
+
+<style>
+    .leader-row td {
+        vertical-align: middle;
+    }
+
+    .leader-row a {
+        display: inline-block;
+        text-align: center;
+        margin-right: 5px;
+        font-size: 14px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .leader-row a:hover {
+        transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+        .leader-row td { font-size: 14px; padding: 6px; }
+    }
+
+    @media (max-width: 480px) {
+        .leader-row td { font-size: 13px; }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const leaderPics = document.querySelectorAll('img[id^="leader-passport-"][data-passport-url]');
+    leaderPics.forEach(imgEl => {
+        const hiddenImg = new Image();
+        const passportUrl = imgEl.dataset.passportUrl;
+        hiddenImg.src = passportUrl;
+        hiddenImg.onload = function() {
+            imgEl.src = passportUrl;
+            imgEl.style.display = 'inline';
+        };
+    });
+});
+</script>

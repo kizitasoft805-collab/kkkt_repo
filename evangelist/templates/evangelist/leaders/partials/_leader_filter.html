@@ -1,0 +1,144 @@
+<!-- Filter Section -->
+<div class="filter-form"
+     style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 800px; margin-bottom: 15px;">
+
+    <!-- Name Filter -->
+    <input type="text" id="searchName" placeholder="🔍 Search by Name or ID"
+           style="border: 1px solid #ccc; padding: 10px; border-radius: 25px; width: 100%; box-sizing: border-box;">
+
+    <!-- Gender Filter -->
+    <select id="genderFilter"
+            style="border: 1px solid #ccc; padding: 10px; border-radius: 25px; width: 100%; box-sizing: border-box;">
+        <option value="all">⚥ Filter by Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+    </select>
+
+    <!-- Occupation Filter -->
+    <select id="occupationFilter"
+            style="border: 1px solid #ccc; padding: 10px; border-radius: 25px; width: 100%; box-sizing: border-box;">
+        <option value="all">💼 Filter by Occupation</option>
+        {% for occupation in all_occupations %}
+            <option value="{{ occupation }}">{{ occupation }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- Community Filter -->
+    <select id="communityFilter"
+            style="border: 1px solid #ccc; padding: 10px; border-radius: 25px; width: 100%; box-sizing: border-box;">
+        <option value="all">🏘️ Filter by Community</option>
+        {% for community in all_communities %}
+            <option value="{{ community.id }}">{{ community.name }} ({{ community.zone.name }})</option>
+        {% endfor %}
+    </select>
+
+    <!-- Zone Filter -->
+    <select id="zoneFilter"
+            style="border: 1px solid #ccc; padding: 10px; border-radius: 25px; width: 100%; box-sizing: border-box;">
+        <option value="all">📍 Filter by Zone</option>
+        {% for zone in all_zones %}
+            <option value="{{ zone.id }}">{{ zone.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- JavaScript for Real-Time Filtering -->
+<script>
+    function filterLeaders() {
+        let nameFilter = document.getElementById("searchName").value.toLowerCase();
+        let genderFilter = document.getElementById("genderFilter").value;
+        let occupationFilter = document.getElementById("occupationFilter").value;
+        let communityFilter = document.getElementById("communityFilter").value;
+        let zoneFilter = document.getElementById("zoneFilter").value;
+
+        let leaders = document.querySelectorAll(".leader-row");
+
+        let totalLeaders = 0;
+        let totalMales = 0;
+        let totalFemales = 0;
+
+        leaders.forEach(leader => {
+            let name = leader.getAttribute("data-name").toLowerCase();
+            let gender = leader.getAttribute("data-gender");
+            let occupation = leader.getAttribute("data-occupation");
+            let community = leader.getAttribute("data-community");
+            let zone = leader.getAttribute("data-zone");
+
+            let showByName = name.includes(nameFilter);
+            let showByGender = (genderFilter === "all" || gender === genderFilter);
+            let showByOccupation = (occupationFilter === "all" || occupation === occupationFilter);
+            let showByCommunity = (communityFilter === "all" || community === communityFilter);
+            let showByZone = (zoneFilter === "all" || zone === zoneFilter);
+
+            if (showByName && showByGender && showByOccupation && showByCommunity && showByZone) {
+                leader.style.display = "table-row";
+                totalLeaders++;
+
+                if (gender === "Male") {
+                    totalMales++;
+                } else if (gender === "Female") {
+                    totalFemales++;
+                }
+            } else {
+                leader.style.display = "none";
+            }
+        });
+
+        // Update the summary section
+        document.getElementById("totalLeaders").textContent = totalLeaders;
+        document.getElementById("totalMales").textContent = totalMales;
+        document.getElementById("totalFemales").textContent = totalFemales;
+    }
+
+    document.getElementById("searchName").addEventListener("input", filterLeaders);
+    document.getElementById("genderFilter").addEventListener("change", filterLeaders);
+    document.getElementById("occupationFilter").addEventListener("change", filterLeaders);
+    document.getElementById("communityFilter").addEventListener("change", filterLeaders);
+    document.getElementById("zoneFilter").addEventListener("change", filterLeaders);
+</script>
+
+<!-- ✅ Inline Styling -->
+<style>
+    /* 📌 Centered Filter Section */
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 10px;
+    }
+
+    /* 🔍 Input Fields */
+    .filter-form input,
+    .filter-form select {
+        width: 100%;
+        max-width: 400px;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 25px;
+        font-size: 16px;
+        outline: none;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-in-out;
+    }
+
+    /* 🎨 Input Focus Effect */
+    .filter-form input:focus,
+    .filter-form select:focus {
+        border-color: #007bff;
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    /* 📱 Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .filter-form input,
+        .filter-form select {
+            font-size: 14px;
+            padding: 10px;
+        }
+    }
+</style>

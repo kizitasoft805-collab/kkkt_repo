@@ -1,0 +1,206 @@
+{% load static %}
+
+<!-- Floating Sidebar Trigger -->
+<button id="sidebarTrigger" class="floating-trigger">⬆️</button>
+
+<!-- Floating Sidebar -->
+<div id="floatingSidebar" class="floating-sidebar">
+    
+    <!-- Floating Header (CSM Title & Close Button) -->
+    <div class="floating-header">
+        <span class="sidebar-title">🌊 CSM</span>
+        <button id="closeSidebar" class="close-sidebar">❌</button>
+    </div>
+
+    <!-- Enlarged & Centered Church Logo -->
+    <div class="church-logo-container">
+        <img src="{% static 'images/church.png' %}" alt="Church Logo" class="floating-church-logo">
+    </div>
+
+    <!-- Floating Navigation Buttons -->
+    <div class="floating-links">
+        <a href="{% url 'login' %}" class="floating-button login-btn">🔑 Login</a>
+        <a href="#" class="floating-button posts-btn">📄 Posts & Updates</a>
+        <a href="{% url 'request_account' %}" class="floating-button request-btn">📝 Request Account</a>
+        <a href="{% url 'forgot_password' %}" class="floating-button forgot-btn">🔒 Forgot Password</a>
+        <a href="{% url 'view_church_location' %}" class="floating-button map-btn">🗺️ View in Map</a>
+        <a href="{% url 'public_chatbot' %}" class="floating-button help-btn">❓ Help</a>
+    </div>
+</div>
+
+<style>
+    /* Floating Sidebar:
+       Place ~10px above a 60px bottom bar => bottom: 70px 
+    */
+    .floating-sidebar {
+        position: fixed;
+        bottom: 70px; /* 10px above a 60px bottom-fixed topbar */
+        right: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transform: translateY(140%);
+        transition: transform 0.4s ease-in-out;
+        z-index: 1050;
+        padding: 8px;
+    }
+
+    /* Floating Sidebar Trigger Button 
+       Also ~10px above the bottom bar => bottom: 15px remains okay if you want it just above the corner
+       Or if you want it above the topbar, e.g. bottom: 70px
+    */
+    .floating-trigger {
+        position: fixed;
+        bottom: 65px; /* If you want a 5px gap above a 60px topbar */
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(130deg, #007bff, #0056b3);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 50%;
+        border: none;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .floating-trigger:hover {
+        transform: scale(1.08);
+    }
+
+    /* Floating Header */
+    .floating-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 200px;
+        padding: 6px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    /* Close Button */
+    .close-sidebar {
+        border: none;
+        color: white;
+        font-weight: bold;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+        font-size: 14px;
+        background: #ff4444; /* or similar */
+    }
+
+    /* Church Logo Container */
+    .church-logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin-top: 8px;
+        margin-bottom: 12px;
+    }
+    .floating-church-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Floating Navigation Buttons */
+    .floating-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .floating-links .floating-button {
+        width: 160px;
+        padding: 10px;
+        text-align: center;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        text-decoration: none;
+        color: white;
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    .floating-links .floating-button::before {
+        content: "";
+        position: absolute;
+        width: 2px;
+        height: 7px;
+        background: black;
+        top: -7px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .floating-links .floating-button:hover {
+        transform: scale(1.03);
+    }
+
+    /* Unique Button Colors */
+    .login-btn {
+        background: linear-gradient(130deg, #007bff, #0056b3);
+    }
+    .posts-btn {
+        background: linear-gradient(130deg, #ff9800, #ff5722);
+    }
+    .request-btn {
+        background: linear-gradient(130deg, #4caf50, #388e3c);
+    }
+    .forgot-btn {
+        background: linear-gradient(130deg, #ff4081, #d81b60);
+    }
+    .map-btn {
+        background: linear-gradient(130deg, #673ab7, #512da8);
+    }
+    .help-btn {
+        background: linear-gradient(130deg, #3f51b5, #1a237e);
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById('floatingSidebar');
+        const sidebarTrigger = document.getElementById('sidebarTrigger');
+        const closeSidebar = document.getElementById('closeSidebar');
+        let sidebarOpen = false;
+
+        // Toggle Sidebar (Show/Hide)
+        function toggleSidebar() {
+            if (sidebarOpen) {
+                sidebar.style.transform = "translateY(140%)"; // Hide
+                sidebarOpen = false;
+            } else {
+                sidebar.style.transform = "translateY(0)"; // Show
+                sidebarOpen = true;
+            }
+        }
+
+        // Close Sidebar When Clicking "X" or Outside
+        sidebarTrigger.addEventListener('click', toggleSidebar);
+        closeSidebar.addEventListener('click', toggleSidebar);
+        document.addEventListener("click", function (event) {
+            if (!sidebar.contains(event.target) && event.target !== sidebarTrigger) {
+                sidebar.style.transform = "translateY(140%)";
+                sidebarOpen = false;
+            }
+        });
+    });
+</script>

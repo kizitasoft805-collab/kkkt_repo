@@ -1,0 +1,149 @@
+{% if membership_distribution_data %}
+    <h3>👥 Membership Distribution</h3>
+
+    <div class="members-distribution-charts">
+        <!-- Cell Chart -->
+        <div class="chart-wrapper">
+            <h4>
+                Cell Distribution
+                <button id="downloadCellChart" style="background: none; border: none; cursor: pointer;">
+                    📥 Download Graph
+                </button>
+            </h4>
+            <div class="chart-container">
+                <canvas id="membersCellChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Outstation Chart (changed from Zone) -->
+        <div class="chart-wrapper">
+            <h4>
+                Outstation Distribution
+                <button id="downloadOutstationChart" style="background: none; border: none; cursor: pointer;">
+                    📥 Download Graph
+                </button>
+            </h4>
+            <div class="chart-container">
+                <canvas id="membersOutstationChart"></canvas> <!-- Updated ID -->
+            </div>
+        </div>
+    </div>
+
+    <p id="membersAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .members-distribution-charts {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .chart-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-container {
+            width: 300px;
+            height: 300px;
+            position: relative;
+        }
+
+        @media screen and (max-width: 1000px) {
+            .members-distribution-charts {
+                flex-wrap: wrap;
+            }
+        }
+        @media screen and (max-width: 600px) {
+            .chart-container {
+                width: 280px;
+                height: 280px;
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const membersData = JSON.parse('{{ membership_distribution_data|safe }}');
+
+        // Store references to each Chart.js instance
+        let cellChart, outstationChart;
+
+        // ---------- Cell Doughnut Chart ----------
+        const cellCtx = document.getElementById('membersCellChart').getContext('2d');
+        cellChart = new Chart(cellCtx, {
+            type: 'doughnut',
+            data: {
+                labels: membersData.cell_labels,
+                datasets: [{
+                    data: membersData.cell_data,
+                    backgroundColor: membersData.cell_labels.map((_, index) => `hsl(${index * 40}, 70%, 50%)`)
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // ---------- Outstation Pie Chart (changed from Zone) ----------
+        const outstationCtx = document.getElementById('membersOutstationChart').getContext('2d'); // Updated ID
+        outstationChart = new Chart(outstationCtx, {
+            type: 'pie',
+            data: {
+                labels: membersData.outstation_labels, // Updated key
+                datasets: [{
+                    data: membersData.outstation_data, // Updated key
+                    backgroundColor: membersData.outstation_labels.map((_, index) => `hsl(${index * 40}, 70%, 50%)`) // Updated key
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Display analysis text below the charts
+        document.getElementById("membersAnalysis").innerHTML = `<strong>${membersData.analysis}</strong>`;
+
+        // ---------- Download Buttons for Each Chart ----------
+        document.getElementById("downloadCellChart").addEventListener("click", function() {
+            if (cellChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('membersCellChart').toDataURL('image/png');
+                link.download = 'Cell_Distribution.png';
+                link.click();
+            }
+        });
+
+        document.getElementById("downloadOutstationChart").addEventListener("click", function() { // Updated ID
+            if (outstationChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('membersOutstationChart').toDataURL('image/png'); // Updated ID
+                link.download = 'Outstation_Distribution.png'; // Updated filename
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No membership data available.</p>
+{% endif %}

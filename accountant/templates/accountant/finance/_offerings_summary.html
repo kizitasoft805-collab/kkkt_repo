@@ -1,0 +1,25 @@
+<div id="totalOfferingsSummary" style="text-align: center; font-size: 18px; font-weight: bold; margin-top: 10px;">
+    🏦 **Total Offerings Amount**: <span id="filteredTotal" style="color: #28a745;">💰 {{ total_offerings|floatformat:2 }} TZS</span>
+</div>
+
+<!-- 📜 JavaScript for Updating the Filtered Total -->
+<script>
+    function updateFilteredTotal() {
+        let total = 0;
+        let visibleRows = document.querySelectorAll(".offering-row");
+
+        visibleRows.forEach(row => {
+            if (row.style.display !== "none") {
+                let amountText = row.children[2].textContent.trim();  // Get amount column
+                let amount = parseFloat(amountText.replace(/,/g, "")) || 0; // Remove commas and convert to number
+                total += amount;
+            }
+        });
+
+        let filteredTotal = document.getElementById("filteredTotal");
+        filteredTotal.textContent = `💰 ${total.toFixed(2)} TZS`;
+    }
+
+    // Run function initially and whenever filtering happens
+    updateFilteredTotal();
+</script>

@@ -1,0 +1,190 @@
+{% load static %}
+
+<tr class="church-member-row"
+    data-name="{{ member.full_name|lower }}"
+    data-gender="{{ member.gender }}"
+    data-cell="{% if member.cell %}{{ member.cell.cell_id }}{% else %}N/A{% endif %}"
+    data-outstation="{% if member.cell and member.cell.outstation %}{{ member.cell.outstation.outstation_id }}{% else %}N/A{% endif %}">
+
+    <td>{{ counter }}</td>
+    <td>{{ member.member_id }}</td>
+
+    <td>
+        {% if member.status == "Active" %}
+            <span class="status-icon active">✅</span>
+        {% elif member.status == "Pending" %}
+            <span class="status-icon pending">⏳</span>
+        {% else %}
+            <span class="status-icon inactive">❌</span>
+        {% endif %}
+    </td>
+
+    <td>
+        <a href="{% url 'upload_passport' member.pk %}">
+            <img 
+                 id="member-passport-{{ member.pk }}"
+                 class="profile-pic"
+                 style="display: none;"
+                 alt="Passport"
+                 data-passport-url="{% if member.passport %}{{ member.passport.url }}{% else %}{% static 'images/user.png' %}{% endif %}"
+            >
+        </a>
+    </td>
+
+    <td class="member-name">
+        {{ member.full_name }}
+        {% if member.status == "Pending" %}
+            <form method="POST" action="{% url 'approve_church_member' member.pk %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="approve-btn">✅ Approve</button>
+            </form>
+        {% endif %}
+    </td>
+    <td>{{ member.gender }}</td>
+    <td>{{ member.phone_number }}</td>
+
+    <td>
+        {% if member.cell %}
+            {{ member.cell.name }} ({{ member.cell.outstation.name }})
+        {% else %}
+            N/A
+        {% endif %}
+    </td>
+
+    <td>{{ member.date_created }} ({{ member.time_since_created }})</td>
+
+    <td class="action-buttons">
+        <a href="{% url 'church_member_detail' member.pk %}" class="view-btn">👁️ View</a>
+        <a href="{% url 'update_church_member' member.pk %}" class="edit-btn">✏️ Edit</a>
+        <a href="{% url 'delete_church_member' member.pk %}" class="delete-btn">🗑️ Delete</a>
+    </td>
+</tr>
+
+<!-- ✅ Inline Styling for Row -->
+<style>
+    /* 📌 Table Row Actions */
+    .church-member-row {
+        border-bottom: 1px solid #ddd;
+    }
+
+    .church-member-row td {
+        vertical-align: middle;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .church-member-row .status-icon {
+        font-size: 1.2rem;
+    }
+
+    .status-icon.active {
+        color: green;
+    }
+
+    .status-icon.pending {
+        color: orange;
+    }
+
+    .status-icon.inactive {
+        color: red;
+    }
+
+    .profile-pic {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .member-name {
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .approve-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-left: 10px;
+    }
+
+    .approve-btn:hover {
+        background: #218838;
+    }
+
+    /* 🏹 Action Buttons */
+    .action-buttons a {
+        display: inline-block;
+        text-align: center;
+        margin-right: 5px;
+        font-size: 14px;
+        padding: 6px 10px;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .view-btn {
+        background: #007bff;
+        color: white;
+    }
+
+    .edit-btn {
+        background: #ffc107;
+        color: black;
+    }
+
+    .delete-btn {
+        background: #dc3545;
+        color: white;
+    }
+
+    .action-buttons a:hover {
+        transform: scale(1.1);
+    }
+
+    /* 📱 Responsive Design */
+    @media (max-width: 768px) {
+        .church-member-row td {
+            font-size: 12px;
+            padding: 8px;
+        }
+
+        .action-buttons a, .approve-btn {
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .church-member-row td {
+            font-size: 11px;
+        }
+
+        .action-buttons a, .approve-btn {
+            font-size: 10px;
+            padding: 3px 6px;
+        }
+    }
+</style>
+
+<!-- Preload Script for Member Passport Photos -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const profilePics = document.querySelectorAll('.profile-pic[data-passport-url]');
+
+    profilePics.forEach(imgEl => {
+        const hiddenImage = new Image();
+        const passportUrl = imgEl.getAttribute('data-passport-url');
+
+        hiddenImage.src = passportUrl;
+        hiddenImage.onload = function() {
+            imgEl.src = passportUrl;
+            imgEl.style.display = 'block';
+        };
+    });
+});
+</script>

@@ -1,0 +1,129 @@
+<!-- Summary Section -->
+<div class="summary-section">
+    📊 Males: <strong id="totalMales">{{ total_males }}</strong> | 
+    📊 Females: <strong id="totalFemales">{{ total_females }}</strong> | 
+    📊 Total: <strong id="totalMembers">{{ total_members }}</strong>
+</div>
+
+<!-- Sorting Buttons -->
+<div class="sorting-buttons">
+    <!-- Sort by Name -->
+    <button id="sortByName" onclick="toggleSortByName()" class="btn-blue">
+        🔤 Sort by Name
+    </button>
+
+    <!-- Sort by Gender -->
+    <button id="sortByGender" onclick="toggleSortByGender()" class="btn-green">
+        ⚥ Sort by Gender
+    </button>
+</div>
+
+<!-- ✅ Inline CSS for Sorting Buttons -->
+<style>
+    /* 📊 Summary Section */
+    .summary-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 100%;
+        max-width: 100vw;
+        margin: 10px auto;
+        padding: 8px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    /* 📌 Sorting Buttons */
+    .sorting-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        flex-wrap: nowrap; /* ✅ Ensure buttons remain in one row */
+        margin-top: 10px;
+    }
+
+    /* 🎨 Button Styles */
+    .sorting-buttons button {
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 10px 15px;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+        min-width: 140px; /* ✅ Ensures uniform button size */
+        text-align: center;
+    }
+
+    /* 🎨 Individual Button Colors */
+    .btn-blue { background: rgb(101, 101, 234); }
+    .btn-green { background: rgb(248, 172, 136); }
+
+    /* 🖱️ Hover Effects */
+    .btn-blue:hover { background: green; }
+    .btn-green:hover { background: #1e7e34; }
+
+    /* 📌 Ensure buttons stay in one row */
+    @media (max-width: 480px) {
+        .sorting-buttons {
+            justify-content: center;
+            flex-wrap: nowrap; /* ✅ Prevents buttons from stacking */
+            overflow-x: auto; /* ✅ Allows horizontal scrolling if necessary */
+        }
+
+        .sorting-buttons button {
+            flex: 1; /* ✅ Ensures equal width for small screens */
+        }
+    }
+</style>
+
+<script>
+    let nameSortAsc = true;
+    let genderSortAsc = true;
+
+    function toggleSortByName() {
+        let table = document.querySelector(".styled-table tbody");
+        let rows = Array.from(table.querySelectorAll(".church-member-row"));
+
+        rows.forEach(row => row.classList.add("no-change")); // ✅ Prevents unwanted styling changes
+
+        rows.sort((a, b) => {
+            let nameA = a.getAttribute("data-name").toLowerCase();
+            let nameB = b.getAttribute("data-name").toLowerCase();
+            return nameSortAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+        });
+
+        nameSortAsc = !nameSortAsc;
+
+        rows.forEach(row => {
+            row.classList.remove("no-change"); // ✅ Ensures the styling remains intact
+            table.appendChild(row);
+        });
+    }
+
+    function toggleSortByGender() {
+        let table = document.querySelector(".styled-table tbody");
+        let rows = Array.from(table.querySelectorAll(".church-member-row"));
+
+        rows.forEach(row => row.classList.add("no-change")); // ✅ Prevents styling resets
+
+        rows.sort((a, b) => {
+            let genderA = a.getAttribute("data-gender");
+            let genderB = b.getAttribute("data-gender");
+            return genderSortAsc ? genderA.localeCompare(genderB) : genderB.localeCompare(genderA);
+        });
+
+        genderSortAsc = !genderSortAsc;
+
+        rows.forEach(row => {
+            row.classList.remove("no-change"); // ✅ Ensures consistent styling
+            table.appendChild(row);
+        });
+    }
+</script>

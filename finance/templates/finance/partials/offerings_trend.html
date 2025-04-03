@@ -1,0 +1,100 @@
+{% if offerings_data %}
+    <h3>
+        📊 Offerings Trend (Current Year)
+        <button id="downloadOfferingsTrendChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <!-- Responsive Chart Container -->
+    <div class="offerings-trend-chart-container">
+        <canvas id="offeringsTrendChart"></canvas>
+    </div>
+
+    <p id="offeringsAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* 📊 Increase Y-Axis Length & Responsive Sizing */
+        .offerings-trend-chart-container {
+            max-width: 700px;
+            height: 500px; /* Increased height for better visibility */
+            margin: 0 auto;
+        }
+
+        /* Ensure Proper Sizing on Smaller Screens */
+        @media screen and (max-width: 600px) {
+            .offerings-trend-chart-container {
+                max-width: 100%;
+                height: 550px;  /* Increased height for small viewports */
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const offeringsData = JSON.parse('{{ offerings_data|safe }}');
+
+        let offeringsChart;  // Store Chart.js instance globally
+
+        if (offeringsData.labels.length > 0) {
+            const ctx = document.getElementById('offeringsTrendChart').getContext('2d');
+
+            offeringsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: offeringsData.labels,
+                    datasets: [{
+                        label: 'Total Offerings (TZS)',
+                        data: offeringsData.data,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,  // Ensures correct aspect ratio
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMin: 0,
+                            suggestedMax: Math.max(...offeringsData.data) + 10,  // Dynamically adjust Y-axis
+                            ticks: {
+                                stepSize: 5,  // Ensures proper spacing
+                                font: {
+                                    size: 14  // Larger font for readability
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Display analysis
+            document.getElementById("offeringsAnalysis").innerHTML = `<strong>${offeringsData.analysis}</strong>`;
+        } else {
+            document.getElementById("offeringsAnalysis").innerHTML = `<p>No offerings data available for the current year.</p>`;
+        }
+
+        // Function to Download Chart as Image
+        document.getElementById("downloadOfferingsTrendChart").addEventListener("click", function() {
+            if (offeringsChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('offeringsTrendChart').toDataURL('image/png');
+                link.download = 'Offerings_Trend_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No offerings data available for the current year.</p>
+{% endif %}

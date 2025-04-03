@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Adjust container to move contents higher -->
+<div class="container" style="
+    margin-top: -20px;  /* Move closer to the top */
+    padding-top: 10px;  /* Prevent overlap */
+    max-width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+">
+
+    <!-- 📌 Offerings Header -->
+    {% include 'finance/_offerings_header.html' %}
+
+    <!-- 🔍 Offerings Filters -->
+    {% include 'finance/_offerings_filters.html' %}
+
+    <!-- 📊 Offerings Table -->
+    {% include 'finance/_offerings_table.html' %}
+
+</div>
+
+{% endblock %}

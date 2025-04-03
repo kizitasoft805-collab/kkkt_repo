@@ -1,0 +1,184 @@
+{% extends 'pastor_base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+">
+
+    <!-- Back Button -->
+    <a href="{% url 'pastor_dashboard' %}" style="
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        background: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 25px;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        <span class="material-icons" style="font-size: 20px;">arrow_back</span>
+        Back to Dashboard
+    </a>
+
+    <!-- Header -->
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin: 20px 0;
+    ">
+        <h2 style="
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            text-align: center;
+            word-wrap: break-word;
+        ">
+            👤 Senior Pastor details
+        </h2>
+    </div>
+
+    <!-- Passport Image -->
+    {% if passport_url %}
+        <img src="{{ passport_url }}" alt="Passport"
+             onclick="openFullScreen()"
+             style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid #ccc; margin-bottom: 20px; cursor: pointer;">
+    {% endif %}
+
+    <!-- Full Screen Passport View -->
+    <div id="fullScreenContainer" style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    ">
+        <span onclick="closeFullScreen()" style="
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        ">✖</span>
+        <img id="fullScreenImage" src="{{ passport_url }}" style="
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+        ">
+    </div>
+
+    <!-- User Information Table -->
+    <div style="width: 100%; max-width: 800px; margin-top: 10px;">
+        
+        <!-- Account Information -->
+        <h3>📱 Account Information</h3>
+        <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+            <tbody>
+                {% for label, value in account_details.items %}
+                    <tr>
+                        <td style="padding: 10px; font-weight: bold; width: 40%; text-align: left;">{{ label }}</td>
+                        <td style="padding: 10px; width: 60%; text-align: right;">{{ value|safe }}</td>
+                    </tr>
+                    <tr><td colspan="2"><hr></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Membership Information -->
+        <h3>🙋‍♂️ Membership Details</h3>
+        <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+            <tbody>
+                {% for label, value in membership_details.items %}
+                    <tr>
+                        <td style="padding: 10px; font-weight: bold; width: 40%; text-align: left;">{{ label }}</td>
+                        <td style="padding: 10px; width: 60%; text-align: right;">{{ value|safe }}</td>
+                    </tr>
+                    <tr><td colspan="2"><hr></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Leadership Information -->
+        <h3>🎯 Leadership Details</h3>
+        <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+            <tbody>
+                {% for label, value in leadership_details.items %}
+                    <tr>
+                        <td style="padding: 10px; font-weight: bold; width: 40%; text-align: left;">{{ label }}</td>
+                        <td style="padding: 10px; width: 60%; text-align: right;">{{ value|safe }}</td>
+                    </tr>
+                    <tr><td colspan="2"><hr></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Certificates Section (As Buttons with Labels) -->
+        <h3>📜 Certificates</h3>
+        <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+            <tbody>
+                {% for label, value in certificates.items %}
+                    <tr>
+                        <td style="padding: 10px; font-weight: bold; width: 60%; text-align: left;">{{ label }}</td>
+                        <td style="padding: 10px; width: 40%; text-align: center;">
+                            {% if value %}
+                                <a href="{{ value }}" target="_blank"
+                                   style="display: flex; align-items: center; justify-content: center;
+                                          width: 50px; height: 50px; background: #007bff;
+                                          color: white; border-radius: 50%; text-decoration: none;
+                                          font-size: 22px; font-weight: bold; transition: 0.3s;">
+                                    📄
+                                </a>
+                            {% else %}
+                                <div style="display: flex; align-items: center; justify-content: center;
+                                            width: 50px; height: 50px; background: #ddd;
+                                            color: gray; border-radius: 50%; text-decoration: none;
+                                            font-size: 22px; font-weight: bold;">
+                                    ❌
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr><td colspan="2"><hr></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<!-- Full Screen Image Script -->
+<script>
+    function openFullScreen() {
+        const fullScreenImage = document.getElementById("fullScreenImage");
+        fullScreenImage.src = document.querySelector("img[onclick='openFullScreen()']").src;
+        document.getElementById("fullScreenContainer").style.display = "flex";
+    }
+    function closeFullScreen() {
+        document.getElementById("fullScreenContainer").style.display = "none";
+    }
+</script>
+
+{% endblock %}

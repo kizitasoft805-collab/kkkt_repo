@@ -1,0 +1,189 @@
+{% extends 'secretary_base.html' %}
+{% block content %}
+<div class="container">
+    <div class="header-row">
+        <h2 class="header-title">🏛️ <span class="highlight-text">Add Church Assets</span></h2>
+        <a href="{% url 'secretary_church_assets_list' %}" class="skip-button">
+            ⏭️ <span class="highlight-text">Skip This Step</span>
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="success-message">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        <div id="formset-container">
+            {% for form in formset %}
+            <div class="form-card">
+                <h3 class="sub-header">➕ <span class="highlight-text">Asset {{ forloop.counter }}</span></h3>
+                <div>
+                    {% for field in form %}
+                    <div class="field-container">
+                        <label class="field-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="error-message">
+                                {{ field.errors|join:', ' }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-more-button" class="add-more-button">➕ Add More</button>
+        <button type="submit" class="submit-button">💾 Save Assets</button>
+    </form>
+</div>
+
+<!-- 🚀 JavaScript for Dynamic Formset -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addMoreButton = document.getElementById('add-more-button');
+        const formsetContainer = document.getElementById('formset-container');
+        let totalForms = parseInt(document.getElementById('id_form-TOTAL_FORMS').value);
+
+        addMoreButton.addEventListener('click', () => {
+            const emptyForm = document.querySelector('.empty-form').innerHTML;
+            const newForm = document.createElement('div');
+            newForm.classList.add("form-card");
+            newForm.innerHTML = emptyForm.replace(/__prefix__/g, totalForms);
+            formsetContainer.appendChild(newForm);
+            totalForms += 1;
+            document.getElementById('id_form-TOTAL_FORMS').value = totalForms;
+        });
+    });
+</script>
+
+<!-- Template for Empty Form -->
+<template class="empty-form">
+    {{ formset.empty_form.as_p }}
+</template>
+
+<!-- 🎨 Fixed Styles (No Overlapping, Perfect Layout) -->
+<style>
+    /* 🌍 Prevent Viewport Shaking */
+    * {
+        box-sizing: border-box;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* 📌 Main Container */
+    .container {
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+        padding: 15px;
+    }
+
+    /* 🏷️ Header Section */
+    .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 70px; /* ✅ FIXED: Added space below the topbar */
+        margin-bottom: 10px;
+    }
+
+    .header-title {
+        font-size: 22px;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    /* ⏭️ Skip Button */
+    .skip-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: bold;
+        text-decoration: none;
+        color: white;
+        background: linear-gradient(130deg, #ff6b6b, #d60000);
+        border-radius: 20px;
+        transition: 0.3s;
+    }
+
+    .skip-button:hover {
+        background: linear-gradient(130deg, #d60000, #ff6b6b);
+    }
+
+    /* 🎯 iPhone-Like Form Fields */
+    input, select, textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: 30px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        outline: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+    }
+
+    textarea {
+        height: 50px;
+        resize: none;
+    }
+
+    /* ✅ Buttons */
+    .add-more-button, .submit-button {
+        width: 100%;
+        padding: 12px;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .add-more-button {
+        background: #28a745;
+        color: white;
+    }
+
+    .submit-button {
+        background: #007bff;
+        color: white;
+    }
+
+    /* 🏷️ Form Section */
+    .form-card {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .field-container {
+        margin-bottom: 10px;
+    }
+
+    .field-label {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+    }
+</style>
+
+{% endblock %}

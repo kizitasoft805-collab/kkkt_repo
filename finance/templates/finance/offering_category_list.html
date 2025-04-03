@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2 style="
+  font-size: 26px; 
+  color: #007bff; 
+  margin-bottom: 15px;
+">
+  Offering Categories
+</h2>
+
+<!-- Buttons: Create New Category + Offerings List -->
+<div style="display: flex; gap: 10px; margin-bottom: 15px;">
+  <!-- Create New Category Button -->
+  <a href="{% url 'offering_category_create' %}" style="
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+  " 
+  onmouseover="this.style.transform='scale(1.05)'"
+  onmouseout="this.style.transform='scale(1)'">
+    ➕ Create new Category
+  </a>
+
+  <!-- Offerings List Button -->
+  <a href="{% url 'offerings_list' %}" style="
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 15px;
+    background-color: #6f42c1; /* Purple or whichever color you prefer */
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+  "
+  onmouseover="this.style.transform='scale(1.05)'"
+  onmouseout="this.style.transform='scale(1)'">
+    📜 Offerings List
+  </a>
+</div>
+
+<!-- Filter by Category Name (client-side) -->
+<div style="margin-bottom: 20px;">
+  <input type="text"
+         id="categoryFilter"
+         placeholder="Type to filter by category name..."
+         style="
+           padding: 14px; 
+           border-radius: 15px; 
+           border: 1px solid #ccc;
+           font-size: 16px;
+           width: 100%;
+           max-width: 400px;
+           box-sizing: border-box;
+         "
+  >
+</div>
+
+<!-- Category List (Non-table layout) -->
+<ul id="categoryList" style="list-style: none; padding: 0;">
+  {% for cat in categories %}
+    <li class="category-item"
+        data-name="{{ cat.name|lower }}"
+        style="
+          margin-bottom: 12px; 
+          border-bottom: 1px solid #ddd;
+          padding-bottom: 12px;
+          display: flex; 
+          justify-content: space-between; 
+          align-items: flex-start;
+          gap: 10px;
+        ">
+
+      <!-- Left side: Category info (name, description, timestamps) -->
+      <div style="text-align: left;">
+        <!-- Name -->
+        <div style="
+          font-size: 18px; 
+          font-weight: bold; 
+          color: #333;
+        ">
+          {{ cat.name }}
+        </div>
+
+        <!-- Description -->
+        <div style="
+          font-size: 14px; 
+          color: #555; 
+          margin: 6px 0;
+        ">
+          {{ cat.description|default:"—" }}
+        </div>
+
+        <!-- Dates -->
+        <small style="font-size: 12px; color: #999;">
+          Created: {{ cat.date_created|date:"Y-m-d H:i" }}
+        </small>
+        <br>
+        <small style="font-size: 12px; color: #999;">
+          Updated: {{ cat.date_updated|date:"Y-m-d H:i" }}
+        </small>
+      </div>
+
+      <!-- Right side: Action Buttons (in two rows) -->
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        
+        <!-- Top Row: Update & Delete -->
+        <div style="display: flex; gap: 8px;">
+          <!-- Update Icon -->
+          <a href="{% url 'offering_category_update' cat.pk %}"
+             style="
+               background-color: #ffc107;
+               color: black;
+               padding: 6px 12px;
+               border-radius: 15px;
+               text-decoration: none;
+               font-size: 14px;
+               font-weight: bold;
+               transition: transform 0.2s ease;
+             "
+             onmouseover="this.style.transform='scale(1.1)'"
+             onmouseout="this.style.transform='scale(1)'"
+             title="Update Category">
+            ✏️
+          </a>
+
+          <!-- Delete Icon -->
+          <a href="{% url 'offering_category_delete' cat.pk %}"
+             style="
+               background-color: #dc3545;
+               color: white;
+               padding: 6px 12px;
+               border-radius: 15px;
+               text-decoration: none;
+               font-size: 14px;
+               font-weight: bold;
+               transition: transform 0.2s ease;
+             "
+             onmouseover="this.style.transform='scale(1.1)'"
+             onmouseout="this.style.transform='scale(1)'"
+             title="Delete Category">
+            🗑️
+          </a>
+        </div>
+
+        <!-- Bottom Row: Add Offering & Eye -->
+        <div style="display: flex; gap: 8px;">
+          <!-- ADD OFFERING Icon -->
+          <a href="{% url 'offering_create_by_category' cat.pk %}"
+             style="
+               background-color: #28a745;
+               color: white;
+               padding: 6px 12px;
+               border-radius: 15px;
+               text-decoration: none;
+               font-size: 14px;
+               font-weight: bold;
+               transition: transform 0.2s ease;
+             "
+             onmouseover="this.style.transform='scale(1.1)'"
+             onmouseout="this.style.transform='scale(1)'"
+             title="Add Offering to this Category">
+            ➕
+          </a>
+
+          <!-- VIEW OFFERINGS Icon -->
+          <a href="{% url 'offerings_by_category_list' cat.pk %}"
+             style="
+               background-color: #17a2b8;
+               color: white;
+               padding: 6px 12px;
+               border-radius: 15px;
+               text-decoration: none;
+               font-size: 14px;
+               font-weight: bold;
+               transition: transform 0.2s ease;
+             "
+             onmouseover="this.style.transform='scale(1.1)'"
+             onmouseout="this.style.transform='scale(1)'"
+             title="View All Offerings in This Category">
+            👁️
+          </a>
+        </div>
+
+      </div>
+    </li>
+  {% empty %}
+    <p style="color: #6c757d; font-style: italic; margin-top: 10px;">
+      No categories available.
+    </p>
+  {% endfor %}
+</ul>
+
+<!-- Client-Side Filter Logic -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Retrieve the input field
+  const filterInput = document.getElementById('categoryFilter');
+  // Retrieve any saved filter from localStorage
+  const savedFilter = localStorage.getItem('offeringCategoryFilter') || '';
+
+  // If we have a saved filter, set it and apply filter
+  filterInput.value = savedFilter;
+  applyFilter(savedFilter);
+
+  // Listen for user input changes
+  filterInput.addEventListener('input', function() {
+    const currentValue = filterInput.value;
+    // Save to localStorage
+    localStorage.setItem('offeringCategoryFilter', currentValue);
+    // Apply filter
+    applyFilter(currentValue);
+  });
+
+  function applyFilter(filterValue) {
+    // Convert filter text to lowercase
+    const filterText = filterValue.toLowerCase();
+    // Get all .category-item <li> elements
+    const items = document.querySelectorAll('.category-item');
+    items.forEach((li) => {
+      // data-name attribute stores the category name in lowercase
+      const catName = li.getAttribute('data-name');
+      // Show/hide based on includes
+      if (catName.includes(filterText)) {
+        li.style.display = 'flex';
+      } else {
+        li.style.display = 'none';
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

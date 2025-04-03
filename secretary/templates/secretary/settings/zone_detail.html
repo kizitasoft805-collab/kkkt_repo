@@ -1,0 +1,137 @@
+{% extends 'secretary_base.html' %}
+
+{% block content %}
+<div class="zone-container">
+    <!-- 🏡 Zone Details Heading -->
+    <h2 class="zone-title">
+        📌 Zone Details - {{ zone.name }}
+    </h2>
+
+    <!-- 🚀 Zone Details (Now Fully Themed) -->
+    <div class="zone-details">
+        <p class="zone-detail">🔢 <strong>ID:</strong> {{ zone.zone_id }}</p>
+        <p class="zone-detail">🏷️ <strong>Name:</strong> {{ zone.name }}</p>
+        <p class="zone-detail">📝 <strong>Description:</strong> {{ zone.description }}</p>
+        <p class="zone-detail">📍 <strong>Location:</strong> {{ zone.location }}</p>
+        <p class="zone-detail">📅 <strong>Date Created:</strong> {{ zone.date_created|date:"F d, Y" }}</p>
+        <p class="zone-detail">⏳ <strong>Time Since Created:</strong> {{ zone.time_since_created }}</p>
+        <p class="zone-detail">📆 <strong>Date Updated:</strong> {{ zone.date_updated|date:"F d, Y" }}</p>
+        <p class="zone-detail">⏳ <strong>Time Since Updated:</strong> {{ zone.time_since_updated }}</p>
+
+        <!-- ⚙️ Actions -->
+        <div class="zone-actions">
+            <a href="{% url 'secretary_update_zone' zone.pk %}" class="edit-button">✏️ Edit</a>
+            <a href="{% url 'secretary_delete_zone' zone.pk %}" class="delete-button">🗑️ Delete</a>
+        </div>
+    </div>
+
+    <!-- 🔙 Back to Zone List -->
+    <a href="{% url 'secretary_zone_list' %}" class="back-button">🔙 Back to Zones List</a>
+</div>
+
+<!-- 🚀 Dark Mode Support Styles -->
+<style>
+    /* General Container */
+    .zone-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        width: 100%;
+        background: var(--background-color);
+        color: var(--text-color);
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Heading */
+    .zone-title {
+        font-size: 26px;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+    }
+
+    /* Details Section (Now Fully Dark Mode Compatible) */
+    .zone-details {
+        width: 90%;
+        max-width: 600px;
+        padding: 20px;
+        border-radius: 10px;
+        background: var(--background-color); /* Same as page background */
+        color: var(--text-color);
+        border: 1px solid var(--border-color); /* Ensure visibility */
+    }
+
+    .zone-detail {
+        font-size: 18px;
+        color: var(--text-color);
+        margin-bottom: 10px;
+    }
+
+    /* Action Buttons */
+    .zone-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .edit-button, .delete-button, .back-button {
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        text-align: center;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .edit-button {
+        background: #ffc107;
+    }
+
+    .delete-button {
+        background: #f44336;
+    }
+
+    .back-button {
+        background: #007bff;
+        margin-top: 20px;
+    }
+
+    .edit-button:hover, .delete-button:hover, .back-button:hover {
+        transform: scale(1.05);
+    }
+
+    /* 🎨 Dark Mode Variables */
+    :root {
+        --background-color: white;
+        --text-color: black;
+        --primary-color: #007bff;
+        --border-color: #ddd;
+    }
+
+    [data-theme="dark"] {
+        --background-color: #121212;
+        --text-color: white;
+        --primary-color: #4da3ff;
+        --border-color: #444; /* Darker border */
+    }
+</style>
+
+<!-- 🚀 JavaScript for Dark Mode Detection -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const applyDarkMode = () => {
+            const isDarkMode = localStorage.getItem("darkMode") === "true";
+            document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
+        };
+
+        applyDarkMode();
+    });
+</script>
+
+{% endblock %}

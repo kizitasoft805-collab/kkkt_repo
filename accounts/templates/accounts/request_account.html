@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request an Account</title>
+    {% load static %}
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to right, #e6e6fa, #40e0d0); /* Soft lavender to gentle teal */
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            width: 100%;
+            padding: 20px;
+        }
+
+        body.dark-mode {
+            background: #1c1c1c;
+            color: #ddd;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        form {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .input-container {
+            position: relative;
+            width: 100%;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            background-color: #fff; /* Ensure inputs remain readable */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        body.dark-mode input {
+            background-color: #333;
+            color: #ddd;
+            border-color: #555;
+        }
+
+        /* Eye Icon */
+        .eye-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #777;
+        }
+        body.dark-mode .eye-icon {
+            color: #bbb;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+
+        /* Button Colors */
+        .validate-button {
+            background: linear-gradient(130deg, #007bff, #0056b3);
+            color: white;
+        }
+        .validate-button:hover {
+            background: #0056b3;
+        }
+
+        .forgot-password-button {
+            background: linear-gradient(130deg, #ff9800, #e65100);
+            color: white;
+        }
+        .forgot-password-button:hover {
+            background: #e65100;
+        }
+
+        .posts-button {
+            background: linear-gradient(130deg, #4caf50, #388e3c);
+            color: white;
+        }
+        .posts-button:hover {
+            background: #388e3c;
+        }
+
+        .login-button {
+            background: linear-gradient(130deg, #673ab7, #4527a0);
+            color: white;
+        }
+        .login-button:hover {
+            background: #4527a0;
+        }
+
+        .hidden-fields {
+            {% if not member_id_valid %}display: none;{% endif %}
+        }
+
+        .error-message {
+            color: #ff4444;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            color: #00cc00;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Request an Account</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="error-message">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Member ID Field -->
+        <label for="id_member_id">Enter Your Member ID</label>
+        {{ form.member_id }}
+
+        <!-- Validate Button -->
+        <button type="submit" name="validate_id" class="validate-button">✔️ Validate Your ID</button>
+
+        <!-- Forgot Password Button -->
+        <button type="button" class="forgot-password-button" onclick="window.location.href='{% url 'forgot_password' %}'">🔑 Forgot Password?</button>
+
+        <!-- Posts & Updates Button -->
+        <button type="button" class="posts-button" onclick="window.location.href='{% url 'public_news_list' %}'">📢 Posts & Updates</button>
+
+        <!-- Login Button -->
+        <button type="button" class="login-button" onclick="window.location.href='{% url 'login' %}'">🔑 Login</button>
+
+        <!-- Show Success Message -->
+        {% if display_message %}
+            <p class="success-message">{{ display_message }}</p>
+        {% endif %}
+
+        <!-- Hidden Fields (Only Shown if ID is Valid) -->
+        {% if member_id_valid %}
+        <div>
+            <label for="id_email">Email (Optional)</label>
+            {{ form.email }}
+
+            <label for="id_username">Username</label>
+            {{ form.username }}
+
+            <!-- Password Field with Eye Icon -->
+            <label for="id_password">Password</label>
+            <div class="input-container">
+                {{ form.password }}
+                <span class="eye-icon" onclick="togglePassword('id_password', this)">👁️</span>
+            </div>
+
+            <!-- Confirm Password Field with Eye Icon -->
+            <label for="id_confirm_password">Confirm Password</label>
+            <div class="input-container">
+                {{ form.confirm_password }}
+                <span class="eye-icon" onclick="togglePassword('id_confirm_password', this)">👁️</span>
+            </div>
+
+            <button type="submit" name="submit_account" class="validate-button">📩 Request Account</button>
+        </div>
+        {% endif %}
+    </form>
+
+    <script>
+        function togglePassword(fieldId, iconElement) {
+            const passwordField = document.getElementById(fieldId);
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                iconElement.textContent = "🙈";  // Change to closed eye
+            } else {
+                passwordField.type = "password";
+                iconElement.textContent = "👁️";  // Change to open eye
+            }
+        }
+    </script>
+
+</body>
+</html>

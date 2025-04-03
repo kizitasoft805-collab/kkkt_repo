@@ -1,0 +1,217 @@
+{% extends 'accountant_base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+">
+    <!-- Back Button -->
+    <a href="{% url 'accountant_news_list' %}" style="
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        background: linear-gradient(130deg, #007bff, #0056b3);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 25px;
+        margin-bottom: 15px;
+    ">
+        <span class="material-icons">arrow_back</span> Back
+    </a>
+
+    <!-- News Title -->
+    <h2 style="
+        font-size: 26px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 10px;
+        text-align: center;
+        width: 100%;
+    ">
+        {{ news.title }}
+    </h2>
+
+    <!-- Time Since Created & Date Created -->
+    <p style="font-size: 14px; color: #777; margin-bottom: 10px; text-align: center;">
+        ⏳ Created {{ news.time_since_created }} | 📅 {{ news.created_at|date:"F d, Y" }}
+    </p>
+
+    <!-- Media Block (Scrollable) -->
+    {% if images or videos %}
+        <div id="media-container" style="
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: auto;
+            white-space: nowrap;
+            scroll-snap-type: x mandatory;
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+        ">
+            {% for image in images %}
+                <img src="{{ image.file.url }}" alt="News Image" class="media-item" onclick="openFullScreen('{{ image.file.url }}')" style="
+                    width: 100vw;
+                    max-height: 400px;
+                    object-fit: cover;
+                    border-radius: 10px;
+                    scroll-snap-align: center;
+                    cursor: pointer;
+                ">
+            {% endfor %}
+
+            {% for video in videos %}
+                <video class="media-item" onclick="openFullScreen('{{ video.file.url }}', true)" style="
+                    width: 100vw;
+                    max-height: 400px;
+                    object-fit: cover;
+                    border-radius: 10px;
+                    scroll-snap-align: center;
+                    cursor: pointer;
+                ">
+                    <source src="{{ video.file.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Full-Screen Media Viewer -->
+    <div id="fullscreen-container" style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    ">
+        <span onclick="closeFullScreen()" style="
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        ">✖</span>
+
+        <button onclick="nextMedia()" style="
+            position: absolute;
+            bottom: 50px;
+            right: 30px;
+            font-size: 24px;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+        ">➡</button>
+
+        <img id="fullscreen-image" src="" style="display: none; max-width: 90vw; max-height: 90vh; object-fit: contain;">
+        <video id="fullscreen-video" controls style="display: none; max-width: 90vw; max-height: 90vh; object-fit: contain;">
+            <source id="fullscreen-video-source" src="" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Documents -->
+    {% if documents %}
+        <h3 style="font-size: 18px; color: #007bff; margin-top: 20px;">📚 Read More Documents:</h3>
+        <ul style="list-style: none; padding: 0;">
+            {% for doc in documents %}
+                <li style="margin-bottom: 10px;">
+                    <a href="{{ doc.file.url }}" target="_blank" style="
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        font-size: 16px;
+                        font-weight: bold;
+                        color: white;
+                        background-color: #ff9800;
+                        padding: 10px 15px;
+                        border-radius: 25px;
+                        text-decoration: none;
+                        transition: background-color 0.3s ease;
+                    ">
+                        <span class="material-icons">picture_as_pdf</span> Read Document
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- News Content -->
+    <h3 style="font-size: 18px; color: #007bff; margin-top: 20px;">📝 News Content</h3>
+    <p style="color: #555; font-size: 18px; line-height: 1.5; text-align: justify;">
+        {{ news.content }}
+    </p>
+
+    <!-- Bible Reference -->
+    {% if news.bible_reference %}
+        <h3 style="font-size: 18px; color: #007bff; margin-top: 20px;">📖 Bible Reference</h3>
+        <p style="color: #555; font-size: 18px; line-height: 1.5;">
+            {{ news.bible_reference }}
+        </p>
+    {% endif %}
+</div>
+
+<!-- JavaScript for Full-Screen Media Viewing -->
+<script>
+    let mediaIndex = 0;
+    let mediaItems = [];
+
+    function openFullScreen(src, isVideo = false) {
+        const fullscreenContainer = document.getElementById("fullscreen-container");
+        const fullscreenImage = document.getElementById("fullscreen-image");
+        const fullscreenVideo = document.getElementById("fullscreen-video");
+        const fullscreenVideoSource = document.getElementById("fullscreen-video-source");
+
+        fullscreenContainer.style.display = "flex";
+
+        if (isVideo) {
+            fullscreenImage.style.display = "none";
+            fullscreenVideo.style.display = "block";
+            fullscreenVideoSource.src = src;
+            fullscreenVideo.load();
+        } else {
+            fullscreenVideo.style.display = "none";
+            fullscreenImage.style.display = "block";
+            fullscreenImage.src = src;
+        }
+
+        // Find the index of the current media
+        mediaItems = Array.from(document.querySelectorAll(".media-item"));
+        mediaIndex = mediaItems.findIndex(item => item.src === src);
+    }
+
+    function closeFullScreen() {
+        document.getElementById("fullscreen-container").style.display = "none";
+    }
+
+    function nextMedia() {
+        if (mediaItems.length > 0) {
+            mediaIndex = (mediaIndex + 1) % mediaItems.length;
+            let nextMedia = mediaItems[mediaIndex];
+
+            if (nextMedia.tagName === "VIDEO") {
+                openFullScreen(nextMedia.querySelector("source").src, true);
+            } else {
+                openFullScreen(nextMedia.src, false);
+            }
+        }
+    }
+</script>
+{% endblock %}

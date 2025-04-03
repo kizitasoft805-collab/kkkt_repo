@@ -1,0 +1,115 @@
+{% if general_properties_data %}
+    <h3>
+        🏠 General Properties Analysis
+        <button id="downloadPropertiesChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <canvas id="generalPropertiesChart"></canvas>
+
+    <p id="propertiesAnalysis"></p>
+
+    <!-- Include Chart.js and Chart.js Datalabels Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+    <script>
+        // Parse JSON data from Django
+        const propertiesData = JSON.parse('{{ general_properties_data|safe }}');
+
+        let propertiesChart;  // Store Chart.js instance globally
+
+        if (propertiesData.labels.length > 0) {
+            const ctx = document.getElementById('generalPropertiesChart').getContext('2d');
+
+            // Assign a unique color to each section of the pie chart
+            const backgroundColors = [
+                'rgba(75, 192, 192, 0.6)',  // Good
+                'rgba(255, 159, 64, 0.6)',  // Needs Repair
+                'rgba(255, 99, 132, 0.6)',  // Damaged
+                'rgba(54, 162, 235, 0.6)',  // Sold
+                'rgba(153, 102, 255, 0.6)'  // Donated
+            ];
+
+            // Calculate total properties count for percentage calculations
+            const totalProperties = propertiesData.data.reduce((sum, value) => sum + value, 0);
+
+            // Filter out properties that have a value of 0
+            const filteredLabels = [];
+            const filteredData = [];
+            const filteredColors = [];
+
+            propertiesData.data.forEach((value, index) => {
+                if (value > 0) {
+                    filteredLabels.push(propertiesData.labels[index]);
+                    filteredData.push(value);
+                    filteredColors.push(backgroundColors[index]);  // Maintain correct colors
+                }
+            });
+
+            // Create Pie Chart with Data Labels and Percentages
+            propertiesChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: filteredLabels,
+                    datasets: [{
+                        label: 'Property Status Distribution',
+                        data: filteredData,
+                        backgroundColor: filteredColors,
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    const status = filteredLabels[tooltipItem.dataIndex];
+                                    const count = filteredData[tooltipItem.dataIndex];
+                                    const percentage = ((count / totalProperties) * 100).toFixed(2);
+                                    return `${status}: ${count} (${percentage}%)`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#000',  // Set label and percentage text color to black
+                            anchor: 'center',
+                            align: 'center',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function(value, ctx) {
+                                const percentage = ((value / totalProperties) * 100).toFixed(2);
+                                return `${ctx.chart.data.labels[ctx.dataIndex]}: ${percentage}%`;
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Display analysis
+            document.getElementById("propertiesAnalysis").innerHTML = `<strong>${propertiesData.analysis}</strong>`;
+        } else {
+            document.getElementById("propertiesAnalysis").innerHTML = `<p>No property data available.</p>`;
+        }
+
+        // Function to Download Chart as Image
+        document.getElementById("downloadPropertiesChart").addEventListener("click", function() {
+            if (propertiesChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('generalPropertiesChart').toDataURL('image/png');
+                link.download = 'General_Properties_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No property data available.</p>
+{% endif %}

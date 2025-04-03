@@ -1,0 +1,131 @@
+{% extends 'accountant_base.html' %}
+
+{% block content %}
+
+<!-- 📋 Title & Action Buttons in One Row -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 style="font-size: 26px; font-weight: bold; color: #007bff;">🌟 Special Contributions</h2>
+
+    <!-- 🔍 View All Donations & ➕ Add Contribution Icons -->
+    <div style="display: flex; gap: 10px;">
+        <!-- 👁️ View All Donations Icon -->
+        <a href="{% url 'accountant_all_donation_item_funds' %}" style="
+            background-color: #17a2b8;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        " onmouseover="this.style.transform='scale(1.1)'" 
+           onmouseout="this.style.transform='scale(1)'">
+            👁️
+        </a>
+
+        <!-- ➕ Add Contribution Icon -->
+        <a href="{% url 'accountant_special_contribution_create' %}" style="
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        " onmouseover="this.style.transform='scale(1.1)'" 
+           onmouseout="this.style.transform='scale(1)'">
+            ➕
+        </a>
+    </div>
+</div>
+
+<!-- ✅ Special Contributions Table -->
+{% if contributions %}
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: center;">
+            <thead>
+                <tr style="background-color: #007bff; color: white;">
+                    <th style="padding: 12px;">⚙️ Actions</th>
+                    <th style="padding: 12px;">📛 Name</th>
+                    <th style="padding: 12px;">📝 Description</th>
+                    <th style="padding: 12px;">📅 Date Created</th>
+                    <th style="padding: 12px;">🕰️ Date Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contribution in contributions %}
+                    <tr style="border-bottom: 1px solid #ccc;">
+                        <td style="padding: 10px; display: flex; justify-content: center; gap: 5px;">
+
+                            <!-- ✏️ Edit Icon -->
+                            <a href="{% url 'accountant_special_contribution_update' contribution.pk %}" style="
+                                background-color: #ffc107;
+                                color: black;
+                                padding: 6px 10px;
+                                border-radius: 50px;
+                                text-decoration: none;
+                                transition: transform 0.2s ease;
+                            " onmouseover="this.style.transform='scale(1.1)'" 
+                               onmouseout="this.style.transform='scale(1)'">
+                                ✏️
+                            </a>
+
+                            <!-- 🗑️ Delete Icon -->
+                            <a href="{% url 'accountant_special_contribution_delete' contribution.pk %}" style="
+                                background-color: #dc3545;
+                                color: white;
+                                padding: 6px 10px;
+                                border-radius: 50px;
+                                text-decoration: none;
+                                transition: transform 0.2s ease;
+                            " onmouseover="this.style.transform='scale(1.1)'" 
+                               onmouseout="this.style.transform='scale(1)'">
+                                🗑️
+                            </a>
+
+                            <!-- 👁️ View Donation Items Icon -->
+                            <a href="{% url 'accountant_donation_item_fund_list' contribution.id %}" style="
+                                background-color: #17a2b8;
+                                color: white;
+                                padding: 6px 10px;
+                                border-radius: 50px;
+                                text-decoration: none;
+                                transition: transform 0.2s ease;
+                            " onmouseover="this.style.transform='scale(1.1)'" 
+                               onmouseout="this.style.transform='scale(1)'">
+                                👁️
+                            </a>
+
+                            <!-- ➕ Add Donation Item Icon -->
+                            <a href="{% url 'accountant_donation_item_fund_create' contribution.id %}" style="
+                                background-color: #28a745;
+                                color: white;
+                                padding: 6px 10px;
+                                border-radius: 50px;
+                                text-decoration: none;
+                                transition: transform 0.2s ease;
+                            " onmouseover="this.style.transform='scale(1.1)'" 
+                               onmouseout="this.style.transform='scale(1)'">
+                                ➕
+                            </a>
+                        </td>
+
+                        <td style="padding: 10px;">{{ contribution.name }}</td>
+                        <td style="padding: 10px;">{{ contribution.description|default:"N/A" }}</td>
+                        <td style="padding: 10px;">{{ contribution.date_created|date:"Y-m-d H:i" }}</td>
+                        <td style="padding: 10px;">{{ contribution.date_updated|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p style="text-align: center; font-weight: bold; color: #6c757d; margin-top: 20px;">
+        No special contributions found.
+    </p>
+{% endif %}
+
+{% endblock %}

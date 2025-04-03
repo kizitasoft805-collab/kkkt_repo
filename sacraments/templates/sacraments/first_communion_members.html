@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Navigation Buttons -->
+<div style="text-align: center; margin: 20px;">
+    <!-- Home Button -->
+    <a href="{% url 'sacraments_home' %}" 
+       style="display: inline-block; padding: 10px 20px; font-size: 16px; text-decoration: none;
+              background: #007bff; color: white; border-radius: 25px; margin-right: 10px;">
+        🏠 Home
+    </a>
+
+    <!-- Add First Communion Members Button -->
+    <a href="{% url 'add_communion_members' %}" 
+       style="display: inline-block; padding: 10px 20px; font-size: 16px; text-decoration: none;
+              background: #28a745; color: white; border-radius: 25px;">
+        ➕ Add
+    </a>
+</div>
+
+<!-- Page Title -->
+{% include 'sacraments/_communion_title_section.html' %}
+
+<!-- Member List Section -->
+{% include 'sacraments/_first_communion_members_list.html' %}
+
+{% endblock %}

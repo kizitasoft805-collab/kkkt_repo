@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+">
+    <h2 style="color: #dc3545;">Confirm Deletion</h2>
+    <p>Are you sure you want to delete <strong>{{ category.name }}</strong>?</p>
+    <p style="font-size: 14px; color: #777;">(This action cannot be undone.)</p>
+
+    <form method="POST" style="margin-top: 15px;">
+        {% csrf_token %}
+        <button type="submit" style="
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        ">
+            Yes, Delete
+        </button>
+        <a href="{% url 'category_list' %}" style="
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 16px;
+        ">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}

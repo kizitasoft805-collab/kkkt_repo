@@ -1,0 +1,122 @@
+{% if general_sacraments_data %}
+    <h3>
+        📊 General Sacraments Analysis
+        <button id="downloadSacramentsChart" style="background: none; border: none; cursor: pointer;">
+            📥 Download Graph
+        </button>
+    </h3>
+
+    <!-- Responsive Container for the Chart -->
+    <div class="sacraments-chart-container">
+        <canvas id="generalSacramentsChart"></canvas>
+    </div>
+
+    <p id="sacramentsAnalysis"></p>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* 📊 Increased Y-Axis Length & Improved Responsiveness */
+        .sacraments-chart-container {
+            max-width: 700px;
+            height: 500px; /* Increased height for better visibility */
+            margin: 0 auto;
+        }
+
+        /* Ensure Proper Sizing on Smaller Screens */
+        @media screen and (max-width: 600px) {
+            .sacraments-chart-container {
+                max-width: 100%;
+                height: 550px;  /* Increased height for small viewports */
+            }
+        }
+    </style>
+
+    <script>
+        // Parse JSON data from Django
+        const sacramentsData = JSON.parse('{{ general_sacraments_data|safe }}');
+
+        let sacramentsChart;  // Store Chart.js instance globally
+
+        if (sacramentsData.labels.length > 0) {
+            const ctx = document.getElementById('generalSacramentsChart').getContext('2d');
+
+            // Assign a unique color to each bar (updated for 8 categories)
+            const backgroundColors = [
+                'rgba(255, 99, 132, 0.6)',  // Baptized
+                'rgba(54, 162, 235, 0.6)',  // Unbaptized
+                'rgba(153, 102, 255, 0.6)', // Confirmed
+                'rgba(255, 159, 64, 0.6)',  // Unconfirmed
+                'rgba(0, 128, 128, 0.6)',   // Married Males
+                'rgba(128, 0, 128, 0.6)',   // Married Females
+                'rgba(0, 0, 255, 0.6)',     // Unmarried Males
+                'rgba(128, 128, 0, 0.6)'    // Unmarried Females
+            ];
+
+            const borderColors = [
+                'rgba(255, 99, 132, 1)',    // Baptized
+                'rgba(54, 162, 235, 1)',    // Unbaptized
+                'rgba(153, 102, 255, 1)',   // Confirmed
+                'rgba(255, 159, 64, 1)',    // Unconfirmed
+                'rgba(0, 128, 128, 1)',     // Married Males
+                'rgba(128, 0, 128, 1)',     // Married Females
+                'rgba(0, 0, 255, 1)',       // Unmarried Males
+                'rgba(128, 128, 0, 1)'      // Unmarried Females
+            ];
+
+            sacramentsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sacramentsData.labels,
+                    datasets: [{
+                        label: 'Total Members',
+                        data: sacramentsData.data,
+                        backgroundColor: backgroundColors,
+                        borderColor: borderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,  // Ensures correct aspect ratio
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMin: 0,
+                            suggestedMax: Math.max(...sacramentsData.data) + 10,  // Dynamically adjust Y-axis
+                            ticks: {
+                                stepSize: 5,  // Ensures proper spacing
+                                font: {
+                                    size: 14  // Larger font for readability
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Display analysis
+            document.getElementById("sacramentsAnalysis").innerHTML = `<strong>${sacramentsData.analysis}</strong>`;
+        } else {
+            document.getElementById("sacramentsAnalysis").innerHTML = `<p>No sacramental data available.</p>`;
+        }
+
+        // Function to Download Chart as Image
+        document.getElementById("downloadSacramentsChart").addEventListener("click", function() {
+            if (sacramentsChart) {
+                const link = document.createElement('a');
+                link.href = document.getElementById('generalSacramentsChart').toDataURL('image/png');
+                link.download = 'General_Sacraments_Analysis.png';
+                link.click();
+            }
+        });
+    </script>
+{% else %}
+    <p>No sacramental data available.</p>
+{% endif %}

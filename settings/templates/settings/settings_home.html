@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- 🔧 Church Settings Header -->
+<h2 class="settings-title">⛪ Church Settings</h2>
+
+<!-- ⚙️ Settings Buttons -->
+<div class="settings-buttons">
+    <!-- ✏️ Create Year Button -->
+    <a href="{% url 'create_year' %}" class="settings-button create-year-button">
+        <div class="button-content">
+            <span class="emoji">✏️</span>
+            <div class="text-container">
+                <span class="button-text">Create Year</span>
+                <span class="button-desc">Add a new church year</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🏡 Create OutStation Button -->
+    <a href="{% url 'create_outstation' %}" class="settings-button create-outstation-button">
+        <div class="button-content">
+            <span class="emoji">🏡</span>
+            <div class="text-container">
+                <span class="button-text">Create OutStation</span>
+                <span class="button-desc">Add a new outstation</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🤝 Create Cell Button -->
+    <a href="{% url 'create_cell' %}" class="settings-button create-cell-button">
+        <div class="button-content">
+            <span class="emoji">🤝</span>
+            <div class="text-container">
+                <span class="button-text">Create Cell</span>
+                <span class="button-desc">Add a new church cell</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 📍 Set Church Location Button -->
+    <a href="{% url 'set_church_location' %}" class="settings-button set-location-button">
+        <div class="button-content">
+            <span class="emoji">📍</span>
+            <div class="text-container">
+                <span class="button-text">Set Church Location</span>
+                <span class="button-desc">Define the church’s location</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- ⏳ Church Years Button -->
+    <a href="{% url 'year_list' %}" class="settings-button years-button">
+        <div class="button-content">
+            <span class="emoji">🕰️</span>
+            <div class="text-container">
+                <span class="button-text">Church Years: <span class="count">{{ years_count }}</span></span>
+                <span class="button-desc">Manage years of church activities</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🗺️ Church OutStations Button -->
+    <a href="{% url 'outstation_list' %}" class="settings-button outstations-button">
+        <div class="button-content">
+            <span class="emoji">🗺️</span>
+            <div class="text-container">
+                <span class="button-text">Church OutStations: <span class="count">{{ outstations_count }}</span></span>
+                <span class="button-desc">Manage church outstations</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 🙏 Church Cells Button -->
+    <a href="{% url 'cell_list' %}" class="settings-button cells-button">
+        <div class="button-content">
+            <span class="emoji">🙏</span>
+            <div class="text-container">
+                <span class="button-text">Church Cells: <span class="count">{{ cells_count }}</span></span>
+                <span class="button-desc">Organize church cells and groups</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+
+    <!-- 📍 Church Location Button -->
+    <a href="{% url 'location_list' %}" class="settings-button location-button">
+        <div class="button-content">
+            <span class="emoji">📍</span>
+            <div class="text-container">
+                <span class="button-text">Church Location</span>
+                <span class="button-desc">View and manage church location</span>
+            </div>
+            <span class="more-info">➡️</span>
+        </div>
+    </a>
+</div>
+
+<!-- 📊 Settings Distribution Bar Chart -->
+<div class="settings-distribution-section">
+    {% include 'settings/partials/settings_distribution_analysis.html' %}
+</div>
+
+<!-- 🚀 iPhone-Like Styling -->
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        text-align: center;
+        width: 100%;
+        overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    .settings-title {
+        font-size: 28px;
+        font-weight: 600; /* iPhone-like weight */
+        margin: 25px 0;
+        color: #333;
+    }
+
+    .settings-buttons {
+        width: 100%;
+        max-width: 100%; /* Respect parent container */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px; /* iPhone-like spacing */
+        overflow-x: hidden;
+    }
+
+    .settings-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%; /* Full width of container */
+        height: 85px; /* Adjusted for description */
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600; /* iPhone-like weight */
+        padding: 0 20px;
+        color: white;
+        background-size: 200% 100%;
+        border-radius: 20px; /* Rounded iPhone corners */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+        transition: opacity 0.2s ease, background-position 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .button-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .emoji {
+        font-size: 28px;
+        margin-right: 12px;
+    }
+
+    .text-container {
+        flex-grow: 1;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .button-text {
+        font-size: 18px;
+    }
+
+    .button-desc {
+        font-size: 14px; /* Smaller for description */
+        font-weight: 400; /* Lighter weight */
+        color: rgba(255, 255, 255, 0.85); /* Slightly transparent white */
+        margin-top: 2px; /* Space between title and description */
+    }
+
+    .count {
+        font-size: 18px;
+        margin-left: 8px;
+        font-weight: 500; /* Medium weight for contrast */
+    }
+
+    .more-info {
+        font-size: 24px;
+        transition: transform 0.2s ease;
+    }
+
+    /* Button color gradients (softened for iPhone aesthetic) */
+    .create-year-button {
+        background: linear-gradient(130deg, #ffca28, #ffb300); /* Yellow-orange */
+    }
+    .create-outstation-button {
+        background: linear-gradient(130deg, #ff7043, #f4511e); /* Red-orange */
+    }
+    .create-cell-button {
+        background: linear-gradient(130deg, #81c784, #66bb6a); /* Light green */
+    }
+    .set-location-button {
+        background: linear-gradient(130deg, #ce93d8, #ab47bc); /* Light purple */
+    }
+    .years-button {
+        background: linear-gradient(130deg, #ff9800, #f57c00); /* Orange */
+    }
+    .cells-button {
+        background: linear-gradient(130deg, #66bb6a, #4caf50); /* Green */
+    }
+    .outstations-button {
+        background: linear-gradient(130deg, #42a5f5, #1976d2); /* Blue */
+    }
+    .location-button {
+        background: linear-gradient(130deg, #ab47bc, #8e24aa); /* Purple */
+    }
+
+    /* Hover effects */
+    .settings-button:hover {
+        opacity: 0.9; /* Subtle fade for iPhone-like feedback */
+        background-position: right center; /* Gradient shift */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+    }
+    .settings-button:hover .more-info {
+        transform: translateX(5px); /* Gentle arrow movement */
+    }
+
+    .settings-distribution-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        width: 100%;
+        max-width: 900px;
+        margin: 20px auto;
+    }
+
+    @media screen and (max-width: 768px) {
+        .settings-button {
+            font-size: 16px;
+            height: 75px; /* Compact for mobile with description */
+            padding: 0 15px;
+        }
+        .emoji {
+            font-size: 24px;
+        }
+        .button-text {
+            font-size: 16px;
+        }
+        .button-desc {
+            font-size: 12px;
+        }
+        .count {
+            font-size: 16px;
+        }
+        .more-info {
+            font-size: 20px;
+        }
+    }
+</style>
+
+{% endblock %}

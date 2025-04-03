@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    
+    <!-- 🔹 Header Section -->
+    {% include 'leaders/partials/_inactive_leader_header.html' %}
+
+    <!-- 🔍 Search & Filter Section -->
+    {% include 'leaders/partials/_leader_filter.html' %}
+
+    <!-- 📊 Leader Statistics -->
+    {% include 'leaders/partials/_leader_summary.html' %}
+
+    <!-- 📋 Leaders Table -->
+    {% include 'leaders/partials/_leader_table.html' %}
+
+</div>
+
+<style>
+    /* 📌 Ensure Content is Closer to the Topbar */
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        max-width: 100vw;
+        margin: 0 auto;
+        padding-top: 30px; /* ✅ Default for Larger Screens */
+        padding-bottom: 20px;
+        box-sizing: border-box;
+    }
+
+    /* 📌 Reduce Margins & Spacing */
+    .header-section, .filter-form, .summary-section, .table-container {
+        margin-top: 5px; /* ✅ Less gap between elements */
+        padding: 0; /* ✅ Remove excessive padding */
+    }
+
+    /* 📌 Prevent Unnecessary Gaps */
+    .header-section h2 {
+        margin-bottom: 5px; /* ✅ Closer to the next section */
+    }
+
+    /* 📌 Fix Padding Issue on Small Screens */
+    @media only screen and (max-width: 768px) {
+        .container {
+            padding-top: 30px !important; /* ✅ Force Override on Mobile */
+        }
+    }
+
+    /* 📌 Extra Fix for Smaller Phones */
+    @media only screen and (max-width: 480px) {
+        .container {
+            padding-top: 30px !important; /* ✅ Ensure Padding Stays */
+        }
+    }
+</style>
+{% endblock %}

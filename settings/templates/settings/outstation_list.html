@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    padding: 10px;
+    box-sizing: border-box;
+    gap: 10px;
+    width: 100%;
+    overflow-x: hidden;
+">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        gap: 10px;
+    ">
+        <button onclick="window.history.back()" style="
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(12px, 2.5vw, 14px);
+            font-weight: bold;
+            color: #007bff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        " onmouseover="this.style.background='linear-gradient(130deg, #bbdefb, #bbdefb)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='linear-gradient(130deg, #e3f2fd, #bbdefb)'; this.style.transform='scale(1)'">
+            <span style="font-size: clamp(16px, 3vw, 20px);">⬅️</span>
+        </button>
+
+        <h2 style="
+            font-size: clamp(18px, 4vw, 22px);
+            font-weight: bold;
+            color: #007bff;
+            margin: 0;
+            flex-grow: 1;
+            text-align: center;
+            white-space: normal;
+        ">
+            🏡 Church OutStations
+        </h2>
+
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    <!-- Create New OutStation Button -->
+    <a href="{% url 'create_outstation' %}" class="create-button">
+        ➕ Create New OutStation
+    </a>
+
+    <!-- Total OutStations Count -->
+    <h3 class="single-line-text">
+        🏆 Total OutStations: <strong id="total-outstations-display">{{ total_outstations }}</strong>
+    </h3>
+
+    <!-- Search Section -->
+    <div class="search-form">
+        <input type="text" id="search-outstation" placeholder="🔍 Search by OutStation ID or Name" class="search-input">
+    </div>
+
+    {% if outstations %}
+        <!-- Full-Width Table Wrapper -->
+        <div style="width: 100%; overflow-x: auto;">
+            <table id="outstation-table" style="
+                width: 100%;
+                border-collapse: collapse;
+                border: 1px solid #ddd;
+                text-align: left;
+                margin: 0;
+            ">
+                <thead>
+                    <tr style="
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        border-bottom: 2px solid #ddd;
+                    ">
+                        <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">S/N</th>
+                        <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">🔢 OutStation ID</th>
+                        <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">🏷️ OutStation Name</th>
+                        <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">📝 Description</th>
+                        <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">📍 Location</th>
+                        <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">
+                            🏘️ Total Cells (<span id="total-cells-display">{{ overall_total_cells }}</span> / {{ overall_total_cells }})
+                        </th>
+                        <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">📅 Date Created</th>
+                        <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">⏳ Time Since Created</th>
+                        <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">📆 Date Updated</th>
+                        <th style="padding: 10px; white-space: nowrap; border-right: 1px solid #ddd;">⏲️ Time Since Updated</th>
+                        <th style="padding: 10px; white-space: nowrap;">⚙️ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for outstation in outstations %}
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">{{ forloop.counter }}</td>
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;" class="outstation-id">🔢 {{ outstation.outstation_id }}</td>
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;" class="outstation-name">🏷️ {{ outstation.name }}</td>
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">📝 
+                                {% if outstation.description %}
+                                    {{ outstation.description|truncatewords:10 }}
+                                {% else %}
+                                    No description available
+                                {% endif %}
+                            </td>
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">📍 {{ outstation.location }}</td>
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;" class="total-cells">{{ outstation.total_cells }}</td>
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">📅 {{ outstation.date_created|date:"F d, Y" }}</td>
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">⏳ {{ outstation.time_since_created }}</td>
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">📆 {{ outstation.date_updated|date:"F d, Y" }}</td>
+                            <td style="padding: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid #ddd;">⏲️ {{ outstation.time_since_updated }}</td>
+                            <td style="padding: 10px; white-space: nowrap;">
+                                <a href="{% url 'outstation_detail' outstation.pk %}" style="color: #17a2b8; text-decoration: none; font-size: 16px; margin-right: 10px;" title="View Details">👁️</a>
+                                <a href="{% url 'update_outstation' outstation.pk %}" style="color: #ffc107; text-decoration: none; font-size: 16px; margin-right: 10px;" title="Edit">✏️</a>
+                                <a href="{% url 'delete_outstation' outstation.pk %}" style="color: #f44336; text-decoration: none; font-size: 16px;" title="Delete">🗑️</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="no-outstations">
+            ❌ No outstations found. Try creating a new outstation.
+        </p>
+    {% endif %}
+</div>
+
+<!-- CSS Fixes & Styling -->
+<style>
+    .single-line-text {
+        font-size: 22px;
+        font-weight: bold;
+        color: #007bff;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .create-button {
+        font-size: 14px;
+        font-weight: bold;
+        background: #28a745;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+        margin-bottom: 10px;
+    }
+
+    .create-button:hover {
+        background: #218838;
+    }
+
+    .search-form {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        width: 100%;
+        max-width: 100vw; /* Full viewport width */
+        box-sizing: border-box;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .no-outstations {
+        font-size: 16px;
+        color: #555;
+        text-align: center;
+        margin-top: 10px;
+    }
+</style>
+
+<!-- JavaScript for Real-Time Filtering -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search-outstation');
+        const table = document.getElementById('outstation-table');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        const totalCellsDisplay = document.getElementById('total-cells-display');
+        const totalOutstationsDisplay = document.getElementById('total-outstations-display');
+        const overallTotalCells = {{ overall_total_cells }};
+
+        function updateFilteredCounts() {
+            let filteredTotalCells = 0;
+            let filteredTotalOutstations = 0;
+
+            for (let row of rows) {
+                if (row.style.display !== 'none') {
+                    const totalCells = parseInt(row.querySelector('.total-cells').textContent.replace('🏘️', '').trim());
+                    filteredTotalCells += totalCells;
+                    filteredTotalOutstations += 1;
+                }
+            }
+
+            totalCellsDisplay.textContent = filteredTotalCells;
+            totalOutstationsDisplay.textContent = filteredTotalOutstations;
+        }
+
+        searchInput.addEventListener('input', function () {
+            const query = this.value.toLowerCase();
+
+            for (let row of rows) {
+                const outstationId = row.querySelector('.outstation-id').textContent.toLowerCase().replace('🔢', '').trim();
+                const outstationName = row.querySelector('.outstation-name').textContent.toLowerCase().replace('🏷️', '').trim();
+
+                if (outstationId.includes(query) || outstationName.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+
+            // Update the filtered counts after filtering
+            updateFilteredCounts();
+        });
+
+        // Initialize the counts on page load
+        updateFilteredCounts();
+    });
+</script>
+
+{% endblock %}

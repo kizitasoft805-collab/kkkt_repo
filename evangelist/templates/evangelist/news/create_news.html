@@ -1,0 +1,238 @@
+{% extends 'evangelist_base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    overflow-x: hidden;
+    width: 100%;
+">
+    <!-- Back Button -->
+    <a href="{% url 'evangelist_news_list' %}" style="
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        background: linear-gradient(130deg, #007bff, #0056b3);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 25px;
+        margin-bottom: 15px;
+    ">
+        <span class="material-icons">arrow_back</span> Back
+    </a>
+
+    <!-- Header -->
+    <h2 style="
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 20px;
+        text-align: center;
+        width: 100%;
+        max-width: 800px;
+    ">
+        📰 Create News Post
+    </h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: green; font-size: 14px; text-align: center;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <!-- News Form -->
+    <form method="POST" enctype="multipart/form-data" id="news-form" style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 600px;
+    ">
+        {% csrf_token %}
+        
+        <div style="width: 100%;">{{ form.as_p }}</div>
+
+        <h3 style="font-size: 18px; color: #007bff; margin-top: 10px; text-align: center;">📷 Upload Media</h3>
+
+        <!-- Media Upload Section -->
+        <div id="media-container" style="width: 100%; display: flex; flex-direction: column; gap: 15px;">
+            <div class="media-entry styled-media-entry">
+                <label>🎬 Select Media Type</label>
+                <select name="media_type" class="form-control media-type styled-input" required>
+                    <option value="">📁 Choose Media Type</option>
+                    <option value="image">🖼️ Image</option>
+                    <option value="video">🎥 Video</option>
+                    <option value="document">📄 Document</option>
+                </select>
+
+                <label>📂 Upload File</label>
+                <input type="file" name="file" class="form-control media-file styled-input" required>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div id="preview-section" style="
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        "></div>
+
+        <!-- Add More Media Button -->
+        <button type="button" id="add-media" style="
+            font-size: 14px;
+            font-weight: bold;
+            background: #ff9800;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        " onmouseover="this.style.backgroundColor='#e65100'" onmouseout="this.style.backgroundColor='#ff9800'">
+            ➕ Add More Media
+        </button>
+
+        <!-- Submit Button -->
+        <button type="submit" style="
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(130deg, #4caf50, #388e3c);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        ">✅ Submit News</button>
+    </form>
+</div>
+
+<!-- Full Screen Preview Container -->
+<div id="fullScreenContainer" style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+">
+    <span onclick="closeFullScreen()" style="
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 40px;
+        color: white;
+        cursor: pointer;
+        z-index: 1001;
+    ">✖</span>
+    <div id="fullScreenContent"></div>
+</div>
+
+<!-- JavaScript for Adding Media Fields & Styling -->
+<script>
+    document.getElementById("add-media").addEventListener("click", function() {
+        let container = document.getElementById("media-container");
+        let newEntry = document.createElement("div");
+        newEntry.classList.add("media-entry", "styled-media-entry");
+
+        newEntry.innerHTML = `
+            <label>🎬 Select Media Type</label>
+            <select name="media_type" class="form-control media-type styled-input" required>
+                <option value="">📁 Choose Media Type</option>
+                <option value="image">🖼️ Image</option>
+                <option value="video">🎥 Video</option>
+                <option value="document">📄 Document</option>
+            </select>
+
+            <label>📂 Upload File</label>
+            <input type="file" name="file" class="form-control media-file styled-input" required>
+        `;
+
+        container.appendChild(newEntry);
+    });
+
+    document.addEventListener("change", function(event) {
+        if (event.target.classList.contains("media-file")) {
+            let file = event.target.files[0];
+            let previewSection = document.getElementById("preview-section");
+            let mediaType = event.target.previousElementSibling.previousElementSibling.value;
+
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let preview;
+                    if (mediaType === "image") {
+                        preview = `<img src="${e.target.result}" onclick="openFullScreen('${e.target.result}')" class="preview-media">`;
+                    } else if (mediaType === "video") {
+                        preview = `<video src="${e.target.result}" onclick="openFullScreen('${e.target.result}', 'video')" class="preview-media"></video>`;
+                    } else if (mediaType === "document") {
+                        preview = `<a href="${e.target.result}" target="_blank" class="preview-document">📄 View Document</a>`;
+                    }
+                    previewSection.innerHTML += preview;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+
+    function openFullScreen(url, type) {
+        let content = type === "video" ? `<video src="${url}" controls autoplay class="fullscreen-media"></video>` : `<img src="${url}" class="fullscreen-media">`;
+        document.getElementById("fullScreenContent").innerHTML = content;
+        document.getElementById("fullScreenContainer").style.display = "flex";
+    }
+
+    function closeFullScreen() {
+        document.getElementById("fullScreenContainer").style.display = "none";
+    }
+</script>
+
+<!-- CSS for Field Styling -->
+<style>
+    .styled-input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 25px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+    
+    .styled-media-entry {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .preview-media {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .fullscreen-media {
+        width: 100vw;
+        height: 100vh;
+    }
+</style>
+{% endblock %}

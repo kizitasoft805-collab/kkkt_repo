@@ -1,0 +1,45 @@
+{% extends 'accountant_base.html' %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 50px auto; text-align: center; padding: 20px;">
+
+    <!-- ⚠️ Delete Confirmation Title -->
+    <h2 style="color: red; font-weight: bold;">⚠️ Confirm Deletion</h2>
+    <p>Are you sure you want to delete the donation item fund for:</p>
+
+    <!-- 📝 Display Donation Item Fund Details -->
+    <div style="padding: 15px; border-radius: 10px; margin: 20px 0;">
+        <strong>📛 Contribution:</strong> {{ contribution.name }}<br>
+        <strong>⛪ Mass Name:</strong> {{ donation_item_fund.mass_name }}<br>
+        <strong>📅 Period:</strong> {{ donation_item_fund.period }}<br>
+        <strong>💰 Amount:</strong> {{ donation_item_fund.amount|floatformat:2 }} TZS<br>
+        <strong>📝 Notes:</strong> {{ donation_item_fund.notes|default:"N/A" }}
+    </div>
+
+    <!-- 🚀 Deletion Form -->
+    <form method="POST" style="display: flex; justify-content: center; gap: 15px;">
+        {% csrf_token %}
+        <button type="submit" style="
+            background-color: #dc3545;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        ">
+            ✅ Yes, Delete
+        </button>
+        <a href="{% url 'accountant_donation_item_fund_list' contribution.id %}" style="
+            background-color: #6c757d;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        ">
+            ❌ Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}

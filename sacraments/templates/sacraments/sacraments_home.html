@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="sacraments-container">
+    <!-- Header Row with Back Button, Title, and Menu Button -->
+    <div class="header-row">
+        <!-- Back Button -->
+        <button onclick="window.history.back()" class="back-btn">
+            <span class="emoji">⬅️</span>
+        </button>
+
+        <!-- Sacraments Title -->
+        <h2 class="sacraments-title">✝️ Church Sacraments</h2>
+
+        <!-- Menu Button Partial -->
+        {% include 'accounts/partials/menu_button_partial.html' %}
+    </div>
+
+    <div class="sacraments-buttons">
+        <a href="{% url 'baptized_members' %}" class="sacraments-button baptism-button">
+            <div class="button-content">
+                <span class="emoji">🎽</span>
+                <div class="text-container">
+                    <span class="button-text">Baptism (Ubatizo)</span>
+                    <span class="button-desc">Manage Baptism Records</span>
+                </div>
+                <span class="more-info">➡️</span>
+            </div>
+        </a>
+
+        <a href="{% url 'add_baptism_members' %}" class="sacraments-button add-baptism-button">
+            <div class="button-content">
+                <span class="emoji">➕🎽</span>
+                <div class="text-container">
+                    <span class="button-text">Add Baptism</span>
+                    <span class="button-desc">Add new Baptism member</span>
+                </div>
+                <span class="more-info">➡️</span>
+            </div>
+        </a>
+
+        <a href="{% url 'confirmed_members' %}" class="sacraments-button confirmation-button">
+            <div class="button-content">
+                <span class="emoji">🕊️</span>
+                <div class="text-container">
+                    <span class="button-text">Confirmation (Kipaimara)</span>
+                    <span class="button-desc">Confirm Sacraments</span>
+                </div>
+                <span class="more-info">➡️</span>
+            </div>
+        </a>
+
+        <a href="{% url 'add_confirmation_members' %}" class="sacraments-button add-confirmation-button">
+            <div class="button-content">
+                <span class="emoji">➕🕊️</span>
+                <div class="text-container">
+                    <span class="button-text">Add Confirmation</span>
+                    <span class="button-desc">Add new Confirmation member</span>
+                </div>
+                <span class="more-info">➡️</span>
+            </div>
+        </a>
+
+        <a href="{% url 'marriage_list' %}" class="sacraments-button marriage-button">
+            <div class="button-content">
+                <span class="emoji">💍</span>
+                <div class="text-container">
+                    <span class="button-text">Marriage (Ndoa)</span>
+                    <span class="button-desc">Manage Church Marriages</span>
+                </div>
+                <span class="more-info">➡️</span>
+            </div>
+        </a>
+
+        <a href="{% url 'create_marriage' %}" class="sacraments-button create-marriage-button">
+            <div class="button-content">
+                <span class="emoji">➕💍</span>
+                <div class="text-container">
+                    <span class="button-text">Create Marriage</span>
+                    <span class="button-desc">Register a new Marriage</span>
+                </div>
+                <span class="more-info">➡️</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="sacraments-trend-section">
+        {% include 'sacraments/partials/sacraments_trend_analysis.html' %}
+    </div>
+</div>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        text-align: center;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .sacraments-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 25px;
+        padding: 0 10px;
+        box-sizing: border-box;
+        gap: 10px;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(12px, 2.5vw, 14px);
+        font-weight: bold;
+        color: #007bff;
+        padding: 8px 12px;
+        border-radius: 20px;
+        background: linear-gradient(130deg, #e3f2fd, #bbdefb);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .back-btn .emoji {
+        font-size: clamp(16px, 3vw, 20px);
+    }
+
+    .back-btn:hover {
+        background: #bbdefb;
+        transform: scale(1.05);
+    }
+
+    .sacraments-title {
+        font-size: clamp(20px, 4vw, 28px);
+        font-weight: 600;
+        margin: 0;
+        color: #333;
+        flex-grow: 1;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .sacraments-buttons {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        overflow-x: hidden;
+    }
+
+    .sacraments-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        height: 85px;
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600;
+        padding: 0 20px;
+        color: white;
+        background-size: 200% 100%;
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        transition: opacity 0.2s ease, background-position 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .button-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .emoji {
+        font-size: 28px;
+        margin-right: 12px;
+    }
+
+    .text-container {
+        flex-grow: 1;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .button-text {
+        font-size: 18px;
+    }
+
+    .button-desc {
+        font-size: 14px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.85);
+        margin-top: 2px;
+    }
+
+    .more-info {
+        font-size: 24px;
+        transition: transform 0.2s ease;
+    }
+
+    .baptism-button {
+        background: linear-gradient(130deg, #3498db, #1e88e5);
+    }
+
+    .add-baptism-button {
+        background: linear-gradient(130deg, #1e88e5, #3498db);
+    }
+
+    .confirmation-button {
+        background: linear-gradient(130deg, #8e44ad, #6a1b9a);
+    }
+
+    .add-confirmation-button {
+        background: linear-gradient(130deg, #6a1b9a, #8e44ad);
+    }
+
+    .marriage-button {
+        background: linear-gradient(130deg, #e74c3c, #c0392b);
+    }
+
+    .create-marriage-button {
+        background: linear-gradient(130deg, #c0392b, #e74c3c);
+    }
+
+    .sacraments-trend-section {
+        width: 95%;
+        max-width: 900px;
+        margin: 20px auto;
+        text-align: left;
+    }
+
+    .sacraments-button:hover {
+        opacity: 0.9;
+        background-position: right center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .sacraments-button:hover .more-info {
+        transform: translateX(5px);
+    }
+
+    @media screen and (max-width: 768px) {
+        .sacraments-title {
+            font-size: clamp(18px, 3.5vw, 24px);
+        }
+
+        .sacraments-button {
+            font-size: 16px;
+            height: 75px;
+            padding: 0 15px;
+        }
+
+        .emoji {
+            font-size: 24px;
+        }
+
+        .button-text {
+            font-size: 16px;
+        }
+
+        .button-desc {
+            font-size: 12px;
+        }
+
+        .more-info {
+            font-size: 20px;
+        }
+    }
+</style>
+{% endblock %}
