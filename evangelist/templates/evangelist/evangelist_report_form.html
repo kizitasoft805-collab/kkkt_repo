@@ -1,0 +1,81 @@
+{% extends "evangelist_base.html" %}
+{% load static %}
+
+{% block title %}Create Evangelist Report{% endblock %}
+
+{% block content %}
+<h2 class="header-title">✍️ New Evangelist Report</h2>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+
+  <!-- ───── Main Report Fields ───── -->
+  <fieldset class="box">
+    <legend>Attendance & Cash</legend>
+    {{ report_form.non_field_errors }}
+    <div class="grid">
+      {{ report_form.date_given }}
+      {{ report_form.children_count }}
+      {{ report_form.adults_count }}
+      {{ report_form.count_10000 }}
+      {{ report_form.count_5000 }}
+      {{ report_form.count_2000 }}
+      {{ report_form.count_1000 }}
+      {{ report_form.count_500 }}
+      {{ report_form.count_200 }}
+      {{ report_form.count_100 }}
+      {{ report_form.count_50 }}
+    </div>
+  </fieldset>
+
+  <!-- ───── Elders on Duty (formset) ───── -->
+  <fieldset class="box">
+    <legend>Elders on Duty</legend>
+    {{ formset.management_form }}
+    <div id="elder-forms">
+      {% for form in formset %}
+        <div class="elder-row">
+          {{ form.elder }}
+        </div>
+      {% endfor %}
+    </div>
+
+    <button type="button" id="add-elder" class="add-btn">➕ Add Elder</button>
+  </fieldset>
+
+  <button type="submit" class="submit-btn">💾 Save Report</button>
+</form>
+
+<!-- ───── Minimal CSS ───── -->
+<style>
+body { font-family: system-ui, sans-serif; margin: 0 0 40px; }
+.header-title { text-align:center; margin:20px 0; color:#1976D2; }
+.box { border:1px solid #ddd; border-radius:8px; padding:15px; margin:15px auto; max-width:800px; }
+legend { font-weight:600; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+.elder-row { margin-bottom:10px; }
+.add-btn { background:#f0f0f0; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
+.add-btn:hover { background:#e0e0e0; }
+.submit-btn { display:block; margin:25px auto; padding:10px 25px; background:#1976D2; color:#fff; border:none; border-radius:6px; cursor:pointer; }
+.submit-btn:hover { background:#145ca8; }
+</style>
+
+<!-- ───── JavaScript to clone empty form ───── -->
+<script>
+document.getElementById("add-elder").addEventListener("click", function () {
+  const formContainer = document.getElementById("elder-forms");
+  const totalForms    = document.getElementById("id_elder_duty_set-TOTAL_FORMS");
+  const currentCount  = parseInt(totalForms.value, 10);
+
+  // Clone the first row as a template
+  const newRow = formContainer.firstElementChild.cloneNode(true);
+  // Replace indexes in the cloned row
+  newRow.innerHTML = newRow.innerHTML.replace(/elder_duty_set-0-/g, `elder_duty_set-${currentCount}-`);
+  // Clear any previously selected value
+  newRow.querySelector("select").selectedIndex = 0;
+
+  formContainer.appendChild(newRow);
+  totalForms.value = currentCount + 1;
+});
+</script>
+{% endblock %}

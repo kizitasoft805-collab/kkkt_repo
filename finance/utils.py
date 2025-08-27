@@ -1,13 +1,8 @@
-import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sns
-import io
-import base64
-from django.utils.timezone import now
 from .models import Offerings, SpecialContribution, DonationItemFund
+from django.utils.timezone import now
+
 
 import json
-from django.utils.timezone import now
 from .models import Offerings
 
 

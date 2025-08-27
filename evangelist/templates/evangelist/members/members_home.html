@@ -2,161 +2,183 @@
 {% load static %}
 
 {% block content %}
-<!-- Page Header -->
 <h2 class="header-title">👥 Church Members Overview</h2>
 
-<!-- Members Summary Boxes -->
-<div class="summary-boxes">
-    <!-- ✅ Active Members Box -->
-    <a href="{% url 'evangelist_church_member_list' %}" class="summary-box active-box">
-        <div class="box-content">
-            <div>
-                <h3>✅ Active Members</h3>
-                <!-- Display the total number of active members -->
-                <p class="count">{{ total_active_members }}</p>
+<div class="button-stack">
+    <a href="{% url 'evangelist_church_member_list' %}" class="big-button active-button">
+        <div class="button-text">
+            <span class="button-emoji">✅</span>
+            <div class="text-content">
+                <h3>Active Members</h3>
+                <p>View all active members in your outstation ({{ total_active_members }}).</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 
-    <!-- ❌ Inactive Members Box -->
-    <a href="{% url 'evangelist_inactive_church_member_list' %}" class="summary-box inactive-box">
-        <div class="box-content">
-            <div>
-                <h3>❌ Inactive Members</h3>
-                <!-- Display the total number of inactive members -->
-                <p class="count">{{ total_inactive_members }}</p>
+    <a href="{% url 'evangelist_inactive_church_member_list' %}" class="big-button inactive-button">
+        <div class="button-text">
+            <span class="button-emoji">❌</span>
+            <div class="text-content">
+                <h3>Inactive Members</h3>
+                <p>Check inactive members in your outstation ({{ total_inactive_members }}).</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 </div>
 
-<!-- 📊 Membership Distribution Analysis Graphs -->
 <div class="members-distribution-section">
     {% include 'members/partials/membership_distribution_analysis.html' %}
 </div>
 
-<!-- 🚀 Styling -->
 <style>
-    /* 🌍 General Layout */
     body {
         margin: 0;
         padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-                     'Helvetica Neue', Arial, sans-serif;
-        text-align: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         width: 100%;
+        overflow-x: hidden;
     }
 
-    /* 🔹 Header Title */
+    :root {
+        --text-color: #fff;
+        --shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] {
+        --text-color: #e0e0e0;
+        --shadow: rgba(0, 0, 0, 0.5);
+    }
+
     .header-title {
-        font-size: 26px;
+        font-size: 22px;
         font-weight: bold;
-        margin: 20px 0;
+        margin: 15px;
+        color: #007bff;
+        text-align: center;
     }
 
-    /* 📊 Summary Boxes */
-    .summary-boxes {
+    .button-stack {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+
+    .big-button {
+        width: 100%;
+        max-width: 100vw;
+        height: 100px;
+        display: flex;
+        align-items: center;
         justify-content: center;
-        gap: 20px;
-        width: 100%;
-        max-width: 800px;
-        margin: auto;
-    }
-
-    /* 📦 Member Box Styling */
-    .summary-box {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 300px;
-        height: 80px;
         text-decoration: none;
-        font-size: 16px;
-        font-weight: bold;
-        padding: 15px 20px;
-        border-radius: 15px;
-        color: white;
-        transition: transform 0.2s ease, box-shadow 0.3s ease;
+        color: var(--text-color);
+        background: linear-gradient(130deg, #4CAF50, #388E3C);
+        box-shadow: 0 3px 8px var(--shadow);
+        transition: transform 0.2s ease;
+        margin: 8px 0;
+        border-radius: 12px;
+        box-sizing: border-box;
     }
 
-    /* 🎨 Box Colors */
-    .active-box {
-        background: linear-gradient(130deg, #4CAF50, #388E3C); /* Green */
+    .active-button {
+        background: linear-gradient(130deg, #4CAF50, #388E3C);
+    }
+    .inactive-button {
+        background: linear-gradient(130deg, #FF5722, #E64A19);
     }
 
-    .inactive-box {
-        background: linear-gradient(130deg, #FF5722, #E64A19); /* Red-Orange */
-    }
-
-    /* 🏹 More Info Arrow */
-    .box-content {
+    .button-text {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        width: 100%;
+        width: 90%;
+        padding: 10px;
     }
 
-    .more-info {
-        font-size: 24px;
+    .button-emoji {
+        font-size: 28px;
+        flex-shrink: 0;
+    }
+
+    .text-content {
+        flex-grow: 1;
+        text-align: left;
+        margin: 0 15px;
+    }
+
+    .big-button h3 {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .big-button p {
+        font-size: 13px;
+        margin: 2px 0 0;
+    }
+
+    .arrow-emoji {
+        font-size: 26px;
+        flex-shrink: 0;
         transition: transform 0.2s ease;
     }
 
-    /* 🏠 Hover Effects */
-    .summary-box:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    .big-button:hover {
+        transform: scale(1.02);
     }
 
-    .summary-box:hover .more-info {
+    .big-button:hover .arrow-emoji {
         transform: translateX(5px);
     }
 
-    /* 📊 Membership Distribution Section */
+    .big-button:active {
+        transform: scale(0.98);
+    }
+
     .members-distribution-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 30px;
         width: 100%;
-        max-width: 900px;
-        margin: auto;
-    }
-
-    /* 📊 Graphs Grid */
-    .members-graphs-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-        gap: 20px;
-        width: 100%;
-        max-width: 1200px;
-        margin: auto;
-    }
-
-    /* 🖼 Graph Blocks */
-    .graph-container {
-        padding: 15px 0;
-        border-bottom: 2px solid #ddd; /* Separator Line Between Graphs */
-    }
-
-    /* 📱 Responsive Design */
-    @media screen and (max-width: 1024px) {
-        .members-graphs-grid {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        }
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 10px;
+        box-sizing: border-box;
     }
 
     @media screen and (max-width: 768px) {
-        .members-graphs-grid {
-            grid-template-columns: 1fr;
+        .big-button {
+            height: 90px;
         }
-        .graph-container {
-            border-bottom: 1px solid #ddd;
+        .button-text {
+            width: 95%;
+        }
+        .button-emoji {
+            font-size: 26px;
+        }
+        .big-button h3 {
+            font-size: 16px;
+        }
+        .big-button p {
+            font-size: 12px;
+        }
+        .arrow-emoji {
+            font-size: 24px;
+        }
+        .header-title {
+            font-size: 20px;
+        }
+        .members-distribution-section {
+            padding: 0 5px;
         }
     }
-</style>
 
+    html, body {
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
 {% endblock %}

@@ -16,89 +16,144 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* Limit the chart size on larger screens */
         .leaders-trend-chart-wrapper {
             max-width: 700px;
             margin: 0 auto;
-            height: 400px; /* Ensure a reasonable height */
+            height: 400px;
+            position: relative;
         }
 
-        /* Improve visibility for mobile screens */
         @media screen and (max-width: 600px) {
             .leaders-trend-chart-wrapper {
                 max-width: 100%;
-                height: 500px; /* Increase height on mobile for better readability */
+                height: 500px;
             }
         }
     </style>
 
     <script>
         // Parse JSON data from Django
-        const leadersTrendData = JSON.parse('{{ leaders_distribution_data|safe }}');
+        let leadersTrendData;
+        try {
+            leadersTrendData = JSON.parse('{{ leaders_distribution_data|safe }}');
+            console.log("Leaders Trend Data:", leadersTrendData);
+        } catch (e) {
+            console.error("Error parsing leaders_distribution_data:", e);
+            leadersTrendData = {
+                cell_labels: ["No Data"],
+                cell_data: [0],
+                outstation_labels: ["No Data"],
+                outstation_data: [0],
+                analysis: "Error loading leadership data."
+            };
+        }
 
         let leadersTrendChart;  // Store Chart.js instance globally
 
-        if (leadersTrendData.community_labels.length > 0 || leadersTrendData.zone_labels.length > 0) {
-            const ctx = document.getElementById('leadersTrendChart').getContext('2d');
-
-            leadersTrendChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: leadersTrendData.community_labels.length > leadersTrendData.zone_labels.length ?
-                        leadersTrendData.community_labels : leadersTrendData.zone_labels,
-                    datasets: [
-                        {
-                            label: 'Total Leaders per Community',
-                            data: leadersTrendData.community_data,
-                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 2,
-                            fill: false
-                        },
-                        {
-                            label: 'Total Leaders per Zone',
-                            data: leadersTrendData.zone_data,
-                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 2,
-                            fill: false
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,  // Allow proper height scaling
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
+        // Ensure canvas exists
+        const canvas = document.getElementById('leadersTrendChart');
+        if (!canvas) {
+            console.error("Canvas element 'leadersTrendChart' not found.");
+        } else {
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error("Failed to get 2D context for canvas.");
+            } else {
+                // Create chart with cell data only to avoid label mismatch
+                leadersTrendChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: leadersTrendData.cell_labels,
+                        datasets: [
+                            {
+                                label: 'Leaders per Cell',
+                                data: leadersTrendData.cell_data,
+                                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Leaders per Outstation',
+                                data: leadersTrendData.outstation_data.map((_, i) => {
+                                    // Map outstation data to cell labels by finding matching outstation
+                                    const cellOutstation = leadersTrendData.cell_labels[i];
+                                    const outstationIndex = leadersTrendData.outstation_labels.indexOf(
+                                        cellOutstation ? leadersTrendData.outstation_labels.find(ol => {
+                                            return leadersTrendData.cell_labels.some(cl => {
+                                                const cell = JSON.stringify(leadersTrendData.cell_labels).includes(cl);
+                                                return cell && cl.includes(ol);
+                                            });
+                                        }) : "Unassigned"
+                                    );
+                                    return outstationIndex !== -1 ? leadersTrendData.outstation_data[outstationIndex] : 0;
+                                }),
+                                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }
+                        ]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,  // Ensure readable increments
-                                autoSkip: false,  // Avoid skipping numbers on mobile
-                                maxRotation: 0,  // Keep numbers horizontal
-                                minRotation: 0
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.parsed.y;
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    precision: 0
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Number of Leaders'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Cells'
+                                },
+                                ticks: {
+                                    autoSkip: false,
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
 
-            document.getElementById("leadersTrendAnalysis").innerHTML = `<strong>${leadersTrendData.analysis}</strong>`;
-        } else {
-            document.getElementById("leadersTrendAnalysis").innerHTML = `<p>No leadership data available.</p>`;
+                // Display analysis
+                document.getElementById("leadersTrendAnalysis").innerHTML = `<strong>${leadersTrendData.analysis}</strong>`;
+            }
         }
 
         // Function to Download Chart as Image
         document.getElementById("downloadLeadersTrendChart").addEventListener("click", function() {
             if (leadersTrendChart) {
                 const link = document.createElement('a');
-                link.href = document.getElementById('leadersTrendChart').toDataURL('image/png');
+                link.href = leadersTrendChart.toBase64Image();
                 link.download = 'Leaders_Distribution_Trend.png';
                 link.click();
+            } else {
+                console.error("No chart instance available for download.");
             }
         });
     </script>

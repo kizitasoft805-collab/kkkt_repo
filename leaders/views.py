@@ -340,6 +340,7 @@ def is_superuser(user):
     """ Helper function to check if the user is a superuser. """
     return user.is_authenticated and user.is_superuser
 
+# leaders/views.py
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import now, localtime
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -450,12 +451,23 @@ def leader_detail_view(request, pk):
         ("📅 Start Date", leader.start_date.strftime('%d %B, %Y') if leader.start_date else "----"),
         ("⏳ Time in Service", leader.time_in_service if leader.time_in_service else "----"),
         ("📋 Responsibilities", leader.responsibilities or "----"),
-        ("📅 Date Created", f"{localtime(leader.date_created).strftime('%d %B, %Y %I:%M %p')} ({since_created})"),
+    ]
+
+    # Add outstation only for Evangelists
+    if leader.occupation == 'Evangelist':
+        leader_details.append(
+            ("🏞️ Outstation", leader.outstation.name if leader.outstation else "Not Assigned")
+        )
+
+    leader_details.append(
+        ("📅 Date Created", f"{localtime(leader.date_created).strftime('%d %B, %Y %I:%M %p')} ({since_created})")
+    )
+    leader_details.extend([
         ("💍 Marital Status", church_member.marital_status or "----"),
         ("📅 Date of Marriage", church_member.date_of_marriage.strftime('%d %B, %Y') if church_member.date_of_marriage else "----"),
         ("📛 Emergency Contact Name", church_member.emergency_contact_name or "----"),
         ("📞 Emergency Contact Phone", church_member.emergency_contact_phone or "----"),
-    ]
+    ])
 
     return render(request, "leaders/leader_detail.html", {
         "leader": leader,

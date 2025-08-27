@@ -1,3 +1,4 @@
+<!-- _leader_table.html -->
 <!-- Leader Table -->
 <div class="table-container" style="width: 100%; overflow-x: auto;">
     <table class="styled-table" id="leaderTable" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
@@ -10,7 +11,7 @@
                 <th>📛 Full Name</th>
                 <th>⚥ Gender</th>
                 <th>💼 Occupation</th>
-                <th>🏘️ Community (Zone)</th>
+                <th>🏘️ Cell (OutStation)</th>
                 <th>⏳ Time in Service</th>
                 <th>⚙️ Actions</th>
             </tr>
@@ -120,6 +121,7 @@
     document.getElementById("searchName").addEventListener("input", checkNoResults);
     document.getElementById("genderFilter").addEventListener("change", checkNoResults);
     document.getElementById("occupationFilter").addEventListener("change", checkNoResults);
-    document.getElementById("communityFilter").addEventListener("change", checkNoResults);
-    document.getElementById("zoneFilter").addEventListener("change", checkNoResults);
+    document.getElementById("cellFilter").addEventListener("change", checkNoResults);
+    document.getElementById("outstationFilter").addEventListener("change", checkNoResults);
 </script>
+

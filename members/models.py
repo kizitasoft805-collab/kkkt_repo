@@ -4,7 +4,8 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
-from settings.models import Cell  # Already correctly imported Cell
+from settings.models import Cell
+
 
 class ChurchMember(models.Model):
     """
@@ -21,7 +22,7 @@ class ChurchMember(models.Model):
         message="Email must be a valid Gmail address and end with '@gmail.com'."
     )
 
-    # Unique Member ID (Very Rough 20 Characters)
+    # Unique Member ID
     member_id = models.CharField(
         max_length=20,
         unique=True,
@@ -30,7 +31,7 @@ class ChurchMember(models.Model):
         help_text="Unique ID consisting of a highly randomized mix of 10 letters and 10 numbers."
     )
 
-    # Status Field (Active/Inactive/Pending)
+    # Status Field
     STATUS_CHOICES = [
         ('Active', 'Active'),
         ('Inactive', 'Inactive'),
@@ -39,11 +40,11 @@ class ChurchMember(models.Model):
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
-        default='Pending',  # Changed default from 'Active' to 'Pending'
+        default='Pending',
         help_text="Indicates whether the church member is active, inactive, or pending."
     )
 
-    # 📅 Date Created (Auto-filled)
+    # Date Created
     date_created = models.DateTimeField(
         default=now,
         editable=False,
@@ -72,9 +73,9 @@ class ChurchMember(models.Model):
     )
     address = models.TextField(help_text="Full address of the church member.")
 
-    # Cell (corrected from Community)
+    # Cell
     cell = models.ForeignKey(
-        Cell,  # Changed from Community to Cell
+        Cell,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -146,9 +147,6 @@ class ChurchMember(models.Model):
     def generate_unique_member_id(self):
         """
         Generates a highly randomized unique 20-character member ID.
-        - Mixes 10 random letters (A-Z) and 10 random numbers (0-9)
-        - Completely shuffled for maximum randomness
-        - Ensures uniqueness across all Church Members
         """
         while True:
             characters = list(
@@ -166,15 +164,39 @@ class ChurchMember(models.Model):
 
     def save(self, *args, **kwargs):
         """
-        Overrides the save method:
-        - Calls full_clean() to ensure all model validations are respected.
-        - Ensures the member_id is set if not existing yet.
+        Overrides save to:
+        - Generate member_id if not set.
+        - Send SMS on status change to Active with member_id instructions.
         """
-        # Run all validations (including those in clean())
-        self.full_clean()
+        # Store original status for comparison
+        original_status = None
+        if self.pk:
+            original_status = ChurchMember.objects.get(pk=self.pk).status
 
-        # Generate a unique member_id if not set
+        # Generate member_id if not set
         if not self.member_id:
             self.member_id = self.generate_unique_member_id()
 
+        # Run validations
+        self.full_clean()
+
+        # Save the instance
         super().save(*args, **kwargs)
+
+        # Send SMS if status changed to Active
+        if original_status != 'Active' and self.status == 'Active':
+            from sms.utils import send_sms  # Import here to avoid circular import
+            approval_message = (
+                f"Hongera {self.full_name}! "
+                f"Umeidhinishwa kuwa mshirika hai wa KKKT Mkwawa. "
+                f"Kitambulisho chako cha uanachama ni {self.member_id}. "
+                f"Tumia ID hii kuomba akaunti au kubadilisha nenosiri kupitia "
+                f"https://www.kkktmkwawa.com/accounts/request-account/. "
+                f"Karibu sana katika jumuiya yetu!"
+            )
+            response = send_sms(
+                to=self.phone_number,
+                message=approval_message,
+                member=self
+            )
+            print(f"📩 Approval SMS sent to {self.phone_number}: {response}")

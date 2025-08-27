@@ -32,14 +32,14 @@ else:
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG", default=True)
 
-#ALLOWED_HOSTS = ["127.0.0.1", "localhost", "4cf6-196-249-104-56.ngrok-free.app"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "6e54-197-250-99-186.ngrok-free.app"]
 
-#CSRF_TRUSTED_ORIGINS = [
-#    "https://4cf6-196-249-104-56.ngrok-free.app"
-#]
+CSRF_TRUSTED_ORIGINS = [
+    "https://6e54-197-250-99-186.ngrok-free.app"
+]
 
 
-ALLOWED_HOSTS = ['kkktmkwawa.pythonanywhere.com']
+#ALLOWED_HOSTS = ['kkktmkwawa.pythonanywhere.com']
 
 # --------------------------
 # INSTALLED APPS

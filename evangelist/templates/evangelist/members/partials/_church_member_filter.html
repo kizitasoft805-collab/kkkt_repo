@@ -10,19 +10,19 @@
         <option value="Female">Female</option>
     </select>
 
-    <!-- Community Filter -->
-    <select id="communityFilter">
-        <option value="all">🏡 Filter by Community</option>
-        {% for community in communities %}
-            <option value="{{ community.name }}">{{ community.name }}</option>
+    <!-- Cell Filter -->
+    <select id="cellFilter">
+        <option value="all">🏡 Filter by Cell</option>
+        {% for cell in cells %}
+            <option value="{{ cell.cell_id }}">{{ cell.name }}</option>
         {% endfor %}
     </select>
 
-    <!-- Zone Filter -->
-    <select id="zoneFilter">
-        <option value="all">📍 Filter by Zone</option>
-        {% for zone in zones %}
-            <option value="{{ zone.name }}">{{ zone.name }}</option>
+    <!-- OutStation Filter -->
+    <select id="outstationFilter">
+        <option value="all">📍 Filter by OutStation</option>
+        {% for outstation in outstations %}
+            <option value="{{ outstation.outstation_id }}">{{ outstation.name }}</option>
         {% endfor %}
     </select>
 </div>
@@ -32,8 +32,8 @@
     function filterChurchMembers() {
         let nameFilter = document.getElementById("searchName").value.toLowerCase();
         let genderFilter = document.getElementById("genderFilter").value;
-        let communityFilter = document.getElementById("communityFilter").value;
-        let zoneFilter = document.getElementById("zoneFilter").value;
+        let cellFilter = document.getElementById("cellFilter").value;
+        let outstationFilter = document.getElementById("outstationFilter").value;
 
         let members = document.querySelectorAll(".church-member-row");
 
@@ -44,15 +44,15 @@
         members.forEach(member => {
             let name = member.getAttribute("data-name").toLowerCase();
             let gender = member.getAttribute("data-gender");
-            let community = member.getAttribute("data-community");
-            let zone = member.getAttribute("data-zone");
+            let cell = member.getAttribute("data-cell");
+            let outstation = member.getAttribute("data-outstation");
 
             let showByName = name.includes(nameFilter);
             let showByGender = (genderFilter === "all" || gender === genderFilter);
-            let showByCommunity = (communityFilter === "all" || community === communityFilter);
-            let showByZone = (zoneFilter === "all" || zone === zoneFilter);
+            let showByCell = (cellFilter === "all" || cell === cellFilter);
+            let showByOutstation = (outstationFilter === "all" || outstation === outstationFilter);
 
-            if (showByName && showByGender && showByCommunity && showByZone) {
+            if (showByName && showByGender && showByCell && showByOutstation) {
                 member.style.display = "table-row";
                 totalMembers++;
 
@@ -75,8 +75,11 @@
     // Attach event listeners for real-time filtering
     document.getElementById("searchName").addEventListener("input", filterChurchMembers);
     document.getElementById("genderFilter").addEventListener("change", filterChurchMembers);
-    document.getElementById("communityFilter").addEventListener("change", filterChurchMembers);
-    document.getElementById("zoneFilter").addEventListener("change", filterChurchMembers);
+    document.getElementById("cellFilter").addEventListener("change", filterChurchMembers);
+    document.getElementById("outstationFilter").addEventListener("change", filterChurchMembers);
+
+    // Trigger initial filter to apply any pre-selected filters from URL
+    filterChurchMembers();
 </script>
 
 <!-- CSS for Styling -->

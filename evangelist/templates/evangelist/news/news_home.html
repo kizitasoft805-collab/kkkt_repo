@@ -1,103 +1,154 @@
 {% extends 'evangelist_base.html' %}
 
 {% block content %}
-<!-- 📰 News Home Header -->
-<h2 class="news-title">🗞️ News</h2>
+<h2 class="header-title">🗞️ News</h2>
 
-<!-- 📊 News Dashboard -->
-<div class="news-grid">
-    <!-- News Box -->
-    <a href="{% url 'evangelist_news_list' %}" class="news-box news-section">
-        <div class="box-content">
-            <div>
-                <!-- Display news_count in parentheses here -->
-                <h3>📰 News ({{ news_count }})</h3>
-                <p>Post and View News</p>
+<div class="button-stack">
+    <a href="{% url 'evangelist_news_list' %}" class="big-button news-button">
+        <div class="button-text">
+            <span class="button-emoji">📰</span>
+            <div class="text-content">
+                <h3>News ({{ news_count }})</h3>
+                <p>Post and view news for the church community.</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 </div>
 
-<!-- 🎨 News Styling -->
 <style>
-    /* 🌍 General Styles */
     body {
         margin: 0;
         padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
-                     'Helvetica Neue', Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    :root {
+        --text-color: #fff;
+        --shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] {
+        --text-color: #e0e0e0;
+        --shadow: rgba(0, 0, 0, 0.5);
+    }
+
+    .header-title {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 15px;
+        color: #007bff;
         text-align: center;
-        width: 100%;
     }
 
-    /* 🗞️ News Title */
-    .news-title {
-        font-size: 26px;
-        font-weight: bold;
-        margin: 20px 0;
-    }
-
-    /* 📊 News Grid */
-    .news-grid {
+    .button-stack {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 20px;
+        flex-direction: column;
         width: 100%;
-        max-width: 600px;
-        margin: auto;
-    }
-
-    /* 📦 News Box Styling */
-    .news-box {
-        display: flex;
         align-items: center;
-        justify-content: space-between;
-        width: 320px;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+
+    .big-button {
+        width: 100%;
+        max-width: 100vw;
         height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-decoration: none;
-        font-size: 16px;
-        font-weight: bold;
-        padding: 15px 20px;
-        border-radius: 15px;
-        color: white;
-        transition: transform 0.2s ease, box-shadow 0.3s ease;
+        color: var(--text-color);
+        background: linear-gradient(130deg, #1e88e5, #1565c0);
+        box-shadow: 0 3px 8px var(--shadow);
+        transition: transform 0.2s ease;
+        margin: 8px 0;
+        border-radius: 12px;
+        box-sizing: border-box;
     }
 
-    /* 🎨 Unique News Colors */
-    .news-section {
-        background: linear-gradient(130deg, #1e88e5, #1565c0); /* Blue */
+    .news-button {
+        background: linear-gradient(130deg, #1e88e5, #1565c0);
     }
 
-    /* 🏹 More Info Arrow */
-    .box-content {
+    .button-text {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        width: 100%;
+        width: 90%;
+        padding: 10px;
     }
 
-    .more-info {
-        font-size: 24px;
+    .button-emoji {
+        font-size: 28px;
+        flex-shrink: 0;
+    }
+
+    .text-content {
+        flex-grow: 1;
+        text-align: left;
+        margin: 0 15px;
+    }
+
+    .big-button h3 {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .big-button p {
+        font-size: 13px;
+        margin: 2px 0 0;
+    }
+
+    .arrow-emoji {
+        font-size: 26px;
+        flex-shrink: 0;
         transition: transform 0.2s ease;
     }
 
-    /* 🚀 Hover Effects */
-    .news-box:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    .big-button:hover {
+        transform: scale(1.02);
     }
 
-    .news-box:hover .more-info {
+    .big-button:hover .arrow-emoji {
         transform: translateX(5px);
     }
 
-    /* 📱 Responsive Design */
-    @media screen and (max-width: 600px) {
-        .news-box {
-            width: 90%;
+    .big-button:active {
+        transform: scale(0.98);
+    }
+
+    @media screen and (max-width: 768px) {
+        .big-button {
+            height: 90px;
         }
+        .button-text {
+            width: 95%;
+        }
+        .button-emoji {
+            font-size: 26px;
+        }
+        .big-button h3 {
+            font-size: 16px;
+        }
+        .big-button p {
+            font-size: 12px;
+        }
+        .arrow-emoji {
+            font-size: 24px;
+        }
+        .header-title {
+            font-size: 20px;
+        }
+    }
+
+    html, body {
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 </style>
 {% endblock %}

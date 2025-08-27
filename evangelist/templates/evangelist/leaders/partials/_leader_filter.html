@@ -1,3 +1,4 @@
+<!-- _leader_filter.html -->
 <!-- Filter Section -->
 <div class="filter-form"
      style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 800px; margin-bottom: 15px;">
@@ -23,21 +24,21 @@
         {% endfor %}
     </select>
 
-    <!-- Community Filter -->
-    <select id="communityFilter"
+    <!-- Cell Filter -->
+    <select id="cellFilter"
             style="border: 1px solid #ccc; padding: 10px; border-radius: 25px; width: 100%; box-sizing: border-box;">
-        <option value="all">🏘️ Filter by Community</option>
-        {% for community in all_communities %}
-            <option value="{{ community.id }}">{{ community.name }} ({{ community.zone.name }})</option>
+        <option value="all">🏘️ Filter by Cell</option>
+        {% for cell in all_cells %}
+            <option value="{{ cell.id }}">{{ cell.name }} ({{ cell.outstation.name }})</option>
         {% endfor %}
     </select>
 
-    <!-- Zone Filter -->
-    <select id="zoneFilter"
+    <!-- OutStation Filter -->
+    <select id="outstationFilter"
             style="border: 1px solid #ccc; padding: 10px; border-radius: 25px; width: 100%; box-sizing: border-box;">
-        <option value="all">📍 Filter by Zone</option>
-        {% for zone in all_zones %}
-            <option value="{{ zone.id }}">{{ zone.name }}</option>
+        <option value="all">📍 Filter by OutStation</option>
+        {% for outstation in all_outstations %}
+            <option value="{{ outstation.id }}">{{ outstation.name }}</option>
         {% endfor %}
     </select>
 </div>
@@ -48,8 +49,8 @@
         let nameFilter = document.getElementById("searchName").value.toLowerCase();
         let genderFilter = document.getElementById("genderFilter").value;
         let occupationFilter = document.getElementById("occupationFilter").value;
-        let communityFilter = document.getElementById("communityFilter").value;
-        let zoneFilter = document.getElementById("zoneFilter").value;
+        let cellFilter = document.getElementById("cellFilter").value;
+        let outstationFilter = document.getElementById("outstationFilter").value;
 
         let leaders = document.querySelectorAll(".leader-row");
 
@@ -61,16 +62,16 @@
             let name = leader.getAttribute("data-name").toLowerCase();
             let gender = leader.getAttribute("data-gender");
             let occupation = leader.getAttribute("data-occupation");
-            let community = leader.getAttribute("data-community");
-            let zone = leader.getAttribute("data-zone");
+            let cell = leader.getAttribute("data-cell");
+            let outstation = leader.getAttribute("data-outstation");
 
             let showByName = name.includes(nameFilter);
             let showByGender = (genderFilter === "all" || gender === genderFilter);
             let showByOccupation = (occupationFilter === "all" || occupation === occupationFilter);
-            let showByCommunity = (communityFilter === "all" || community === communityFilter);
-            let showByZone = (zoneFilter === "all" || zone === zoneFilter);
+            let showByCell = (cellFilter === "all" || cell === cellFilter);
+            let showByOutstation = (outstationFilter === "all" || outstation === outstationFilter);
 
-            if (showByName && showByGender && showByOccupation && showByCommunity && showByZone) {
+            if (showByName && showByGender && showByOccupation && showByCell && showByOutstation) {
                 leader.style.display = "table-row";
                 totalLeaders++;
 
@@ -93,8 +94,8 @@
     document.getElementById("searchName").addEventListener("input", filterLeaders);
     document.getElementById("genderFilter").addEventListener("change", filterLeaders);
     document.getElementById("occupationFilter").addEventListener("change", filterLeaders);
-    document.getElementById("communityFilter").addEventListener("change", filterLeaders);
-    document.getElementById("zoneFilter").addEventListener("change", filterLeaders);
+    document.getElementById("cellFilter").addEventListener("change", filterLeaders);
+    document.getElementById("outstationFilter").addEventListener("change", filterLeaders);
 </script>
 
 <!-- ✅ Inline Styling -->
@@ -142,3 +143,4 @@
         }
     }
 </style>
+

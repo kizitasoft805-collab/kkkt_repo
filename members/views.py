@@ -43,7 +43,7 @@ def create_or_update_church_member(request, member_id=None):
                         f"Habari {church_member.full_name}, karibu katika application yetu ya kkkt mkwawa, "
                         f"kama unatumia smartphone unaweza kupata akaunti yako mwenyewe kwa kutumia "
                         f"utambulisho wako ID (Usimpe yeyote!!) {church_member.member_id}, kwa kutumia link "
-                        f"https://f692-197-250-100-119.ngrok-free.app/accounts/request-account/"
+                        f"https://www.kkktmkwawa.com/accounts/request-account/"
                     )
                     response = send_sms(to=church_member.phone_number, message=sms_message, member=church_member)
                     print(f"📩 SMS sent to {church_member.phone_number} (Request ID: {response.get('request_id', 'N/A')}): {response}")
@@ -767,21 +767,43 @@ def church_members_report(request):
 from django.shortcuts import render, redirect
 from .forms import ChurchMemberSignupForm
 from django.contrib import messages
+from sms.utils import send_sms  # Import send_sms
 
 def church_member_signup(request):
     if request.method == 'POST':
         form = ChurchMemberSignupForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Your signup request has been submitted successfully! It is pending approval.')
-            return redirect('signup_success')  # Redirect to same page or another success page
+            church_member = form.save()
+
+            # Ujumbe wa pongezi kwa SMS (Kiswahili)
+            signup_message = (
+                f"Hongera {church_member.full_name}! "
+                f"Umefanikiwa kujisajili KKKT Mkwawa. "
+                f"Hali yako ya uanachama kwa sasa ni *Inasubiri(Pending)*. "
+                f"Tafadhali subiri idhini ya msimamizi; "
+                f"utapokea SMS nyingine pindi utakapothibitishwa."
+            )
+
+            response = send_sms(
+                to=church_member.phone_number,
+                message=signup_message,
+                member=church_member
+            )
+            print(f"📩 Signup SMS sent to {church_member.phone_number}: {response}")
+
+            # Flash message kwa mtumiaji aliyejaza fomu
+            messages.success(
+                request,
+                'Maombi yako ya usajili yamewasilishwa kikamilifu! '
+                'Utapokea SMS yenye maelezo zaidi.'
+            )
+            return redirect('signup_success')  # Redirect to success page
         else:
-            messages.error(request, 'Please correct the errors below.')
+            messages.error(request, 'Tafadhali rekebisha makosa yaliyo hapa chini.')
     else:
         form = ChurchMemberSignupForm()
-    
-    return render(request, 'members/signup.html', {'form': form})
 
+    return render(request, 'members/signup.html', {'form': form})
 
 def signup_success(request):
     return render(request, 'members/signup_success.html')

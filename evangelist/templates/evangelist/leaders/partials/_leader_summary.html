@@ -1,6 +1,7 @@
+<!-- _leader_summary.html -->
 <!-- Summary Section -->
 <div class="summary-section"
-     style="display: flex; justify-content: center; gap: 15px; width: 100%; max-width: 800px; margin-bottom: 15px; flex-wrap: wrap; font-size: 16px; font-weight: bold;">
+     style="display: flex; justify-content: center; align-items: center; gap: 15px; width: 100%; max-width: 600px; margin: 10px auto 15px auto; font-size: 16px; font-weight: bold;">
     📊 Leaders: <strong id="totalLeaders">{{ total_leaders }}</strong> | 
     👨‍💼 Males: <strong id="totalMales">{{ total_male }}</strong> | 
     👩‍💼 Females: <strong id="totalFemales">{{ total_female }}</strong>
@@ -57,7 +58,7 @@
         items.sort((a, b) => {
             let genderA = a.getAttribute("data-gender");
             let genderB = b.getAttribute("data-gender");
-            return genderSortAsc ? genderA.localeCompare(genderB) : genderB.localeCompare(genderA);
+            return genderSortAsc ? genderA.localeCompare(genderB) : genderB.localeCompare(genderB);
         });
 
         genderSortAsc = !genderSortAsc;

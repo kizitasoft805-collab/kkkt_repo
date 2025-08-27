@@ -2,124 +2,183 @@
 {% load static %}
 
 {% block content %}
-<!-- Page Header -->
 <h2 class="header-title">🧑‍💼 Leaders Management</h2>
 
-<!-- Leaders Summary Boxes -->
-<div class="summary-boxes">
-    <!-- ✅ Active Leaders Box -->
-    <a href="{% url 'evangelist_leader_list' %}" class="summary-box active-box">
-        <div class="box-content">
-            <div>
-                <h3>✅ Active Leaders</h3>
-                <!-- Show the total number of leaders who are Active -->
-                <p class="count">{{ total_active_leaders }}</p>
+<div class="button-stack">
+    <a href="{% url 'evangelist_leader_list' %}" class="big-button active-button">
+        <div class="button-text">
+            <span class="button-emoji">✅</span>
+            <div class="text-content">
+                <h3>Active Leaders</h3>
+                <p>View all active leaders in your outstation ({{ total_active_leaders }}).</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 
-    <!-- ❌ Inactive Leaders Box -->
-    <a href="{% url 'evangelist_inactive_leader_list' %}" class="summary-box inactive-box">
-        <div class="box-content">
-            <div>
-                <h3>❌ Inactive Leaders</h3>
-                <!-- Show the total number of leaders who are Inactive -->
-                <p class="count">{{ total_inactive_leaders }}</p>
+    <a href="{% url 'evangelist_inactive_leader_list' %}" class="big-button inactive-button">
+        <div class="button-text">
+            <span class="button-emoji">❌</span>
+            <div class="text-content">
+                <h3>Inactive Leaders</h3>
+                <p>Check inactive leaders in your outstation ({{ total_inactive_leaders }}).</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 </div>
 
-<!-- 📊 Leaders Distribution Analysis Graph -->
 <div class="leaders-distribution-section">
-    {% include 'evangelist/partials/leaders_distribution_trend.html' %}
+    {% include 'evangelist/leaders/partials/leaders_distribution_trend.html' %}
 </div>
 
-<!-- 🚀 iPhone-Like Styling -->
 <style>
-    /* 🌍 General Layout */
     body {
         margin: 0;
         padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        text-align: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         width: 100%;
+        overflow-x: hidden;
     }
 
-    /* 🔹 Header Title */
+    :root {
+        --text-color: #fff;
+        --shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] {
+        --text-color: #e0e0e0;
+        --shadow: rgba(0, 0, 0, 0.5);
+    }
+
     .header-title {
-        font-size: 24px;
+        font-size: 22px;
         font-weight: bold;
-        margin: 20px 0;
+        margin: 15px;
+        color: #007bff;
+        text-align: center;
     }
 
-    /* 📊 Summary Boxes */
-    .summary-boxes {
+    .button-stack {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+
+    .big-button {
+        width: 100%;
+        max-width: 100vw;
+        height: 100px;
+        display: flex;
+        align-items: center;
         justify-content: center;
-        gap: 20px;
-        width: 100%;
-        max-width: 800px;
-        margin: auto;
-    }
-
-    /* 📦 Leader Box Styling */
-    .summary-box {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 300px;
-        height: 80px;
         text-decoration: none;
-        font-size: 16px;
-        font-weight: bold;
-        padding: 15px 20px;
-        border-radius: 15px;
-        color: white;
-        transition: transform 0.2s ease, box-shadow 0.3s ease;
+        color: var(--text-color);
+        background: linear-gradient(130deg, #4CAF50, #388E3C);
+        box-shadow: 0 3px 8px var(--shadow);
+        transition: transform 0.2s ease;
+        margin: 8px 0;
+        border-radius: 12px;
+        box-sizing: border-box;
     }
 
-    /* 🎨 Box Colors */
-    .active-box {
-        background: linear-gradient(130deg, #4CAF50, #388E3C); /* Green */
+    .active-button {
+        background: linear-gradient(130deg, #4CAF50, #388E3C);
+    }
+    .inactive-button {
+        background: linear-gradient(130deg, #FF5722, #E64A19);
     }
 
-    .inactive-box {
-        background: linear-gradient(130deg, #FF5722, #E64A19); /* Red-Orange */
-    }
-
-    /* 🏹 More Info Arrow */
-    .box-content {
+    .button-text {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        width: 100%;
+        width: 90%;
+        padding: 10px;
     }
 
-    .more-info {
-        font-size: 24px;
+    .button-emoji {
+        font-size: 28px;
+        flex-shrink: 0;
+    }
+
+    .text-content {
+        flex-grow: 1;
+        text-align: left;
+        margin: 0 15px;
+    }
+
+    .big-button h3 {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .big-button p {
+        font-size: 13px;
+        margin: 2px 0 0;
+    }
+
+    .arrow-emoji {
+        font-size: 26px;
+        flex-shrink: 0;
         transition: transform 0.2s ease;
     }
 
-    /* 🏠 Hover Effects */
-    .summary-box:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    .big-button:hover {
+        transform: scale(1.02);
     }
 
-    .summary-box:hover .more-info {
+    .big-button:hover .arrow-emoji {
         transform: translateX(5px);
     }
 
-    /* 📱 Responsive Design */
-    @media screen and (max-width: 600px) {
-        .summary-box {
-            width: 90%;
+    .big-button:active {
+        transform: scale(0.98);
+    }
+
+    .leaders-distribution-section {
+        width: 100%;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+
+    @media screen and (max-width: 768px) {
+        .big-button {
+            height: 90px;
+        }
+        .button-text {
+            width: 95%;
+        }
+        .button-emoji {
+            font-size: 26px;
+        }
+        .big-button h3 {
+            font-size: 16px;
+        }
+        .big-button p {
+            font-size: 12px;
+        }
+        .arrow-emoji {
+            font-size: 24px;
+        }
+        .header-title {
+            font-size: 20px;
+        }
+        .leaders-distribution-section {
+            padding: 0 5px;
         }
     }
-</style>
 
+    html, body {
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
 {% endblock %}

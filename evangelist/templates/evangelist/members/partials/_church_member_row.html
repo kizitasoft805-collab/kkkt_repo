@@ -3,8 +3,8 @@
 <tr class="church-member-row"
     data-name="{{ member.full_name|lower }}"
     data-gender="{{ member.gender }}"
-    data-community="{% if member.community %}{{ member.community.name }}{% else %}N/A{% endif %}"
-    data-zone="{% if member.community and member.community.zone %}{{ member.community.zone.name }}{% else %}N/A{% endif %}">
+    data-cell="{% if member.cell %}{{ member.cell.cell_id }}{% else %}N/A{% endif %}"
+    data-outstation="{% if member.cell and member.cell.outstation %}{{ member.cell.outstation.outstation_id }}{% else %}N/A{% endif %}">
 
     <td>{{ counter }}</td>
     <td>{{ member.member_id }}</td>
@@ -36,8 +36,8 @@
     <td>{{ member.phone_number }}</td>
 
     <td>
-        {% if member.community %}
-            {{ member.community.name }} ({{ member.community.zone.name }})
+        {% if member.cell %}
+            {{ member.cell.name }} ({{ member.cell.outstation.name }})
         {% else %}
             N/A
         {% endif %}
@@ -100,16 +100,6 @@
 
     .view-btn {
         background: #007bff;
-        color: white;
-    }
-
-    .edit-btn {
-        background: #ffc107;
-        color: black;
-    }
-
-    .delete-btn {
-        background: #dc3545;
         color: white;
     }
 

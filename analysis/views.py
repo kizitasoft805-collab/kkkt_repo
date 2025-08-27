@@ -9,7 +9,6 @@ from analysis.utils import (
     get_active_inactive_analysis,
     get_leaders_active_inactive_analysis,
     get_offerings_analysis,
-    get_tithes_monthly_analysis,
     get_facility_renting_analysis,
     get_special_contribution_funds_analysis
 )
@@ -52,8 +51,6 @@ def general_analysis_view(request):
     # 6. Offerings (Line chart + Summaries for current year)
     offerings_data_json = get_offerings_analysis()
 
-    # 7. Tithes Monthly Analysis (Combined Line+Bar, current year)
-    tithes_data_json = get_tithes_monthly_analysis()
 
     # 8. Facility Renting Analysis (Bar chart for current year)
     facility_data_json = get_facility_renting_analysis()
@@ -70,7 +67,6 @@ def general_analysis_view(request):
             'active_inactive_data': active_inactive_data_json,
             'leaders_active_inactive_data': leaders_active_inactive_data_json,
             'offerings_data': offerings_data_json,
-            'tithes_data': tithes_data_json,
             'facility_data': facility_data_json,
             'donation_fund_data': donation_fund_data_json,  # <-- pass radar chart data to template
         }
@@ -87,7 +83,6 @@ from analysis.utils import (
     get_active_inactive_analysis,
     get_leaders_active_inactive_analysis,
     get_offerings_analysis,
-    get_tithes_monthly_analysis,
     get_facility_renting_analysis,
     get_special_contribution_funds_analysis
 )
@@ -123,9 +118,6 @@ def secretary_general_analysis_view(request):
     # 6. Offerings (Line chart + Summaries for current year)
     offerings_data_json = get_offerings_analysis()
 
-    # 7. Tithes Monthly Analysis (Combined Line+Bar, current year)
-    tithes_data_json = get_tithes_monthly_analysis()
-
     # 8. Facility Renting Analysis (Bar chart for current year)
     facility_data_json = get_facility_renting_analysis()
 
@@ -141,7 +133,6 @@ def secretary_general_analysis_view(request):
             'active_inactive_data': active_inactive_data_json,
             'leaders_active_inactive_data': leaders_active_inactive_data_json,
             'offerings_data': offerings_data_json,
-            'tithes_data': tithes_data_json,
             'facility_data': facility_data_json,
             'donation_fund_data': donation_fund_data_json,  # <-- pass radar chart data to template
         }
@@ -158,7 +149,6 @@ from analysis.utils import (
     get_active_inactive_analysis,
     get_leaders_active_inactive_analysis,
     get_offerings_analysis,
-    get_tithes_monthly_analysis,
     get_facility_renting_analysis,
     get_special_contribution_funds_analysis
 )
@@ -194,9 +184,6 @@ def accountant_general_analysis_view(request):
     # 6. Offerings (Line chart + Summaries for current year)
     offerings_data_json = get_offerings_analysis()
 
-    # 7. Tithes Monthly Analysis (Combined Line+Bar, current year)
-    tithes_data_json = get_tithes_monthly_analysis()
-
     # 8. Facility Renting Analysis (Bar chart for current year)
     facility_data_json = get_facility_renting_analysis()
 
@@ -212,7 +199,6 @@ def accountant_general_analysis_view(request):
             'active_inactive_data': active_inactive_data_json,
             'leaders_active_inactive_data': leaders_active_inactive_data_json,
             'offerings_data': offerings_data_json,
-            'tithes_data': tithes_data_json,
             'facility_data': facility_data_json,
             'donation_fund_data': donation_fund_data_json,  # <-- pass radar chart data to template
         }

@@ -3,6 +3,10 @@ from django.urls import path
 
 from . import views
 
+from .views import EvangelistOfferingCategoryListView
+
+from .views import evangelist_report_create
+
 urlpatterns = [
     # Details urls
     path('evangelist/details/', views.evangelist_details, name='evangelist_details'),
@@ -29,4 +33,15 @@ urlpatterns = [
     path("evangelist/news/<int:pk>/edit/", views.evangelist_create_news_view, name="evangelist_edit_news"),
     path('evangelist/home/news/', views.evangelist_news_home, name='evangelist_news_home'),
     path('evangelist/notifications/', views.evangelist_notifications_view, name='evangelist_notifications'),  # 🚀 New URL for Notifications
+    path(
+        "evangelist-offering-categories/",
+        EvangelistOfferingCategoryListView.as_view(),
+        name="evangelist_offering_category_list",
+    ),
+
+    path(
+        "evangelist-report/create/",
+        evangelist_report_create,
+        name="evangelist_report_create",
+    ),
 ]

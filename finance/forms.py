@@ -3,6 +3,7 @@ from .models import Offerings
 from django.utils.timezone import now
 from members.models import ChurchMember
 from leaders.models import Leader  # Import Leader model
+from settings.models import OutStation  # Import OutStation model
 
 class OfferingsForm(forms.ModelForm):
     """
@@ -11,7 +12,7 @@ class OfferingsForm(forms.ModelForm):
 
     class Meta:
         model = Offerings
-        fields = ['date_given', 'service_time', 'amount', 'collected_by', 'recorded_by', 'mass_name', 'notes']
+        fields = ['date_given', 'service_time', 'amount', 'collected_by', 'recorded_by', 'mass_name', 'notes', 'outstation']
         widgets = {
             # 📅 Date Given (Default Today)
             'date_given': forms.DateInput(
@@ -58,13 +59,22 @@ class OfferingsForm(forms.ModelForm):
                     'style': 'border-radius: 15px; padding: 10px;',
                 }
             ),
+
+            # 🏛️ Outstation (Dropdown)
+            'outstation': forms.Select(
+                attrs={
+                    'class': 'form-control',
+                    'style': 'border-radius: 50px; padding: 10px;',
+                }
+            ),
         }
 
     def __init__(self, *args, **kwargs):
         """
-        Custom initialization for dynamically loading church members in choices.
+        Custom initialization for dynamically loading church members and outstations in choices.
         - "Collected By" will contain all active members with ✅.
         - "Recorded By" will contain only leaders who are active with ✅.
+        - "Outstation" will contain all outstations.
         """
         super().__init__(*args, **kwargs)
 
@@ -80,14 +90,18 @@ class OfferingsForm(forms.ModelForm):
             (leader.pk, f"✅ {leader.full_name}") for leader in active_leaders
         ]
 
-        # Apply styles
-        for field_name in ['collected_by', 'recorded_by']:
+        # Load all outstations into "Outstation" dropdown
+        outstations = OutStation.objects.all()
+        self.fields['outstation'].choices = [("", "Select outstation...")] + [
+            (outstation.pk, f"{outstation.name} - {outstation.location}") for outstation in outstations
+        ]
+
+        # Apply styles to dropdown fields
+        for field_name in ['collected_by', 'recorded_by', 'outstation']:
             self.fields[field_name].widget.attrs.update({
                 'class': 'form-control',
                 'style': 'border-radius: 50px; padding: 10px;',
             })
-
-
 
 from django import forms
 from .models import FacilityRenting

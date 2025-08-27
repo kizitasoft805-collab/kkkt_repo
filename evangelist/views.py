@@ -1,3 +1,4 @@
+# views.py
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -5,21 +6,16 @@ from django.core.exceptions import PermissionDenied
 from members.models import ChurchMember
 from leaders.models import Leader
 
+
 @login_required
 def evangelist_details(request):
     """
-    View to retrieve all details of an 'Evangelist':
-    - Account Information
-    - Membership Details
-    - Leadership Details
-    - Certificates (Displayed as Buttons)
-    
-    Accessible only to a user who:
-      - is logged in
-      - user_type == 'CHURCH_MEMBER'
-      - church_member.status == 'Active'
-      - church_member is a leader
-      - leader.occupation == 'Evangelist'
+    Retrieve & display all details for a logged‑in Evangelist.
+    Access is granted **ONLY** when:
+      • user_type == 'CHURCH_MEMBER'
+      • related ChurchMember is Active
+      • that member has a Leader record
+      • occupation == 'Evangelist'
     """
     user = request.user
 
@@ -37,23 +33,32 @@ def evangelist_details(request):
     if not leader:
         raise PermissionDenied("Access denied: ChurchMember is not a Leader.")
 
-    # 4) Must have occupation == 'Evangelist'
+    # 4) Must be an Evangelist
     if leader.occupation != 'Evangelist':
         raise PermissionDenied("Access denied: Only Evangelists can access this page.")
 
-    # ✅ If checks pass, proceed with original logic
-    def format_boolean(value):
-        return '<span style="color: green; font-size: 18px;">✔️</span>' if value else '<span style="color: red; font-size: 18px;">❌</span>'
+    # Helper to render ✔️ / ❌
+    format_boolean = lambda val: (
+        '<span style="color: green; font-size: 18px;">✔️</span>'
+        if val else
+        '<span style="color: red; font-size: 18px;">❌</span>'
+    )
 
-    # ✅ Account Details
+    # ---------- Account Details ----------
     account_details = {
         "Username": user.username,
         "Email": user.email or "Not provided",
-        "Phone Number": user.phone_number,
-        "Date Created": user.date_created.strftime("%d %B %Y"),
+        "Phone Number": getattr(user, "phone_number", "Not provided"),
+        "Date Created": user.date_joined.strftime("%d %B %Y"),
     }
 
-    # ✅ Membership Details
+    # ---------- Membership Details ----------
+    outstation_name = (
+        church_member.cell.outstation.name
+        if church_member.cell and church_member.cell.outstation
+        else "Not Assigned"
+    )
+
     membership_details = {
         "Full Name": church_member.full_name,
         "Member ID": church_member.member_id,
@@ -62,53 +67,63 @@ def evangelist_details(request):
         "Phone Number": church_member.phone_number,
         "Email": church_member.email or "Not provided",
         "Address": church_member.address,
-        "Community": church_member.community.name if church_member.community else "Not Assigned",
-        "Apostolic Movement": church_member.apostolic_movement.name if church_member.apostolic_movement else "Not Assigned",
-        "Leader of Movement": format_boolean(church_member.is_the_member_a_leader_of_the_movement),
+        "Outstation": outstation_name,
+        "Cell": church_member.cell.name if church_member.cell else "Not Assigned",
         "Baptized": format_boolean(church_member.is_baptised),
-        "Date of Baptism": church_member.date_of_baptism.strftime("%d %B %Y") if church_member.date_of_baptism else "Not Available",
+        "Date of Baptism": (
+            church_member.date_of_baptism.strftime("%d %B %Y")
+            if church_member.date_of_baptism else "Not Available"
+        ),
         "Confirmed": format_boolean(church_member.is_confirmed),
-        "Date Confirmed": church_member.date_confirmed.strftime("%d %B %Y") if church_member.date_confirmed else "Not Available",
+        "Date Confirmed": (
+            church_member.date_confirmed.strftime("%d %B %Y")
+            if church_member.date_confirmed else "Not Available"
+        ),
         "Marital Status": church_member.marital_status,
-        "Spouse Name": church_member.spouse_name or "Not provided",
-        "Number of Children": church_member.number_of_children or "Not provided",
-        "Job": church_member.job,
-        "Talent": church_member.talent or "Not Provided",
-        "Church Services": church_member.services or "Not Involved",
+        "Date of Marriage": (
+            church_member.date_of_marriage.strftime("%d %B %Y")
+            if church_member.date_of_marriage else "Not Available"
+        ),
         "Emergency Contact Name": church_member.emergency_contact_name,
         "Emergency Contact Phone": church_member.emergency_contact_phone,
-        "Disability": church_member.disability or "None",
-        "Special Interests": church_member.special_interests or "None",
     }
 
-    # ✅ Leadership Details
+    # ---------- Leadership Details ----------
     leadership_details = {
         "Occupation": leader.occupation,
         "Start Date": leader.start_date.strftime("%d %B %Y"),
-        "Committee": leader.committee,
         "Responsibilities": leader.responsibilities,
-        "Education Level": leader.education_level,
-        "Religious Education": leader.religious_education or "Not Provided",
-        "Voluntary Service": format_boolean(leader.voluntary),
+        "Time in Service": leader.time_in_service or "Not Provided",
+        "Outstation Assignment": leader.outstation.name if leader.outstation else "Not Assigned",
     }
 
-    # ✅ Certificates (Displayed as Button Links)
+    # ---------- Certificates ----------
     certificates = {
-        "Baptism Certificate": church_member.baptism_certificate.url if church_member.baptism_certificate else None,
-        "Confirmation Certificate": church_member.confirmation_certificate.url if church_member.confirmation_certificate else None,
-        "Marriage Certificate": church_member.marriage_certificate.url if church_member.marriage_certificate else None,
+        "Baptism Certificate": (
+            church_member.baptism_certificate.url
+            if church_member.baptism_certificate else None
+        ),
+        "Confirmation Certificate": (
+            church_member.confirmation_certificate.url
+            if church_member.confirmation_certificate else None
+        ),
     }
 
-    # ✅ Passport (Move to Top)
+    # ---------- Passport ----------
     passport_url = church_member.passport.url if church_member.passport else None
 
-    return render(request, "evangelist/evangelist_details.html", {
-        "passport_url": passport_url,
-        "account_details": account_details,
-        "membership_details": membership_details,
-        "leadership_details": leadership_details,
-        "certificates": certificates,
-    })
+    return render(
+        request,
+        "evangelist/evangelist_details.html",
+        {
+            "passport_url": passport_url,
+            "account_details": account_details,
+            "membership_details": membership_details,
+            "leadership_details": leadership_details,
+            "certificates": certificates,
+        },
+    )
+
 
 from django.shortcuts import render
 from django.utils.timezone import now, localtime
@@ -492,54 +507,56 @@ from members.models import ChurchMember
 @login_required
 def evangelist_church_member_detail(request, pk):
     """
-    View to retrieve and display all details of a specific ChurchMember,
-    accessible only if the user is:
-      - logged in
-      - user_type == 'CHURCH_MEMBER'
-      - church_member.status == 'Active'
-      - church_member is a leader
-      - leader.occupation == 'Evangelist'
+    Display details for a single ChurchMember.
+    Access allowed only to logged‑in Evangelists (see checks below).
     """
     user = request.user
-    
+
     # 1) Must be CHURCH_MEMBER
-    if user.user_type != 'CHURCH_MEMBER':
+    if user.user_type != "CHURCH_MEMBER":
         raise PermissionDenied("Access denied: user type must be CHURCH_MEMBER.")
 
     # 2) Must have an Active ChurchMember
-    church_member_user = getattr(user, 'church_member', None)
-    if not church_member_user or church_member_user.status != 'Active':
+    church_member_user = getattr(user, "church_member", None)
+    if not church_member_user or church_member_user.status != "Active":
         raise PermissionDenied("Access denied: ChurchMember must be active.")
 
     # 3) Must be a Leader
-    leader_user = getattr(church_member_user, 'leader', None)
+    leader_user = getattr(church_member_user, "leader", None)
     if not leader_user:
         raise PermissionDenied("Access denied: ChurchMember is not a Leader.")
 
-    # 4) Must have occupation == 'Evangelist'
-    if leader_user.occupation != 'Evangelist':
-        raise PermissionDenied("Access denied: Only Evangelists can view church member detail.")
+    # 4) Must be an Evangelist
+    if leader_user.occupation != "Evangelist":
+        raise PermissionDenied("Access denied: Only Evangelists can view member detail.")
 
-    # ✅ If checks pass, proceed with original logic
+    # ---------------------------------------------------------------------
     church_member = get_object_or_404(ChurchMember, pk=pk)
-
-    # Calculate "since created" time
     since_created = calculate_since_created(church_member.date_created)
+    fmt_bool = lambda v: "✅" if v else "❌"
 
-    def format_boolean(value):
-        return "✅" if value else "❌"
+    # Cell / Outstation names
+    cell_name = church_member.cell.name if church_member.cell else "----"
+    outstation_name = (
+        church_member.cell.outstation.name
+        if church_member.cell and church_member.cell.outstation
+        else "----"
+    )
 
+    # Documents available for download
     documents = {
-        "📜 Baptism Certificate": church_member.baptism_certificate.url if church_member.baptism_certificate else None,
-        "🕊️ Confirmation Certificate": church_member.confirmation_certificate.url if church_member.confirmation_certificate else None,
-        "💍 Marriage Certificate": church_member.marriage_certificate.url if church_member.marriage_certificate else None,
+        "📜 Baptism Certificate": church_member.baptism_certificate.url
+            if church_member.baptism_certificate else None,
+        "🕊️ Confirmation Certificate": church_member.confirmation_certificate.url
+            if church_member.confirmation_certificate else None,
     }
 
+    # Details dictionary (keys appear as labels in template)
     details = {
         "👤 Full Name": church_member.full_name,
         "🆔 Member ID": church_member.member_id,
         "🎂 Date of Birth": (
-            church_member.date_of_birth.strftime('%d %B, %Y')
+            church_member.date_of_birth.strftime("%d %B, %Y")
             if church_member.date_of_birth else "----"
         ),
         "🔢 Age": calculate_age(church_member.date_of_birth),
@@ -547,66 +564,48 @@ def evangelist_church_member_detail(request, pk):
         "📞 Phone Number": church_member.phone_number,
         "📧 Email": church_member.email or "----",
         "🏠 Address": church_member.address or "----",
-        "🏘️ Community": (
-            f"{church_member.community.name} ({church_member.community.zone.name})"
-            if church_member.community else "----"
-        ),
-        "🔘 Status": (
-            "✅ Active" if church_member.status == "Active"
-            else "❌ Inactive"
-        ),
+        "📍 Outstation": outstation_name,
+        "🏘️ Cell": cell_name,
+        "🔘 Status": "✅ Active" if church_member.status == "Active" else "❌ Inactive",
         "📅 Date Created": (
             f"{localtime(church_member.date_created).strftime('%d %B, %Y %I:%M %p')} "
             f"({since_created})"
         ),
 
-        # Sacramental Info
-        "🌊 Baptized": format_boolean(church_member.is_baptised),
+        # Sacraments
+        "🌊 Baptized": fmt_bool(church_member.is_baptised),
         "🗓️ Date of Baptism": (
-            church_member.date_of_baptism.strftime('%d %B, %Y')
+            church_member.date_of_baptism.strftime("%d %B, %Y")
             if church_member.date_of_baptism else "----"
         ),
-        "🕊️ Confirmed": format_boolean(church_member.is_confirmed),
+        "🕊️ Confirmed": fmt_bool(church_member.is_confirmed),
         "🗓️ Date of Confirmation": (
-            church_member.date_confirmed.strftime('%d %B, %Y')
+            church_member.date_confirmed.strftime("%d %B, %Y")
             if church_member.date_confirmed else "----"
         ),
 
         # Marriage
         "💍 Marital Status": church_member.marital_status or "----",
-        "❤️ Spouse Name": church_member.spouse_name or "----",
-        "👶 Number of Children": church_member.number_of_children or "----",
         "🗓️ Date of Marriage": (
-            church_member.date_of_marriage.strftime('%d %B, %Y')
+            church_member.date_of_marriage.strftime("%d %B, %Y")
             if church_member.date_of_marriage else "----"
         ),
 
-        # Additional
-        "💼 Job": church_member.job or "----",
-        "🎨 Talent": church_member.talent or "----",
-        "🙏 Services": church_member.services or "----",
+        # Emergency Contact
         "📛 Emergency Contact Name": church_member.emergency_contact_name or "----",
         "📞 Emergency Contact Phone": church_member.emergency_contact_phone or "----",
-        "♿ Disability": church_member.disability or "----",
-        "🌟 Special Interests": church_member.special_interests or "----",
-
-        # Apostolic Movement
-        "🕊️ Apostolic Movement": (
-            church_member.apostolic_movement.name
-            if church_member.apostolic_movement else "----"
-        ),
-        "👑 Is Leader of Movement?": format_boolean(church_member.is_the_member_a_leader_of_the_movement),
     }
 
     return render(
         request,
-        'evangelist/members/church_member_detail.html',
+        "evangelist/members/church_member_detail.html",
         {
-            'church_member': church_member,
-            'details': details,
-            'documents': documents
-        }
+            "church_member": church_member,
+            "details": details,
+            "documents": documents,
+        },
     )
+
 
 from django.shortcuts import render
 from datetime import date
@@ -854,154 +853,143 @@ def evangelist_inactive_leader_list_view(request):
     })
 
 
+# views.py
+from datetime import date
+
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.utils.timezone import localtime, now
-from datetime import date
 
 from leaders.models import Leader
-from members.models import ChurchMember
 
-def calculate_since_created(date_created):
-    """
-    Calculate the time since the leader's record was created (human-readable).
-    """
-    current_time = now()
-    delta = current_time - date_created
 
+def _calculate_since_created(date_created):
+    """Human‑readable time since an object was created."""
+    delta = now() - date_created
     if delta.days < 1:
         if delta.seconds < 60:
             return "Just now"
-        elif delta.seconds < 3600:
+        if delta.seconds < 3600:
             return f"{delta.seconds // 60} minute(s) ago"
-        else:
-            return f"{delta.seconds // 3600} hour(s) ago"
-    elif delta.days == 1:
+        return f"{delta.seconds // 3600} hour(s) ago"
+    if delta.days == 1:
         return "1 day ago"
-    elif delta.days < 7:
+    if delta.days < 7:
         return f"{delta.days} day(s) ago"
-    elif delta.days < 30:
-        weeks = delta.days // 7
-        return f"{weeks} week(s) ago"
-    elif delta.days < 365:
-        months = delta.days // 30
-        return f"{months} month(s) ago"
-    else:
-        years = delta.days // 365
-        return f"{years} year(s) ago"
+    if delta.days < 30:
+        return f"{delta.days // 7} week(s) ago"
+    if delta.days < 365:
+        return f"{delta.days // 30} month(s) ago"
+    return f"{delta.days // 365} year(s) ago"
 
 
-def calculate_age(date_of_birth):
-    """
-    Calculate the age of a Leader based on date_of_birth.
-    """
-    if date_of_birth:
-        today = date.today()
-        age = today.year - date_of_birth.year - (
-            (today.month, today.day) < (date_of_birth.month, date_of_birth.day)
-        )
-        return f"{age} years old"
-    return "----"
+def _calculate_age(dob):
+    """Return age in full years, or placeholder if dob missing."""
+    if not dob:
+        return "----"
+    today = date.today()
+    years = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+    return f"{years} years old"
 
 
-def calculate_time_in_service(start_date):
-    """
-    Calculate the time in service (years, months, days).
-    """
+def _calculate_time_in_service(start_date):
+    """Return service duration in years, months, days."""
     if not start_date:
         return ""
     today = date.today()
     years = today.year - start_date.year
     months = today.month - start_date.month
     days = today.day - start_date.day
-
     if days < 0:
         months -= 1
         days += 30
     if months < 0:
         years -= 1
         months += 12
-
     return f"{years} years, {months} months, {days} days"
 
 
 @login_required
 def evangelist_leader_detail_view(request, pk):
     """
-    View to display details of a specific Leader.
-    Accessible only if:
-      - user_type == 'CHURCH_MEMBER'
-      - church_member.status == 'Active'
-      - church_member is a Leader
-      - leader.occupation == 'Evangelist'
+    Detail page for a Leader (Evangelist‑only access).
     """
-    # 1) Must be CHURCH_MEMBER
     user = request.user
+
+    # --- permission checks -------------------------------------------------
     if user.user_type != 'CHURCH_MEMBER':
         raise PermissionDenied("Access denied: user type must be CHURCH_MEMBER.")
 
-    # 2) Must have an Active ChurchMember
-    church_member_user = getattr(user, 'church_member', None)
-    if not church_member_user or church_member_user.status != 'Active':
+    church_member_user = getattr(user, "church_member", None)
+    if not church_member_user or church_member_user.status != "Active":
         raise PermissionDenied("Access denied: ChurchMember must be active.")
 
-    # 3) Must be a Leader
-    leader_user = getattr(church_member_user, 'leader', None)
-    if not leader_user:
-        raise PermissionDenied("Access denied: ChurchMember is not a Leader.")
-
-    # 4) Must have occupation == 'Evangelist'
-    if leader_user.occupation != 'Evangelist':
+    leader_user = getattr(church_member_user, "leader", None)
+    if not leader_user or leader_user.occupation != "Evangelist":
         raise PermissionDenied("Access denied: Only Evangelists can view this leader detail.")
+    # ----------------------------------------------------------------------
 
-    # ✅ If checks pass, continue
+    # Leader we want to display
     leader = get_object_or_404(Leader, pk=pk)
     church_member = leader.church_member
 
-    # Update time_in_service dynamically
+    # Update & persist time_in_service dynamically
     if leader.start_date:
-        leader.time_in_service = calculate_time_in_service(leader.start_date)
-        leader.save(update_fields=['time_in_service'])
+        leader.time_in_service = _calculate_time_in_service(leader.start_date)
+        leader.save(update_fields=["time_in_service"])
 
-    # Calculate the "since created" time
-    since_created = calculate_since_created(leader.date_created)
+    since_created = _calculate_since_created(leader.date_created)
+    fmt_bool = lambda v: "✅" if v else "❌"
 
-    def format_boolean(value):
-        return "✅" if value else "❌"
+    # Determine Outstation & Cell
+    outstation_name = (
+        leader.outstation.name
+        if leader.outstation
+        else (
+            church_member.cell.outstation.name
+            if church_member.cell and church_member.cell.outstation
+            else "Not Assigned"
+        )
+    )
+    cell_name = church_member.cell.name if church_member.cell else "Not Assigned"
 
+    # -------------- details list (shown in template) -----------------------
     leader_details = [
         ("📛 Full Name", church_member.full_name),
         ("🆔 Leader ID", leader.leader_id),
         ("🆔 Member ID", church_member.member_id),
-        ("🎂 Date of Birth", church_member.date_of_birth.strftime('%d %B, %Y') if church_member.date_of_birth else "----"),
-        ("🔢 Age", calculate_age(church_member.date_of_birth)),
+        ("🎂 Date of Birth", church_member.date_of_birth.strftime("%d %B, %Y") if church_member.date_of_birth else "----"),
+        ("🔢 Age", _calculate_age(church_member.date_of_birth)),
         ("⚥ Gender", church_member.gender),
         ("📞 Phone Number", church_member.phone_number),
-        ("📧 Email", church_member.email if church_member.email else "----"),
+        ("📧 Email", church_member.email or "----"),
         ("🏠 Address", church_member.address or "----"),
+        ("📍 Outstation", outstation_name),
+        ("🏘️ Cell", cell_name),
         ("📅 Date Created", f"{localtime(leader.date_created).strftime('%d %B, %Y %I:%M %p')} ({since_created})"),
-        ("📅 Start Date", leader.start_date.strftime('%d %B, %Y') if leader.start_date else "----"),
-        ("⏳ Time in Service", leader.time_in_service if leader.time_in_service else "----"),
-        ("🏢 Committee", leader.committee or "----"),
+        ("📅 Start Date", leader.start_date.strftime("%d %B, %Y") if leader.start_date else "----"),
+        ("⏳ Time in Service", leader.time_in_service or "----"),
         ("📋 Responsibilities", leader.responsibilities or "----"),
-        ("🎓 Education Level", leader.education_level or "----"),
-        ("✝️ Religious Education", leader.religious_education or "----"),
-        ("💰 Compensation/Allowance", leader.compensation_allowance or "----"),
-        ("🙌 Voluntary", format_boolean(leader.voluntary)),
         ("💍 Marital Status", church_member.marital_status or "----"),
-        ("❤️ Spouse Name", church_member.spouse_name or "----"),
-        ("👶 Number of Children", church_member.number_of_children or "----"),
+        ("📅 Date of Marriage", church_member.date_of_marriage.strftime("%d %B, %Y") if church_member.date_of_marriage else "----"),
+        ("🕊️ Baptized", fmt_bool(church_member.is_baptised)),
+        ("📅 Date of Baptism", church_member.date_of_baptism.strftime("%d %B, %Y") if church_member.date_of_baptism else "----"),
+        ("✅ Confirmed", fmt_bool(church_member.is_confirmed)),
+        ("📅 Date Confirmed", church_member.date_confirmed.strftime("%d %B, %Y") if church_member.date_confirmed else "----"),
         ("📛 Emergency Contact Name", church_member.emergency_contact_name or "----"),
         ("📞 Emergency Contact Phone", church_member.emergency_contact_phone or "----"),
-        ("🎭 Talent", church_member.talent or "----"),
-        ("🌟 Special Interests", church_member.special_interests or "----"),
     ]
+    # ----------------------------------------------------------------------
 
-    return render(request, "evangelist/leaders/leader_detail.html", {
-        "leader": leader,
-        "leader_details": leader_details,
-    })
+    return render(
+        request,
+        "evangelist/leaders/leader_detail.html",
+        {
+            "leader": leader,
+            "leader_details": leader_details,
+        },
+    )
 
 
 from django.shortcuts import render
@@ -1515,4 +1503,47 @@ def evangelist_notifications_view(request):
         request,
         "evangelist/churchmember/member_notifications.html",
         {"notifications": notifications}
+    )
+
+
+
+# finance/views.py
+from django.views.generic import ListView
+from finance.models import OfferingCategory
+
+
+class EvangelistOfferingCategoryListView(ListView):
+    """
+    Shows all offering categories in a clean, card‑style layout.
+    """
+    model = OfferingCategory
+    template_name = "evangelist/evangelist_offering_category_list.html"
+    context_object_name = "categories"
+    paginate_by = None               # pagination disabled
+
+# evangelist/views.py
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from .forms import EvangelistReportForm, ElderDutyFormSet
+
+
+def evangelist_report_create(request):
+    """Create a report + any number of elders on duty."""
+    if request.method == "POST":
+        report_form = EvangelistReportForm(request.POST)
+        formset     = ElderDutyFormSet(request.POST)
+
+        if report_form.is_valid() and formset.is_valid():
+            report = report_form.save()
+            formset.instance = report   # link children to parent
+            formset.save()
+            return redirect(reverse("evangelist_report_detail", args=[report.pk]))
+    else:
+        report_form = EvangelistReportForm()
+        formset     = ElderDutyFormSet()
+
+    return render(
+        request,
+        "evangelist/evangelist_report_form.html",
+        {"report_form": report_form, "formset": formset},
     )

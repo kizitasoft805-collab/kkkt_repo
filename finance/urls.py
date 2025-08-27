@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import finance_home, OfferingsCreateByCategoryView, OfferingsListView, OfferingsUpdateByCategoryView, OfferingsDeleteView
 
+
 from .views import pledge_create_view
 
 from . import views

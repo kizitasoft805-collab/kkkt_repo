@@ -1,11 +1,12 @@
+<!-- _leader_row.html -->
 {% load static %}
 
 <tr class="leader-row"
     data-name="{{ leader.church_member.full_name|lower }}"
     data-gender="{{ leader.church_member.gender }}"
     data-occupation="{{ leader.occupation }}"
-    data-community="{{ leader.church_member.community.id }}"
-    data-zone="{{ leader.church_member.community.zone.id }}"
+    data-cell="{{ leader.church_member.cell.id|default:'' }}"
+    data-outstation="{{ leader.church_member.cell.outstation.id|default:'' }}"
     style="border-bottom: 1px solid #ddd;">
 
     <td>{{ counter }}</td>
@@ -14,35 +15,40 @@
     <td>
         {% if leader.church_member.status == "Active" %}
             <span style="color: green; font-size: 1.2rem;">✅</span>
+        {% elif leader.church_member.status == "Pending" %}
+            <span style="color: orange; font-size: 1.2rem;">⏳</span>
         {% else %}
             <span style="color: red; font-size: 1.2rem;">❌</span>
         {% endif %}
     </td>
 
     <td>
-            <img
-                id="leader-passport-{{ leader.pk }}"
-                alt="Passport"
-                style="display: none; width: 50px; height: 50px; border-radius: 50%; object-fit: cover;"
-                data-passport-url="{% if leader.church_member.passport %}
-                                     {{ leader.church_member.passport.url }}
-                                   {% else %}
-                                     {% static 'images/user.png' %}
-                                   {% endif %}"
-            >
-        </a>
+        <img
+            id="leader-passport-{{ leader.pk }}"
+            alt="Passport"
+            style="display: none; width: 50px; height: 50px; border-radius: 50%; object-fit: cover;"
+            data-passport-url="{% if leader.church_member.passport %}
+                                 {{ leader.church_member.passport.url }}
+                               {% else %}
+                                 {% static 'images/user.png' %}
+                               {% endif %}"
+        >
     </td>
 
     <td style="font-weight: bold; font-size: 1rem; white-space: nowrap;">{{ leader.church_member.full_name }}</td>
     <td style="font-size: 1rem; white-space: nowrap;">{{ leader.church_member.gender }}</td>
     <td style="font-size: 1rem; white-space: nowrap;">{{ leader.occupation }}</td>
     <td style="font-size: 1rem; white-space: nowrap;">
-        {{ leader.church_member.community.name }} ({{ leader.church_member.community.zone.name }})
+        {% if leader.church_member.cell %}
+            {{ leader.church_member.cell.name }} ({{ leader.church_member.cell.outstation.name }})
+        {% else %}
+            Not Assigned
+        {% endif %}
     </td>
     <td style="font-size: 1rem; white-space: nowrap;">{{ leader.time_in_service }}</td>
 
     <td>
-        <a href="{% url 'leader_detail' leader.pk %}" 
+        <a href="{% url 'evangelist_leader_detail' leader.pk %}" 
            style="text-decoration: none; padding: 6px 10px; background: #007bff; color: white; border-radius: 5px;">
             👁️
         </a>

@@ -43,7 +43,7 @@ class OfferingCategory(models.Model):
 from django.db import models
 from django.utils.timezone import now
 from members.models import ChurchMember
-from settings.models import Year
+from settings.models import Year, OutStation  # Import OutStation
 from finance.models import OfferingCategory
 
 class Offerings(models.Model):
@@ -127,6 +127,14 @@ class Offerings(models.Model):
         help_text="Category under which this offering is classified."
     )
 
+    # 🏛️ Outstation (Foreign Key to OutStation)
+    outstation = models.ForeignKey(
+        OutStation,
+        on_delete=models.PROTECT,  # Prevent deletion of OutStation if linked to offerings
+        related_name="offerings",
+        help_text="The outstation where this offering was collected."
+    )
+
     # ⏳ Date Created (Auto Now)
     date_created = models.DateTimeField(
         auto_now_add=True,
@@ -154,9 +162,9 @@ class Offerings(models.Model):
             f"{self.mass_name} - "
             f"{self.date_given.strftime('%A, %d %B %Y')} - "
             f"{self.service_time} - "
-            f"{self.amount} TZS"
+            f"{self.amount} TZS - "
+            f"{self.outstation.name}"
         )
-
 
 import random
 import string

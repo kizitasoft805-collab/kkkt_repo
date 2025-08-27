@@ -1,198 +1,284 @@
 {% extends 'evangelist_base.html' %}
 
 {% block content %}
-<!-- 🙋‍♂️ Member Dashboard Header -->
-<h2 class="dashboard-title">
-    👤 Hello {{ request.user.church_member.full_name }} with ID {{ request.user.church_member.member_id }},
-    welcome to evangelist dashboard!
+<!-- Header with greeting -->
+<h2 class="header-title">
+    👤 Yo {{ request.user.church_member.full_name }} (ID: {{ request.user.church_member.member_id }}), 
+    welcome to your evangelist dashboard!
 </h2>
 
-<!-- 📊 Member Dashboard Sections -->
-<div class="dashboard-grid">
-
-    <!-- 🏠 Home Box -->
-    <a href="{% url 'evangelist_dashboard' %}" class="dashboard-box home-box">
-        <div class="box-content">
-            <div>
-                <h3>🏠 Home</h3>
-                <p>Member Dashboard</p>
+<!-- Stack of buttons, one per row -->
+<div class="button-stack">
+    <!-- Home Button -->
+    <a href="{% url 'evangelist_dashboard' %}" class="big-button home-button">
+        <div class="button-text">
+            <span class="button-emoji">🏠</span>
+            <div class="text-content">
+                <h3>Home</h3>
+                <p>Your main spot for evangelist tools.</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 
-    <!-- 📋 Details Box -->
-    <a href="{% url 'evangelist_details' %}" class="dashboard-box details-box">
-        <div class="box-content">
-            <div>
-                <h3>📋 Details</h3>
-                <p>View Personal Details</p>
+    <!-- Details Button -->
+    <a href="{% url 'evangelist_details' %}" class="big-button details-button">
+        <div class="button-text">
+            <span class="button-emoji">📋</span>
+            <div class="text-content">
+                <h3>Details</h3>
+                <p>Update your personal info.</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 
-    <!-- 👥 Leaders Box -->
-    <a href="{% url 'evangelist_leaders_home' %}" class="dashboard-box leaders-box">
-        <div class="box-content">
-            <div>
-                <h3>👥 Leaders</h3>
-                <p>Manage church leaders</p>
+    <!-- Leaders Button -->
+    <a href="{% url 'evangelist_leaders_home' %}" class="big-button leaders-button">
+        <div class="button-text">
+            <span class="button-emoji">👥</span>
+            <div class="text-content">
+                <h3>Leaders</h3>
+                <p>Manage church leaders.</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 
-    <!-- 🙍‍♂️ Members Box -->
-    <a href="{% url 'evangelist_members_home' %}" class="dashboard-box members-box">
-        <div class="box-content">
-            <div>
-                <h3>🙍‍♂️ Members</h3>
-                <p>Church members directory</p>
+    <!-- Members Button -->
+    <a href="{% url 'evangelist_members_home' %}" class="big-button members-button">
+        <div class="button-text">
+            <span class="button-emoji">🙍‍♂️</span>
+            <div class="text-content">
+                <h3>Members</h3>
+                <p>View church members.</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 
-    <!-- 📝 Posts Box -->
-    <a href="{% url 'evangelist_news_home' %}" class="dashboard-box posts-box">
-        <div class="box-content">
-            <div>
-                <h3>📝 Posts</h3>
-                <p>Manage Your Posts</p>
+    <!-- Posts Button -->
+    <a href="{% url 'evangelist_news_home' %}" class="big-button posts-button">
+        <div class="button-text">
+            <span class="button-emoji">📝</span>
+            <div class="text-content">
+                <h3>Posts</h3>
+                <p>Handle news posts.</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 
-    <!-- 🔔 Notifications Box -->
-    <a href="{% url 'evangelist_notifications' %}" class="dashboard-box notifications-box">
-        <div class="box-content">
-            <div>
-                <h3>🔔 Notifications</h3>
-                <p>Check Notifications</p>
+    <!-- Notifications Button -->
+    <a href="{% url 'evangelist_notifications' %}" class="big-button notifications-button">
+        <div class="button-text">
+            <span class="button-emoji">🔔</span>
+            <div class="text-content">
+                <h3>Notifications</h3>
+                <p>Stay updated with alerts.</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 
-    <!-- 🆘 Help Box -->
-    <a href="{% url 'evangelist_chatbot' %}" class="dashboard-box help-box">
-        <div class="box-content">
-            <div>
-                <h3>🆘 Help</h3>
-                <p>Get Support & Assistance</p>
+    <!-- Help Button -->
+    <a href="{% url 'evangelist_chatbot' %}" class="big-button help-button">
+        <div class="button-text">
+            <span class="button-emoji">🆘</span>
+            <div class="text-content">
+                <h3>Help</h3>
+                <p>Get support with the app.</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 
-    <!-- 🌐 Public Posts Box -->
-    <a href="{% url 'public_news_list' %}" class="dashboard-box public-posts-box">
-        <div class="box-content">
-            <div>
-                <h3>🌐 Public Page</h3>
-                <p>View public page</p>
+    <!-- Public Page Button -->
+    <a href="{% url 'public_news_list' %}" class="big-button public-posts-button">
+        <div class="button-text">
+            <span class="button-emoji">🌐</span>
+            <div class="text-content">
+                <h3>Public Page</h3>
+                <p>View public news.</p>
             </div>
-            <span class="more-info">➡️</span>
+            <span class="arrow-emoji">➡️</span>
+        </div>
+    </a>
+
+    <!-- Offerings Button -->
+    <a href="#" class="big-button offerings-button">
+        <div class="button-text">
+            <span class="button-emoji">💰</span>
+            <div class="text-content">
+                <h3>Offerings</h3>
+                <p>Manage outstation offerings.</p>
+            </div>
+            <span class="arrow-emoji">➡️</span>
         </div>
     </a>
 </div>
 
-<!-- 🚀 iPhone-Like Dashboard Styling -->
+<!-- Styling for buttons, one per row -->
 <style>
     body {
         margin: 0;
         padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        text-align: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         width: 100%;
+        overflow-x: hidden;
     }
 
-    .dashboard-title {
-        font-size: 24px;
+    :root {
+        --text-color: #fff;
+        --shadow: rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] {
+        --text-color: #e0e0e0;
+        --shadow: rgba(0, 0, 0, 0.5);
+    }
+
+    .header-title {
+        font-size: 22px;
         font-weight: bold;
-        margin: 20px 0;
+        margin: 15px;
         color: #007bff;
+        text-align: center;
     }
 
-    .dashboard-grid {
+    .button-stack {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 20px;
+        flex-direction: column;
         width: 100%;
-        max-width: 900px;
-        margin: auto;
+        align-items: center;
+        padding: 0 10px;
+        box-sizing: border-box;
     }
 
-    .dashboard-box {
+    .big-button {
+        width: 100%;
+        max-width: 100vw;
+        height: 100px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        width: 320px;
-        height: 100px;
+        justify-content: center;
         text-decoration: none;
-        font-size: 16px;
-        font-weight: bold;
-        padding: 15px 20px;
-        border-radius: 15px;
-        color: white;
-        transition: transform 0.2s ease, box-shadow 0.3s ease;
+        color: var(--text-color);
+        background: linear-gradient(130deg, #007bff, #0056b3);
+        box-shadow: 0 3px 8px var(--shadow);
+        transition: transform 0.2s ease;
+        margin: 8px 0;
+        border-radius: 12px;
+        box-sizing: border-box;
     }
 
-    /* Existing gradient classes */
-    .home-box {
+    /* Button colors */
+    .home-button {
         background: linear-gradient(130deg, #007bff, #0056b3);
     }
-    .details-box {
+    .details-button {
         background: linear-gradient(130deg, #6F42C1, #512DA8);
     }
-    .posts-box {
+    .leaders-button {
+        background: linear-gradient(130deg, #FF9800, #F57C00);
+    }
+    .members-button {
+        background: linear-gradient(130deg, #28a745, #218838);
+    }
+    .posts-button {
         background: linear-gradient(130deg, #FFC107, #FFA000);
     }
-    .notifications-box {
+    .notifications-button {
         background: linear-gradient(130deg, #17A2B8, #117A8B);
     }
-    .help-box {
+    .help-button {
         background: linear-gradient(130deg, #FF5733, #C70039);
     }
-    .public-posts-box {
+    .public-posts-button {
         background: linear-gradient(130deg, #9c27b0, #7b1fa2);
     }
-
-    /* ✨ Add color for Leaders and Members boxes */
-    .leaders-box {
-        background: linear-gradient(130deg, #FF9800, #F57C00); /* Bold orange gradient */
-    }
-    .members-box {
-        background: linear-gradient(130deg, #28a745, #218838); /* Classic green gradient */
+    .offerings-button {
+        background: linear-gradient(130deg, #dc3545, #b02a37);
     }
 
-    .box-content {
+    .button-text {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        width: 100%;
+        width: 90%;
+        padding: 10px;
     }
 
-    .more-info {
-        font-size: 24px;
+    .button-emoji {
+        font-size: 28px;
+        flex-shrink: 0;
+    }
+
+    .text-content {
+        flex-grow: 1;
+        text-align: left;
+        margin: 0 15px;
+    }
+
+    .big-button h3 {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .big-button p {
+        font-size: 13px;
+        margin: 2px 0 0;
+    }
+
+    .arrow-emoji {
+        font-size: 26px;
+        flex-shrink: 0;
         transition: transform 0.2s ease;
     }
 
-    .dashboard-box:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    .big-button:hover {
+        transform: scale(1.02);
     }
-    .dashboard-box:hover .more-info {
+
+    .big-button:hover .arrow-emoji {
         transform: translateX(5px);
     }
 
-    @media screen and (max-width: 600px) {
-        .dashboard-box {
-            width: 90%;
+    .big-button:active {
+        transform: scale(0.98);
+    }
+
+    /* Smaller screens */
+    @media screen and (max-width: 768px) {
+        .big-button {
+            height: 90px;
         }
+        .button-text {
+            width: 95%;
+        }
+        .button-emoji {
+            font-size: 26px;
+        }
+        .big-button h3 {
+            font-size: 16px;
+        }
+        .big-button p {
+            font-size: 12px;
+        }
+        .arrow-emoji {
+            font-size: 24px;
+        }
+        .header-title {
+            font-size: 20px;
+        }
+    }
+
+    /* Scrollable page */
+    html, body {
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 </style>
 {% endblock %}
